@@ -110,17 +110,7 @@ $(document).ready(function () {
 
 	// -- Login Form
 
-	$(document).on("submit", "#loginForm", function() {
-		var $t = $(this);
-		$.post($t.attr("action"), $t.serialize(), function(data) {
-			if (typeof (data.url) !== undefined)
-				window.location = data.url;
-			else
-				$($t.parent()).html(data);
-		});
-		return false;
-	});
-
+	LoginDialog();
     // ----------
 
     var didScroll;

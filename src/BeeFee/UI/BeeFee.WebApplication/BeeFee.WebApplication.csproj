@@ -3,7 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
 	  <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
+	  <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Scripts\site_script.ts" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0" />
@@ -26,6 +31,10 @@
     <ProjectReference Include="..\..\Applications\BeeFee.ImageApp\BeeFee.ImageApp.csproj" />
     <ProjectReference Include="..\..\Applications\BeeFee.LoginApp\BeeFee.LoginApp.csproj" />
     <ProjectReference Include="..\..\Applications\BeeFee.OrganizerApp\BeeFee.OrganizerApp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\site_script.ts" />
   </ItemGroup>
 
 </Project>
