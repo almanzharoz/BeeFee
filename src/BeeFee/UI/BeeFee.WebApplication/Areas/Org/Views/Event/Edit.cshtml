@@ -1,0 +1,139 @@
+﻿@using BeeFee.Model.Embed
+@using BeeFee.WebApplication.Infrastructure
+@using FormMethod = Microsoft.AspNetCore.Mvc.Rendering.FormMethod
+@model BeeFee.WebApplication.Areas.Org.Models.EventEditModel
+@{
+    ViewData["Title"] = "Add";
+}
+
+<h2>Edit @Model.Name</h2>
+
+<form asp-action="Edit" asp-controller="Event" asp-route-id="@Model.Id" method="post" class="form-horizontal">
+	<div class="validation" asp-validation-summary="ModelOnly"></div>
+	<input type="hidden" asp-for="Version"/>
+    <div class="container">
+
+        <div class="form-group">
+            <input class="form-control" asp-for="Name" placeholder="Name"/>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+	    <div class="form-group">
+		    <input class="form-control" asp-for="Url" placeholder="Url"/>
+		    <span asp-validation-for="Url" class="text-danger"></span>
+	    </div>
+
+	    <div class="form-group">
+		    @Html.DropDownListFor(x => x.CategoryId, Model.Categories, null, new {@class = "form-control"})
+		    <span asp-validation-for="CategoryId"></span>
+	    </div>
+
+        <div class="form-group">
+            @Html.DropDownListFor(x => x.Type, Html.GetEnumSelectList<EEventType>(), null, new {@class = "form-control"})
+        </div>
+
+        <div class="form-group">
+            <input type="text" class="form-control" asp-for="City" placeholder="City"/>
+            <span asp-validation-for="City"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="text" class="form-control" asp-for="Address" placeholder="Address"/>
+            <span asp-validation-for="Address"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="StartDateTime"></label>
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class='input-group date' id='startDateTimePicker'>
+                        <input type='text' class="form-control" asp-for="StartDateTime" value="@Model.StartDateTime"/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="FinishDateTime"></label>
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class='input-group date' id='finishDateTimePicker'>
+                        <input type='text' class="form-control" asp-for="FinishDateTime" value="@Model.FinishDateTime"/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+	    @*<div class="form-group">
+            <input type="text" class="form-control" placeholder="Price" asp-for="Price"/>
+            <span asp-validation-for="Price"></span>
+        </div>*@
+		
+	    <div class="form-group">
+		    <input class="form-control" placeholder="Cover" type="file" id="file" />
+			@if (!String.IsNullOrEmpty(Model.Cover))
+			{
+				<img src="@Url.GetImageUrl(Model.Cover, 100, 100)"/>
+			}
+		    <input type="hidden" class="form-control" placeholder="Cover" asp-for="Cover"/>
+	    </div>
+
+	    <div class="form-group">
+            <textarea class="form-control" rows="10" placeholder="HTML here" asp-for="Html" id="html"></textarea>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn"/>
+        </div>
+    </div>
+</form> 
+
+@section Scripts{ 
+<script src="~/lib/ckeditor/ckeditor.js"></script>
+	<script type="text/javascript">
+        $(function () {
+            $('#startDateTimePicker').datetimepicker({
+                format: "DD.MM.YYYY HH:mm"
+            });
+            $('#finishDateTimePicker').datetimepicker({
+                format: "DD.MM.YYYY HH:mm",
+                useCurrent: false //Important! See issue #1075
+            });
+            $("#startDateTimePicker").on("dp.change", function (e) {
+                $('#finishDateTimePicker').data("DateTimePicker").minDate(e.date);
+            });
+            $("#finishDateTimePicker").on("dp.change", function (e) {
+                $('#startDateTimePicker').data("DateTimePicker").maxDate(e.date);
+			});
+
+			CKEDITOR.replace('html');
+
+	        $("#file").change(function() {
+		        var $this = $(this);
+		        var fd = new FormData;
+		        fd.append('file', $this.prop('files')[0]);
+		        //fd.append('sizes', [{width: 100, height: 100}]);
+		        fd.append('sizes[0].width', 368);
+		        fd.append('sizes[0].height', 190);
+		        $.ajax({
+			        url: '@(BeeFeeWebAppSettings.Instance.ImagesUrl)/api/home',
+			        contentType: false,
+			        processData: false,
+			        dataType: 'json',
+			        method: "POST",
+			        data: fd,
+					success: function (data) {
+						$this.next("img").remove();
+				        $this.after("<img src='@(BeeFeeWebAppSettings.Instance.ImagesUrl)/368_190/" + data.path + "' />");
+				        $("#Cover").val(data.path);
+			        }
+		        });
+	        });
+        });
+    </script>
+}

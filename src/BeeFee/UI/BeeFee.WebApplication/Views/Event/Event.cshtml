@@ -1,0 +1,8 @@
+@model BeeFee.ClientApp.Projections.Event.EventProjection
+@{
+    ViewData["Title"] = Model.Page.Title;
+}
+<div class="row"><h2>@Model.Page.Caption</h2></div>
+<div class="row">@Model.Page.Date</div>
+<div class="row">@Html.Raw(Model.Page.Html)</div>
+

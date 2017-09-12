@@ -1,0 +1,10 @@
+﻿@using BeeFee.WebApplication.Infrastructure
+
+<form method="post" enctype="multipart/form-data" action="@(BeeFeeWebAppSettings.Instance.ImagesUrl)/api/home">
+	<input type="file" name="file"/>
+	<input type="hidden" name="sizes[0].width" value="100" />
+	<input type="hidden" name="sizes[0].height" value="100"/>
+	<input type="hidden" name="sizes[1].width" value="200" />
+	<input type="hidden" name="sizes[1].height" value="200" />
+	<input type="submit"/>
+</form>

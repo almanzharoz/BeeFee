@@ -1,0 +1,41 @@
+@model BeeFee.WebApplication.Models.Event.EventFilterViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+@section fixed_header
+{
+    <div class="fixed-box--r" data-fixed="filter">
+        <div class="container"><a class="filter--head in-fixed" href="#" data-goto="filter">Все события в городе Екатеринбург в ближайшее время</a></div>
+    </div>
+}
+<div class="intro hidden-xs" style="background-image: url(/images/intro.png);">
+	<div class="intro--box">
+		<div class="container">
+			<div class="intro--title">Создай своё событие</div>
+			<div class="intro--text">И расскажи о нём всем</div>
+			<div class="intro--btn"><a class="btn is-block is-sm" href="#">Начать</a></div>
+		</div>
+	</div>
+</div>
+@Html.Partial("_Filter")
+<div class="page--in">
+    <div class="container">
+        <div class="grid">
+            <div class="row">
+				@foreach (var item in Model.Events)
+				{
+					Html.RenderPartial("_EventGridItem", item);
+				}
+            </div>
+        </div>
+        <div class="loader"></div>
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        //$(function () {
+        //    eventsPageInit([{ enddateselector: "#txtSearchText2", cityselector: "#selectCity2", chkconcertselector: "#chkConcert2", chkexhibitionselector: "#chkExhibition2", chkexcursionselector: "#chkExcursion2", maxpriceselector: "#maxPrice2", btnloadselector: "#btnLoad2" },
+        //    { enddateselector: "#txtSearchText1", cityselector: "#selectCity1", chkconcertselector: "#chkConcert1", chkexhibitionselector: "#chkExhibition1", chkexcursionselector: "#chkExcursion1", maxpriceselector: "#maxPrice1", btnloadselector: "#btnLoad1" }], ".container .grid .row");
+        //});
+    </script>
+}

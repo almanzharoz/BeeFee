@@ -1,0 +1,92 @@
+﻿@model BeeFee.WebApplication.Models.Event.EventFilterViewModel
+@{
+    ViewData["Title"] = "Events";
+}
+
+<h2>Events</h2>
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <label for="txtSearchText">Ключевые слова:</label>
+            <input type="text" class="form-control" id="txtSearchText" placeholder="ключевые слова" />
+        </div>
+        <div class="form-group">
+            <label for="selectCity">Выберите город:</label>
+            <select id="selectCity">
+                <option value="0">Не задан</option>
+                @{
+                    var index = 1;
+                    foreach (var city in Model.Cities)
+                    {
+                        <option value="@index">@city</option>
+                        index++;
+                    }
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Выберите категорию:</label>
+            @if (Model.Categories.Count > 0)
+            {
+                <label class="checkbox-inline">
+                    <input type="checkbox" id="chkAllCategories" checked /> Все категории
+                </label>
+                foreach (var category in Model.Categories)
+                {
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="class-category" value="@category.Value" /> @category.Text
+                    </label>
+                }
+            }
+            else
+            {
+                <span class="text-danger">Доступных категорий не найдено</span>
+            }
+        </div>
+        <div class="form-group">
+            <label for="startDate">Дата "с":</label>
+            <input type="text" id="startDate" value="@Model.StartDate.Date" />
+        </div>
+        <div class="form-group">
+            <label for="endDate">Дата "по":</label>
+            <input type="text" id="endDate" value="@Model.EndDate.Date" />
+        </div>
+        <div class="checkbox">
+            <label>Выберите тип:</label>
+            <label class="checkbox-inline">
+                <input type="checkbox" id="chkConcert" checked /> Концерт
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" id="chkExhibition" checked /> Выставка
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" id="chkExcursion" checked /> Экскурсия
+            </label>
+        </div>
+        <div class="form-group">
+            <label for="maxPrice">Максимальная цена билета:</label>
+            <input type="number" id="maxPrice" />
+        </div>
+        <button type="button" class="btn btn-default" id="btnLoad">Поиск</button>
+    </div>
+</div>
+<div class="row" id="listContainer">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Дата</th>
+                <th>Ссылка на картинку</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        $(function () {
+            eventsPageInit();
+        });
+    </script>
+}

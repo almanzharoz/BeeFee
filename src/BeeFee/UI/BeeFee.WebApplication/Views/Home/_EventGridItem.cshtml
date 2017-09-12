@@ -1,0 +1,9 @@
+﻿@using BeeFee.ClientApp.Projections.Event
+@using BeeFee.WebApplication.Infrastructure
+@model EventGridItem
+
+<div class="col-xs-4 col-md-4">
+	<div class="grid--item">
+		<a class="item" href="/event/@Model.Url"><span class="item--poster" style="background-image: url('@Url.GetImageUrl(Model.Page.Cover, 368, 190)');"></span><span class="item--date"><span>@Model.Page.Date</span></span><span class="item--title">@Model.Page.Caption</span></a>
+	</div>
+</div>

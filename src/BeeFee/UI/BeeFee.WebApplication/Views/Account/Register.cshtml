@@ -1,0 +1,43 @@
+@using BeeFee.WebApplication.Models.Account
+@model BeeFee.WebApplication.Models.Account.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2>Register</h2>
+<div class="row">
+    <div class="col-md-8">
+        @if (!String.IsNullOrEmpty(Model.Result))
+        {
+            <div class="text-success">
+                @Model.Result
+            </div>
+        }
+        else
+        {
+            <section>
+                <form asp-controller="Account" asp-action="Register" method="post" class="form-horizontal">
+                    <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+                    <div>
+                        Email: <input asp-for="Email" /><span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div>
+                        Nickname: <input asp-for="Name" /><span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div>
+                        Password: <input asp-for="Password" type="password" /><span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div>
+                        Retry Password: <input asp-for="RetryPassword" type="password" /><span asp-validation-for="RetryPassword" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-default">Register</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        }
+    </div>
+</div>
+

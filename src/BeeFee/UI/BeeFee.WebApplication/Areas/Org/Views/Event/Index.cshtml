@@ -1,0 +1,50 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@model System.Collections.Generic.IReadOnlyCollection<BeeFee.OrganizerApp.Projections.Event.EventProjection>
+
+<h2>My events:</h2>
+
+@if (Model.Count > 0)
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Dates</th>
+            <th>City</th>
+            <th>Address</th>
+            <th>Price</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var e in Model)
+        {
+            <tr>
+                <td>@e.Name</td>
+                <td>@e.Category.Name</td>
+                <td>@e.Type.ToString()</td>
+                <td>@e.DateTime</td>
+                <td>@e.Address.City</td>
+                <td>@e.Address.AddressString</td>
+                <td>@(e.Prices?.FirstOrDefault().Price.ToString())</td>
+                <td>
+					<a asp-action="Edit" asp-route-id="@e.Id">Edit</a>
+	                <a asp-action="Remove" asp-route-id="@e.Id" asp-route-version="@e.Version">Remove</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+else
+{
+    <div class="text-center">
+        You don't have any events
+    </div>
+}
+<br /><br />
+<a asp-action="Add">Add</a>
