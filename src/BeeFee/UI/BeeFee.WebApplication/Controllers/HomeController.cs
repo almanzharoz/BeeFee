@@ -13,8 +13,8 @@ namespace BeeFee.WebApplication.Controllers
         }
 
         public IActionResult Index(LoadEventsRequest request)
-            => View(new EventFilterViewModel(request, _service.GetAllCities(), _categoryService.GetAllCategories<CategoryProjection>(), 
-				_service.SearchEvents(request.Text, request.City, request.Categories, request.Types, request.StartDate, request.EndDate, request.MaxPrice, 9, request.PageIndex)));
+            => View(new EventFilterViewModel(request, Service.GetAllCities(), CategoryService.GetAllCategories<CategoryProjection>(), 
+				Service.SearchEvents(request.Text, request.City, request.Categories, request.Types, request.StartDate, request.EndDate, request.MaxPrice, 9, request.PageIndex)));
 
         public IActionResult Error()
         {

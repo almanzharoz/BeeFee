@@ -8,7 +8,6 @@ using BeeFee.Model.Embed;
 using BeeFee.Model.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using BeeFee.WebApplication.Models;
 using BeeFee.WebApplication.Models.Account;
 
 namespace BeeFee.WebApplication.Controllers
@@ -30,12 +29,15 @@ namespace BeeFee.WebApplication.Controllers
         public async Task<IActionResult> Login(LoginViewModel vm)
         {
 	        if (vm.Login == null || vm.Pass == null)
-		        return View(vm);
+		        return TryAjaxView("_LoginForm", vm);
 
-            var user = _service.TryLogin(vm.Login.Trim().ToLower(), vm.Pass.Trim());
-            if (user == null)
-                return View(vm);
-			
+            var user = Service.TryLogin(vm.Login.Trim().ToLower(), vm.Pass.Trim());
+			if (user == null)
+			{
+				ModelState.AddModelError("error", "Неверный логин или пароль");
+				return TryAjaxView("_LoginForm", vm);
+			}
+
 			var claims = new List<Claim>
 			{
 				new Claim(ClaimTypes.Name, user.Name),
@@ -57,7 +59,7 @@ namespace BeeFee.WebApplication.Controllers
 
 			//_logger.LogInformation(4, "User logged in.");
 
-			return Redirect(vm.ReturnUrl ?? "/");
+			return IsAjax ? (IActionResult)Json(new {url = vm.ReturnUrl}) : Redirect(vm.ReturnUrl ?? "/");
         }
 
         [HttpGet]
@@ -65,9 +67,9 @@ namespace BeeFee.WebApplication.Controllers
         {
             await HttpContext.SignOutAsync("MyCookieAuthenticationScheme");
 
-            //_logger.LogInformation(4, "User logged out.");
+			//_logger.LogInformation(4, "User logged out.");
 
-            return Redirect("/");
+			return Redirect(Request.Headers["Referer"].FirstOrDefault() ?? "/");
         }
 
         public IActionResult AccessDenied()
@@ -87,7 +89,7 @@ namespace BeeFee.WebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = _service.Register(model.Email, model.Name, model.Password);
+                var result = Service.Register(model.Email, model.Name, model.Password);
                 switch (result)
                 {
                     case UserRegistrationResult.Ok:

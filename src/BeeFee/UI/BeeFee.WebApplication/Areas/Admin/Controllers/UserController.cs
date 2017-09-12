@@ -29,7 +29,7 @@ namespace BeeFee.WebApplication.Areas.Admin.Controllers
 		[HttpPost]
 		public IActionResult Add(AddUserModel addUserModel)
 		{
-			_service.AddUser(
+			Service.AddUser(
 				addUserModel.Email,
 				addUserModel.Name,
 				addUserModel.Roles);

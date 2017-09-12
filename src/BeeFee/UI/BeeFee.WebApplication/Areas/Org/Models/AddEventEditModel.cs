@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using BeeFee.Model.Embed;
-using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
 using Microsoft.AspNetCore.Mvc.Rendering;
 

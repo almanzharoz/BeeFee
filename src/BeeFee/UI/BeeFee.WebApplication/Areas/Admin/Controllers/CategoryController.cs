@@ -16,19 +16,19 @@ namespace BeeFee.WebApplication.Areas.Admin.Controllers
 
 		public IActionResult Index()
         {
-            return View(new AddCategoryListModel(_service.GetAllCategories()));
+            return View(new AddCategoryListModel(Service.GetAllCategories()));
         }
 
 	    [HttpPost]
 	    public IActionResult Add(AddCategoryListModel addCategoryListModel)
 	    {
-		    _service.Add(addCategoryListModel.Name, addCategoryListModel.Url);
+		    Service.Add(addCategoryListModel.Name, addCategoryListModel.Url);
 		    return RedirectToAction("Index");
 	    }
 
 	    public IActionResult Remove(string id)
 	    {
-		    _service.Remove(id);
+		    Service.Remove(id);
 		    return RedirectToAction("Index");
 	    }
     }

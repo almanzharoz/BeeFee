@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using BeeFee.WebApplication.Models.Account
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -13,151 +14,28 @@
     </environment>
 </head>
 <body>
-    <div class="page">
-        <header class="header is-light" data-fixed-wrap="header">
-            <div class="container clearfix">
-                <a class="header--logo" href="#">@*<img src="#" alt="" />*@</a>
-                <nav class="header--nav hidden-xs">
-                    <ul class="header--list">
-                        <li class="header--item"><a href="#">События</a></li>
-                        <li class="header--item"><a href="#">Организаторы</a></li>
-                        <li class="header--item"><a href="#">Новости сервиса</a></li>
-                    </ul>
-                </nav>
-                <ul class="header--links hidden-xs">
-                    <li class="header--link"><a class="js-modals-open" href="#authModal">Войти</a></li>
-                    <li class="header--link is-signup"><a class="js-modals-open" href="#signUpModal">Регистрация</a></li>
-                </ul>
-            </div>
-        </header>
-        <div class="fixed-box">
-            <div class="fixed-box--r" data-fixed="header">
-                <header class="header is-small">
-                    <div class="container clearfix">
-                        <a class="header--logo" href="#">@*<img src="#" alt="" />*@</a>
-                        <nav class="header--nav hidden-xs">
-                            <ul class="header--list">
-                                <li class="header--item"><a href="#">События</a></li>
-                                <li class="header--item"><a href="#">Организаторы</a></li>
-                                <li class="header--item"><a href="#">Новости сервиса</a></li>
-                            </ul>
-                        </nav>
-                        <ul class="header--links hidden-xs">
-                            <li class="header--link"><a class="js-modals-open" href="#authModal">Войти</a></li>
-                            <li class="header--link is-signup"><a class="js-modals-open" href="#signUpModal">Регистрация</a></li>
-                        </ul>
-                    </div>
-                </header>
-            </div>
-            @RenderSection("fixed_header", false)
-        </div>
-        @*<nav class="navbar navbar-inverse navbar-fixed-top">
-                <div class="container">
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">BeeFee.WebApplication</a>
-                    </div>
-                    <div class="navbar-collapse collapse">
-                        <ul class="nav navbar-nav">
-                            <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                            <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                            <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                            @if (User.IsInRole("admin"))
-                            {
-                                <li><a asp-area="Admin" asp-controller="Category" asp-action="Index">Categories</a></li>
-                            }
-                            @if (User.IsInRole("organizer"))
-                            {
-                                <li><a asp-area="Org" asp-controller="Event" asp-action="Index">My Events</a></li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </nav>*@
-        @*<div class="container body-content">*@
-        @RenderBody()
-        @*<hr />
-                <footer>
-                    <p>&copy; 2017 - BeeFee.WebApplication</p>
-                </footer>
-            </div>*@
-    </div>
-    <footer class="footer">
-        <div class="container clearfix">
-            <div class="footer--left"><a class="footer--phone" href="#"><span>8-343-365-65-65</span>Номер техподдержки</a></div>
-            <div class="footer--right">
-                <div class="footer--copyrights">&copy; 2017 BeFree<br /> Все права защищены</div>
-            </div>
-        </div>
-    </footer>
+<div class="page">
+	<header class="header is-light" data-fixed-wrap="header">
+		@Html.Partial("_TopMenu")
+	</header>
+	<div class="fixed-box">
+		<div class="fixed-box--r" data-fixed="header">
+			<header class="header is-small">
+				@Html.Partial("_TopMenu")
+			</header>
+		</div>
+		@RenderSection("fixed_header", false)
+	</div>
+	@RenderBody()
+</div>
+	@Html.Partial("_Footer")
     <div class="modals">
         <div class="modals--overlay js-modals-close"></div>
-        <div class="modals--item" id="authModal">
-            <div class="modals--title">Вход и регистрация</div>
-            <div class="modals--body">
-                <div class="modals--field">
-                    <div class="input-field">
-                        <div class="input-field--b">
-                            <label class="input-field--l">Электронная почта</label>
-                            <input class="input-field--i" type="text" />
-                        </div>
-                        <div class="input-field--t"></div>
-                    </div>
-                </div>
-                <div class="modals--field">
-                    <div class="input-field">
-                        <div class="input-field--b">
-                            <label class="input-field--l">Пароль</label>
-                            <input class="input-field--i" type="password" />
-                        </div>
-                        <div class="input-field--t"></div>
-                    </div>
-                </div>
-                <div class="modals--submit">
-                    <button class="btn is-block" type="submit">Вход</button>
-                </div>
-                <div class="modals--socials">
-                    <div class="modals--socials-t">Войти через социальную сеть</div>
-                    <div class="modals--socials-l"><a class="modals--social" href="#"><i class="icon-vkontakte"></i></a><a class="modals--social" href="#"><i class="icon-facebook"></i></a><a class="modals--social" href="#"><i class="icon-twitter"></i></a></div>
-                </div>
-            </div>
-        </div>
-        <div class="modals--item" id="signUpModal">
-            <div class="modals--title">Вход и регистрация</div>
-            <div class="modals--body">
-                <div class="modals--field">
-                    <div class="input-field">
-                        <div class="input-field--b">
-                            <label class="input-field--l">Электронная почта</label>
-                            <input class="input-field--i" type="text" />
-                        </div>
-                        <div class="input-field--t"></div>
-                    </div>
-                </div>
-                <div class="modals--field">
-                    <div class="input-field">
-                        <div class="input-field--b">
-                            <label class="input-field--l">Пароль</label>
-                            <input class="input-field--i" type="password" />
-                        </div>
-                        <div class="input-field--t"></div>
-                    </div>
-                </div>
-                <div class="modals--submit">
-                    <button class="btn is-block" type="submit">Регистрация</button>
-                </div>
-                <div class="modals--socials">
-                    <div class="modals--socials-t">Войти через социальную сеть</div>
-                    <div class="modals--socials-l"><a class="modals--social" href="#"><i class="icon-vkontakte"></i></a><a class="modals--social" href="#"><i class="icon-facebook"></i></a><a class="modals--social" href="#"><i class="icon-twitter"></i></a></div>
-                </div>
-            </div>
-        </div>
-    </div>
+		<div class="modals--item" id="authModal">
+			<div class="modals--title">Вход и регистрация</div>
+			@Html.Partial("_LoginForm", new LoginViewModel(){ReturnUrl = "/"})
+		</div>    
+	</div>
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/datetimepicker/build/jquery.datetimepicker.full.js"></script>

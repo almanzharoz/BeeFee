@@ -1,0 +1,22 @@
+﻿<div class="container clearfix">
+	<a class="header--logo" href="#">@*<img src="#" alt="" />*@</a>
+	<nav class="header--nav hidden-xs">
+		<ul class="header--list">
+			<li class="header--item"><a href="#">События</a></li>
+			<li class="header--item"><a href="#">Организаторы</a></li>
+			<li class="header--item"><a href="#">Новости сервиса</a></li>
+		</ul>
+	</nav>
+	<ul class="header--links hidden-xs">
+		@if (User.Identity.IsAuthenticated)
+		{
+			<li class="header--link"><a asp-action="Profile" asp-controller="Account">@User.Identity.Name</a></li>
+			<li class="header--link"><a asp-action="LogOff" asp-controller="Account">выход</a></li>
+		}
+		else
+		{
+			<li class="header--link"><a class="js-modals-open" modal-id="authModal" asp-action="Login" asp-controller="Account">Войти</a></li>
+			<li class="header--link is-signup"><a asp-action="Register" asp-controller="Account">Регистрация</a></li>
+		}
+	</ul>
+</div>

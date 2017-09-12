@@ -105,10 +105,21 @@ $(document).ready(function () {
     $('a[href="#"]').on({
         click: function (e) {
             e.preventDefault();
-
-            console.log('Click on a[href=#]');
         }
     });
+
+	// -- Login Form
+
+	$(document).on("submit", "#loginForm", function() {
+		var $t = $(this);
+		$.post($t.attr("action"), $t.serialize(), function(data) {
+			if (typeof (data.url) !== undefined)
+				window.location = data.url;
+			else
+				$($t.parent()).html(data);
+		});
+		return false;
+	});
 
     // ----------
 
@@ -188,10 +199,10 @@ $(document).ready(function () {
         click: function (e) {
             e.preventDefault();
 
-            var id = $(this).attr('href');
+            var id = $(this).attr('modal-id');
 
             $('.modals').fadeIn(200);
-            $('.modals--item' + id).fadeIn(200, function () {
+            $('.modals--item#' + id).fadeIn(200, function () {
                 $(this).find('input[type="text"]').first().focus();
             });
         }

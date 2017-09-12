@@ -42,7 +42,7 @@ namespace BeeFee.WebApplication.Controllers
 			//  .IfNotNull<EventProjection, IActionResult>(View, NotFound),
 			// () => Task.FromResult((IActionResult)NotFound())); // рабочий пример, когда не надо юзать fluent :)
 		{
-			var model = await _service.GetEventByUrl(id);
+			var model = await Service.GetEventByUrl(id);
 			if (model == null)
 				return NotFound();
 			return View(model);
@@ -50,7 +50,7 @@ namespace BeeFee.WebApplication.Controllers
 
 		[HttpGet]
 		public IActionResult LoadEvents(LoadEventsRequest request)
-			=> Json(_service.SearchEvents(request.Text, request.City, request.Categories, request.Types, request.StartDate,
+			=> Json(Service.SearchEvents(request.Text, request.City, request.Categories, request.Types, request.StartDate,
 				request.EndDate, request.MaxPrice, request.PageSize, request.PageIndex));
 
 	}

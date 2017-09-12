@@ -20,13 +20,13 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 
 		public IActionResult Index()
 	    {
-		    return View(_service.GetMyEvents());
+		    return View(Service.GetMyEvents());
 	    }
 
 		[HttpGet]
 	    public IActionResult Add()
 		{
-			return View(new AddEventEditModel(_categoryService.GetAllCategories<CategoryProjection>())
+			return View(new AddEventEditModel(CategoryService.GetAllCategories<CategoryProjection>())
 			{
 				StartDateTime = DateTime.Now,
 				FinishDateTime = DateTime.Now.AddDays(1)
@@ -38,7 +38,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 	    {
 		    if (ModelState.IsValid)
 		    {
-			    _service.AddEvent(
+			    Service.AddEvent(
 				    model.CategoryId,
 				    model.Name,
 					model.Url,
@@ -51,16 +51,16 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				    model.Html);
 			    return RedirectToAction("Index");
 		    }
-		    return View(model.Init(_categoryService.GetAllCategories<CategoryProjection>()));
+		    return View(model.Init(CategoryService.GetAllCategories<CategoryProjection>()));
 	    }
 
 		[HttpGet]
 		public IActionResult Edit(string id)
 		{
-			var @event = _service.GetEvent(id);
+			var @event = Service.GetEvent(id);
 			if (@event == null)
 				return NotFound();
-			return View(new EventEditModel(@event, _categoryService.GetAllCategories<CategoryProjection>()));
+			return View(new EventEditModel(@event, CategoryService.GetAllCategories<CategoryProjection>()));
 		}
 
 		[HttpPost]
@@ -68,7 +68,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				_service.UpdateEvent(
+				Service.UpdateEvent(
 				 model.Id,
 				 model.Version,
 				 model.Name,
@@ -83,13 +83,13 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				 model.Html);
 				return RedirectToAction("Index");
 			}
-			model.Init(_categoryService.GetAllCategories<CategoryProjection>());
+			model.Init(CategoryService.GetAllCategories<CategoryProjection>());
 			return View(model);
 		}
 
 		public IActionResult Remove(string id, int version)
 	    {
-			_service.RemoveEvent(id, version);
+			Service.RemoveEvent(id, version);
 		    return RedirectToAction("Index");
 	    }
     }
