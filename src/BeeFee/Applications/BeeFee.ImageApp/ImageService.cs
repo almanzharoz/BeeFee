@@ -9,121 +9,78 @@ using SixLabors.Primitives;
 
 namespace BeeFee.ImageApp
 {
-    public class ImageService
-    {
-	    private readonly string _folder;
-	    public ImageService(string folder)
-	    {
-		    _folder = folder;
-	    }
+	public class ImageService
+	{
+		private readonly string _folder;
+		private readonly string _publicOriginalFolder;
+		private readonly string _privateOriginalFolder;
+		private readonly ImageSize _maxOriginalSize;
 
-	    public async Task<AddImageResult> AddImage(Stream stream, string filename, ImageSize[] sizes)
-	    {
-		    try
-		    {
-			    var fullpath = Path.Combine(_folder, filename);
-			    if (File.Exists(fullpath))
-				    return new AddImageResult(EAddImageResut.Exists, filename, null);
-				if (!Directory.Exists(Path.Combine(_folder, Path.GetDirectoryName(filename))))
-				    Directory.CreateDirectory(Path.Combine(_folder, Path.GetDirectoryName(filename)));
-			    using (stream)
-			    {
-				    await SaveToFile(stream, fullpath);
-				    stream.Position = 0;
-				    if (sizes != null && sizes.Any())
-				    {
-					    var image = Image.Load(stream);
-					    return await Task.Run(() =>
-					    {
-						    try
-						    {
-							    foreach (var size in sizes)
-								    ResizeImage(image, size, filename);
-						    }
-						    catch (Exception e)
-						    {
-							    return new AddImageResult(EAddImageResut.Error, filename, e.Message);
-						    }
-							finally
-							{
-							    image.Dispose();
-						    }
-						    return new AddImageResult(EAddImageResut.Ok, filename, null);
-					    }).ConfigureAwait(false);
-				    }
-			    }
-		    }
-		    catch (Exception e)
-		    {
-			    return new AddImageResult(EAddImageResut.Error, filename, e.Message);
-		    }
-		    return new AddImageResult(EAddImageResut.Ok, filename, null);
-	    }
-
-		public string GetImageUrl(ImageSize size, string filename)
-	    {
-		    var path = Path.Combine(_folder, $"{size.Width}_{size.Height}", filename);
-		    return File.Exists(path) ? $"/{size}/{filename}" : "";
-	    }
-
-	    public string GetImageUrl(string filename)
-	    {
-		    var path = Path.Combine(_folder, filename);
-		    return File.Exists(path) ? $"/{filename}" : "";
-	    }
-
-	    public void Remove(string filename)
-	    {
-		    var dirInfo = new DirectoryInfo(_folder);
-		    foreach (var dir in dirInfo.GetDirectories())
-			    dir.EnumerateFiles(filename).ToList().ForEach(x => x.Delete());
-		    dirInfo.EnumerateFiles(filename).ToList().ForEach(x => x.Delete());
-	    }
-
-	    public async Task<AddImageResult> Update(Stream stream, string filename, ImageSize[] sizes)
-	    {
-		    var files = new DirectoryInfo(_folder).GetFiles(filename, SearchOption.AllDirectories);
-		    foreach (var file in files)
-		    {
-			    var isExists = sizes
-				    .Any(size =>
-					    file.Directory.Name
-						    .Contains(size.ToString()));
-			    if(!isExists) return new AddImageResult(EAddImageResut.Error, filename, "Not all sizes for changing");
-		    }
-
-		    Remove(filename);
-		    return await AddImage(stream, filename, sizes);
-	    }
-
-	    private void ResizeImage(Image<Rgba32> image, ImageSize size, string filename)
-	    {
-		    var folder = Path.Combine(_folder, Path.GetDirectoryName(filename), size.ToString());
-		    var minfullpath = Path.Combine(folder, Path.GetFileName(filename));
-		    if (!Directory.Exists(folder))
-			    Directory.CreateDirectory(folder);
-		    using (var newimg = new Image<Rgba32>(image))
-			    newimg.Resize(new ResizeOptions() {Mode = ResizeMode.Max, Size = new Size(size.Width, size.Height)})
-				    .Save(minfullpath, new JpegEncoder {Quality = 85});
-	    }
-
-
-		private async Task SaveToFile(Stream stream, string filename)
-	    {
-		    var buffer = new byte[65000];
-		    var task = Task.CompletedTask;
-		    var len = 1;
-		    using (var writeStream = File.Create(filename))
-		    {
-			    while (len > 0)
-			    {
-				    await task;
-				    len = stream.Read(buffer, 0, buffer.Length);
-					if (len > 0)
-						task = writeStream.WriteAsync(buffer, 0, len);
-			    }
-			    await task;
-		    }
+		public ImageService(string folder, string publicOriginalFolder, string privateOriginalFolder, ImageSize maxOriginalSize)
+		{
+			_folder = folder;
+			_publicOriginalFolder = publicOriginalFolder;
+			_privateOriginalFolder = privateOriginalFolder;
+			_maxOriginalSize = maxOriginalSize;
 		}
+
+		public async Task<AddImageResult> AddImage(Stream stream, string fileName, ImageSize[] sizes, bool makeOriginalPublic = false)
+		{
+			var uniqueName = GetUniqueName(fileName);
+			try
+			{
+				using (stream)
+				{
+					var image = Image.Load(stream);
+					await Task.Run(() => SaveImage(Resize(image, _maxOriginalSize), _privateOriginalFolder, uniqueName));
+					if (makeOriginalPublic)
+						await Task.Run(() => SaveImage(Resize(image, _maxOriginalSize), _publicOriginalFolder, uniqueName));
+
+					if (sizes != null)
+						foreach (var size in sizes)
+							await Task.Run(() => SaveImage(Resize(image, size), size, uniqueName));
+				}
+			}
+			catch (ArgumentException e)
+			{
+				return new AddImageResult(EAddImageResut.Error, uniqueName, e.Message);
+			}
+			return new AddImageResult(EAddImageResut.Ok, uniqueName);
+		}
+
+		private string GetUniqueName(string fileName)
+		{
+			var result = fileName;
+			var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+			var fullName = Path.Combine(_folder, _privateOriginalFolder, fileName);
+			var index = 0;
+
+			while (File.Exists(fullName))
+			{
+				result = nameWithoutExtension + index + Path.GetExtension(fileName);
+				fullName = Path.Combine(_folder, _privateOriginalFolder, result);
+				index++;
+			}
+			return result;
+		}
+
+		private Image<Rgba32> Resize(Image<Rgba32> image, ImageSize size)
+		{
+			var result = new Image<Rgba32>(image);
+			return result.Resize(new ResizeOptions {Mode = ResizeMode.Max, Size = new Size(size.Width, size.Height)});
+		}
+
+		private void SaveImage(Image<Rgba32> image, string sizePath, string fileName)
+		{
+			var directory = Path.Combine(_folder, sizePath);
+			if (!Directory.Exists(directory))
+				Directory.CreateDirectory(directory);
+			var fullPath = Path.Combine(directory, fileName);
+
+			image.Save(fullPath, new JpegEncoder {Quality = 85});
+		}
+
+		private void SaveImage(Image<Rgba32> image, ImageSize size, string fileName)
+			=> SaveImage(image, size.ToString(), fileName);
 	}
 }

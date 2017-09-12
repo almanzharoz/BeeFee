@@ -3,8 +3,7 @@
 	public enum EAddImageResut
 	{
 		Ok,
-		Error,
-		Exists
+		Error
 	}
 	public struct AddImageResult
 	{
@@ -12,7 +11,7 @@
 		public string Error { get; }
 		public string Path { get; }
 
-		public AddImageResult(EAddImageResut result, string path, string error)
+		public AddImageResult(EAddImageResut result, string path, string error = null)
 		{
 			Result = result;
 			Path = path;

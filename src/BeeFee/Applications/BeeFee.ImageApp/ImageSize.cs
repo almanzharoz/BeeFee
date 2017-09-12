@@ -15,7 +15,7 @@ namespace BeeFee.ImageApp
 
 		public override string ToString()
 		{
-			return $"{Width}_{Height}";
+			return $"{Width}x{Height}";
 		}
 	}
 }
