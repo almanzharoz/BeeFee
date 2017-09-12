@@ -1,8 +1,145 @@
-@model BeeFee.ClientApp.Projections.Event.EventProjection
+﻿@model BeeFee.ClientApp.Projections.Event.EventProjection
 @{
     ViewData["Title"] = Model.Page.Title;
 }
-<div class="row"><h2>@Model.Page.Caption</h2></div>
-<div class="row">@Model.Page.Date</div>
-<div class="row">@Html.Raw(Model.Page.Html)</div>
+<div class="event">
+	<div data-fixed-wrap="info">
+		<div class="event-intro hidden-xs" style="background-image: url(/images/intro.png);">
+			<div class="container">
+				<div class="event-intro--in">
+					<div class="event-intro--box">
+						<div class="event-intro--sticky">
+							<h1 class="event-intro--title"><span>@Model.Page.Caption</span></h1>
+						</div>
+					</div>
+					<div class="event-intro--desc">Долгожданный концерт в Екатеринбурге уже этим летом</div>
+				</div>
+			</div>
+		</div>
+		<div class="event-intro visible-xs" style="background-image: url(/images/intro.png);">
+			<h1 class="event-intro--title">@Model.Page.Caption</h1>
+		</div>
+		<div class="container">
+			<div class="event-fields">
+				@*<div class="event-field"><i class="icon-ticket"></i>от 2000₽ до 5000₽</div>*@
+				<div class="event-field"><i class="icon-date"></i>@Model.Page.Date</div><a class="event-field" href="#"><i class="icon-marker"></i>@Model.Page.Address.City, @Model.Page.Address.AddressString</a><a class="event-field" href="#"><i class="icon-mail"></i>Написать организаторам</a>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="event-text">
+			@Html.Raw(Model.Page.Html)
+		</div>
+		<div class="event-form visible-xs">
+			<div class="event-form--title">На Queens of the Stone Age идут 1025 человек. Присоединяйтесь! </div>
+			<div class="row">
+				<div class="col-xs-4 col-md-3">
+					<div class="input-field">
+						<div class="input-field--b">
+							<label class="input-field--l">Ваше имя</label>
+							<input class="input-field--i" type="text" />
+						</div>
+						<div class="input-field--t"></div>
+					</div>
+				</div>
+				<div class="col-xs-4 col-md-3">
+					<div class="input-field">
+						<div class="input-field--b">
+							<label class="input-field--l">Номер телефона</label>
+							<input class="input-field--i" type="text" />
+						</div>
+						<div class="input-field--t"></div>
+					</div>
+				</div>
+				<div class="col-xs-4 col-md-3">
+					<div class="input-field">
+						<div class="input-field--b">
+							<label class="input-field--l">Электронная почта</label>
+							<input class="input-field--i" type="text" />
+						</div>
+						<div class="input-field--t"></div>
+					</div>
+				</div>
+				<div class="col-xs-4 col-md-3">
+					<button class="btn is-block" type="submit">Регистрация</button>
+				</div>
+			</div>
+		</div>
+		<div class="event-share hidden-xs">
+			<div class="event-share--title">Расскажите о концерте друзьям!</div>
+			<div class="event-share--in"><a class="event-share--item is-vk" href="#"><span>235</span></a><a class="event-share--item is-fb" href="#"></a><a class="event-share--item is-tw" href="#"></a></div>
+		</div>
+	</div>
+</div>
+<div class="event-form hidden-xs">
+<div class="container">
+	<div class="event-form--title">На Queens of the Stone Age идут 1025 человек. Присоединяйтесь! </div>
+	<div class="row">
+		<div class="col-xs-4 col-md-3">
+			<div class="input-field">
+				<div class="input-field--b">
+					<label class="input-field--l">Ваше имя</label>
+					<input class="input-field--i" type="text" />
+				</div>
+				<div class="input-field--t"></div>
+			</div>
+		</div>
+		<div class="col-xs-4 col-md-3">
+			<div class="input-field">
+				<div class="input-field--b">
+					<label class="input-field--l">Номер телефона</label>
+					<input class="input-field--i" type="text" />
+				</div>
+				<div class="input-field--t"></div>
+			</div>
+		</div>
+		<div class="col-xs-4 col-md-3">
+			<div class="input-field">
+				<div class="input-field--b">
+					<label class="input-field--l">Электронная почта</label>
+					<input class="input-field--i" type="text" />
+				</div>
+				<div class="input-field--t"></div>
+			</div>
+		</div>
+		<div class="col-xs-4 col-md-3">
+			<button class="btn is-block" type="submit">Регистрация</button>
+		</div>
+	</div>
+</div>
+</div>
 
+@section fixed_header
+{
+	<div class="fixed-box--r" data-fixed="info">
+		<div class="container">
+			<div class="info">
+				<div class="info--title">@Model.Page.Caption</div>
+				<div class="info--fields">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="info--field">
+								<div class="event-field"><i class="icon-date"></i>@Model.Page.Date
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="info--field"><a class="event-field" href="#"><i class="icon-marker"></i>@Model.Page.Address.City, @Model.Page.Address.AddressString</a>
+							</div>
+						</div>
+						@*<div class="col-md-6">
+							<div class="info--field">
+								<div class="event-field"><i class="icon-ticket"></i>от 2000₽ до 5000₽
+								</div>
+							</div>
+						</div>*@
+						<div class="col-md-6">
+							<div class="info--field"><a class="event-field" href="#"><i class="icon-mail"></i>Написать организаторам</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}

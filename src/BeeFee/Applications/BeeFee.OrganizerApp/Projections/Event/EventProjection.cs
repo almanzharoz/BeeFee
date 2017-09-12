@@ -25,7 +25,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 		[Keyword]
 		public BaseUserProjection Owner { get; private set; }
 
-		internal EventProjection Change(string name, string url, string cover, EventDateTime dateTime, Address address, EEventType type,
+		internal EventProjection Change(string name, string label, string url, string cover, EventDateTime dateTime, Address address, EEventType type,
 			BaseCategoryProjection category, TicketPrice[] prices, string html)
 		{
 			Name = name;
@@ -35,7 +35,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 			Type = type;
 			Category = category.HasNotNullArg(nameof(category));
 			Prices = prices;
-			Page = Page.SetHtml(html).Change(name, category.Name, cover, dateTime, address);
+			Page = Page.SetHtml(html).Change(name, label, category.Name, cover, dateTime, address);
 			return this;
 		}
 

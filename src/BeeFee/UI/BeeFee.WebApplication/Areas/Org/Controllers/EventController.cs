@@ -41,6 +41,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 			    Service.AddEvent(
 				    model.CategoryId,
 				    model.Name,
+					model.Label,
 					model.Url,
 					model.Cover,
 				    model.Type,
@@ -72,6 +73,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				 model.Id,
 				 model.Version,
 				 model.Name,
+				 model.Label,
 				 model.Url,
 				 model.Cover,
 				 new EventDateTime(model.StartDateTime, model.FinishDateTime),

@@ -24,7 +24,7 @@ namespace BeeFee.TestsApp.Services
 					Address = address,
 					Type = type,
 					Category = category,
-					Page = new EventPage(name, category.Name, "", dateTime.ToString(), address, "<p>Html text</p>"),
+					Page = new EventPage(name, "label", category.Name, "", dateTime.ToString(), address, "<p>Html text</p>"),
 					Prices = new TicketPrice[1]
 						{new TicketPrice() {Description = "description price", Name = "price", Price = price}}
 				}
