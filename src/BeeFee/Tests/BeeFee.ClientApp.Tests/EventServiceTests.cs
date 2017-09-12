@@ -82,11 +82,11 @@ namespace BeeFee.ClientApp.Tests
             AddEvent(AddCategory("Category 2"), "Event 2", new EventDateTime(dateTimeNow, dateTimeNow.AddDays(1)), new Address("Sverdlovsk", ""), EEventType.Exhibition,
                 0);
 
-            var events = Service.SearchEvents(types: new List<EEventType>() { EEventType.Concert });
+            var events = Service.SearchEvents(types: new [] { EEventType.Concert });
 
             Assert.IsTrue(events.Any());
 
-            events = Service.SearchEvents(types: new List<EEventType>() { EEventType.Excursion });
+            events = Service.SearchEvents(types: new [] { EEventType.Excursion });
 
             Assert.IsTrue(!events.Any());
         }
@@ -120,13 +120,13 @@ namespace BeeFee.ClientApp.Tests
             AddEvent(category2Id, "Event 3", new EventDateTime(dateTimeNow, dateTimeNow.AddDays(1)), new Address("Sverdlovsk", ""), EEventType.Concert,
                 0);
 
-            var events = Service.SearchEvents(categories: new List<string>() { category1Id });
+            var events = Service.SearchEvents(categories: new [] { category1Id });
 
             Assert.AreEqual(events.Count, 1);
 
             Assert.IsTrue(events.FirstOrDefault().Id == eventid1);
 
-            events = Service.SearchEvents(categories: new List<string>() { "bla-bla" });
+            events = Service.SearchEvents(categories: new [] { "bla-bla" });
 
             Assert.IsTrue(!events.Any());
         }

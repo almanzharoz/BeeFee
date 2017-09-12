@@ -48,7 +48,7 @@ namespace BeeFee.LoginApp.Services
 
 	    public bool ChangePassword(string email, string oldPassword, string newPassword)
 		    => TryLogin(email, oldPassword)
-			    .IfNotNullOrDefault(
+			    .NotNullOrDefault(
 				    user => Update<UpdatePasswordProjection>(user.Id, x => x.ChangePassword(/*oldPassword, */newPassword), true));
 
 	}

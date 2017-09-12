@@ -4,6 +4,9 @@ using SharpFuncExt;
 
 namespace BeeFee.Model.Helpers
 {
+	/// <summary>
+	/// Расширения для проверки аргуметов, являющихся проекциями
+	/// </summary>
 	public static class Extensions
 	{
 		public static T HasNotNullEntity<T>(this T arg, string argName) where T : IEntity

@@ -102,13 +102,6 @@ namespace SharpFuncExt
 			return arg;
 		}
 
-		public static TResult IfNotNullOrDefault<T, TResult>(this T arg, Func<T, TResult> func)
-		{
-			if (arg.NotNull())
-				return func(arg);
-			return default(TResult);
-		}
-
 		public static T HasNotNullArg<T>(this T arg, string argName) => arg.ThrowIfNull(() => new ArgumentNullException(argName));
 		public static T HasNotNullArg<T, TValue>(this T arg, Expression<Func<T, TValue>> expression, string argName) => arg.ThrowIfNull(expression, () => new ArgumentNullException(argName));
 		public static T HasNotNullArg<T, TValue1, TValue2>(this T arg, Expression<Func<T, TValue1>> expression1, Expression<Func<T, TValue2>> expression2, string argName) 
