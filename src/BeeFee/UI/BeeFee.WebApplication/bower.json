@@ -10,7 +10,8 @@
     "eonasdan-bootstrap-datetimepicker": "v4.17.45",
     "bootstrap-datepicker": "v1.7.1",
     "sticky-kit": "v1.1.2",
-    "datetimepicker": "2.5.4"
+    "datetimepicker": "2.5.4",
+    "ScrollToFixed": "1.0.8"
   },
   "resolutions": {
     "jquery-validation": "1.17.0",

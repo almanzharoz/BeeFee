@@ -100,6 +100,34 @@
     });
 }
 
+var topFixed, prevTop = 0, prevShowTop = 0;
+function initFixedBox() {
+	var container = $("div[data-fixed-wrap]>.container");
+	topFixed = container.offset().top + container.outerHeight();
+	prevTop = $(this).scrollTop();
+	prevShowTop = prevTop;
+	$(window).scroll(function (event) {
+		var y = $(this).scrollTop();
+		//console.log(y, prevTop);
+		if (y > prevTop || y < topFixed) {
+			$(".fixed-box").removeClass('is-shown');
+			//console.log("hide");
+			prevTop = y;
+			return;
+		}
+		if (y < prevTop) {
+			if (y >= topFixed && y+2 < prevTop) {
+				if (!$(".fixed-box").hasClass('is-shown')) {
+					$(".fixed-box").addClass('is-shown').slideDown(200);
+					//console.log("show");
+				}
+			} 
+			prevTop = y;
+		}
+		if (!$(".fixed-box").hasClass('is-shown')) 
+			prevTop = y;
+	});
+}
 $(document).ready(function () {
 
     $('a[href="#"]').on({
@@ -110,53 +138,53 @@ $(document).ready(function () {
 
 	// -- Login Form
 
-	LoginDialog();
+	initLoginDialog();
     // ----------
+	initFixedBox();
+    //var didScroll;
+    //var lastScrollTop = 0;
+    //var delta = 5;
+    //var navbarHeight = $('.header').outerHeight();
 
-    var didScroll;
-    var lastScrollTop = 0;
-    var delta = 5;
-    var navbarHeight = $('.header').outerHeight();
+    //$(window).on('scroll', function () {
+    //    didScroll = true;
+    //});
 
-    $(window).on('scroll', function () {
-        didScroll = true;
-    });
+    //setInterval(function () {
+    //    if (didScroll) {
+    //        hasScrolled();
+    //        didScroll = false;
+    //    }
+    //}, 100);
 
-    setInterval(function () {
-        if (didScroll) {
-            hasScrolled();
-            didScroll = false;
-        }
-    }, 100);
+    //function hasScrolled() {
+    //    var st = $(this).scrollTop();
 
-    function hasScrolled() {
-        var st = $(this).scrollTop();
+    //    if (Math.abs(lastScrollTop - st) <= delta)
+    //        return;
 
-        if (Math.abs(lastScrollTop - st) <= delta)
-            return;
+    //    if (st > lastScrollTop) {
+    //        // Scroll Down
+    //        $('.fixed-box').removeClass('is-shown');
+    //    } else {
+    //        // Scroll Up
+    //        if (st + $(window).height() < $(document).height())
+    //            $('.fixed-box').addClass('is-shown');
+    //    }
 
-        if (st > lastScrollTop) {
-            // Scroll Down
-            $('.fixed-box').removeClass('is-shown');
-        } else {
-            // Scroll Up
-            if (st + $(window).height() < $(document).height())
-                $('.fixed-box').addClass('is-shown');
-        }
+    //    $('[data-fixed-wrap]').each(function () {
+    //        var wrap = $(this);
+    //        var box = $('[data-fixed="' + wrap.attr('data-fixed-wrap') + '"]');
 
-        $('[data-fixed-wrap]').each(function () {
-            var wrap = $(this);
-            var box = $('[data-fixed="' + wrap.attr('data-fixed-wrap') + '"]');
+    //        if ((wrap.offset().top + wrap.outerHeight()) >= box.offset().top) {
+    //            box.slideUp(200);
+    //        } else {
+    //            box.slideDown(200);
+    //        }
+    //    });
 
-            if ((wrap.offset().top + wrap.outerHeight()) >= box.offset().top) {
-                box.slideUp(200);
-            } else {
-                box.slideDown(200);
-            }
-        });
-
-        lastScrollTop = st;
-    }
+    //    lastScrollTop = st;
+    //}
 
     // ----------
 

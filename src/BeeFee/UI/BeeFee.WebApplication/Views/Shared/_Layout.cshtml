@@ -28,6 +28,7 @@
 		</div>
 		@RenderBody()
 		@Html.Partial("_Footer")
+		<div class="hidden-xs" style="height: 156px;"></div>
 		<div class="modals">
 			<div class="modals--overlay js-modals-close"></div>
 			<div class="modals--item" id="authModal">
@@ -42,6 +43,7 @@
 		<script src="~/lib/jquery/dist/jquery.js"></script>
 		<script src="~/lib/sticky-kit/jquery.sticky-kit.js"></script>
 		<script src="~/lib/datetimepicker/build/jquery.datetimepicker.full.js"></script>
+		@*<script src="~/lib/ScrollToFixed/jquery-scrolltofixed.js" asp-append-version="true"></script>*@
 		<script src="~/scripts/site_script.js" asp-append-version="true"></script>
 		<script src="~/js/events.js" asp-append-version="true"></script>
 		<script src="~/js/site.js" asp-append-version="true"></script>
