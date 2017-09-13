@@ -36,7 +36,7 @@ namespace BeeFee.ImageApp
 					if (makeOriginalPublic)
 						await Task.Run(() => SaveImage(Resize(image, _maxOriginalSize), _publicOriginalFolder, uniqueName));
 
-					if (sizes != null)
+					if (sizes != null) 
 						foreach (var size in sizes)
 							await Task.Run(() => SaveImage(Resize(image, size), size, uniqueName));
 				}

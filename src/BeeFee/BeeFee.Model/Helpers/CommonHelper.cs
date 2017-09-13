@@ -91,7 +91,8 @@ namespace BeeFee.Model.Helpers
 		    {
 			    if (isRightChar != null && !isRightChar(symbol))
 				    continue;
-			    builder.Append(TransliterationDict[symbol]);
+			    var isGood = TransliterationDict.TryGetValue(symbol, out var newSymbol);
+			    builder.Append(isGood ? newSymbol : symbol.ToString());
 		    }
 		    return builder.ToString();
 	    }
