@@ -37,6 +37,7 @@ namespace BeeFee.WebApplication.Controllers
 		//    return View(model);
 		//}
 
+		[Route("/event/{id}")]
 		public async Task<IActionResult> Event(string id)
 			//=> id.IfNotNull(x => _service.GetEventByUrl(id)
 			//  .IfNotNull<EventProjection, IActionResult>(View, NotFound),

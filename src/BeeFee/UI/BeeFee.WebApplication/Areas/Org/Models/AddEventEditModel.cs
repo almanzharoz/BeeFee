@@ -13,6 +13,9 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		[Required(ErrorMessage = "Name is required")]
 		public string Name { get; set; }
 
+		[Required(ErrorMessage = "Label is required")]
+		public string Label { get; set; }
+
 		public string Url { get; set; }
 
 		public string CategoryId { get; set; }

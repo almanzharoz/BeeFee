@@ -21,8 +21,13 @@
 		    <input class="form-control" asp-for="Url" placeholder="Url"/>
 		    <span asp-validation-for="Url" class="text-danger"></span>
 	    </div>
+		
+		<div class="form-group">
+			<input class="form-control" asp-for="Label" placeholder="Подпись"/>
+			<span asp-validation-for="Label" class="text-danger"></span>
+		</div>
 
-	    <div class="form-group">
+		<div class="form-group">
 		    @Html.DropDownListFor(x => x.CategoryId, Model.Categories, null, new {@class = "form-control"})
 		    <span asp-validation-for="CategoryId"></span>
 	    </div>

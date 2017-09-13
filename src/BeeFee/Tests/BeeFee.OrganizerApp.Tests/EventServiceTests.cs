@@ -23,7 +23,7 @@ namespace BeeFee.OrganizerApp.Tests
 		public void AddEventTest()
 		{
 			var id = AddCategory("test");
-			Assert.IsTrue(Service.AddEvent(id, "test", "test", null, EEventType.Concert,
+			Assert.IsTrue(Service.AddEvent(id, "test", "label", "test", null, EEventType.Concert,
 				new EventDateTime(DateTime.Now, DateTime.Now.AddMinutes(20)), new Address(), new TicketPrice[0], "html"));
 		}
 
@@ -31,7 +31,7 @@ namespace BeeFee.OrganizerApp.Tests
 		public void RemoveEventTest()
 		{
 			var id = AddCategory("test");
-			Assert.IsTrue(Service.AddEvent(id, "test", "test", null, EEventType.Concert,
+			Assert.IsTrue(Service.AddEvent(id, "test", "label", "test", null, EEventType.Concert,
 				new EventDateTime(DateTime.Now, DateTime.Now.AddMinutes(20)), new Address(), new TicketPrice[0], "html"));
 			var myEvents = Service.GetMyEvents().ToList();
 			Assert.AreEqual(1, myEvents.Count);
@@ -46,10 +46,11 @@ namespace BeeFee.OrganizerApp.Tests
 			var id = AddCategory("test");
 			var start = DateTime.Now;
 			var end = start.AddMinutes(20);
-			Assert.IsTrue(Service.AddEvent(id, "test", "test", null, EEventType.Concert, new EventDateTime(start, end),
+			Assert.IsTrue(Service.AddEvent(id, "test", "label", "test", null, EEventType.Concert, new EventDateTime(start, end),
 				new Address("Ekaterinburg", "asd"), new[] {new TicketPrice {Price = 100m}}, "html"));
 			var @event = Service.GetMyEvents().ToList()[0];
 			Assert.AreEqual("test", @event.Name);
+			Assert.AreEqual("label", @event.Page.Label);
 			Assert.AreEqual("test", @event.Url);
 			Assert.AreEqual(EEventType.Concert, @event.Type);
 			Assert.AreEqual(start, @event.DateTime.Start);
@@ -66,10 +67,11 @@ namespace BeeFee.OrganizerApp.Tests
 			var id = AddCategory("test");
 			var start = DateTime.Now;
 			var end = start.AddMinutes(20);
-			Assert.IsTrue(Service.AddEvent(id, "test", "test", null, EEventType.Concert, new EventDateTime(start, end),
+			Assert.IsTrue(Service.AddEvent(id, "test", "label", "test", null, EEventType.Concert, new EventDateTime(start, end),
 				new Address("Ekaterinburg", "asd"), new[] { new TicketPrice { Price = 100m } }, "html"));
 			var @event = Service.GetMyEvents().ToList()[0];
 			Assert.AreEqual("test", @event.Name);
+			Assert.AreEqual("label", @event.Page.Label);
 			Assert.AreEqual("test", @event.Url);
 			Assert.AreEqual(EEventType.Concert, @event.Type);
 			Assert.AreEqual(start, @event.DateTime.Start);
@@ -81,10 +83,11 @@ namespace BeeFee.OrganizerApp.Tests
 
 			start = DateTime.Now;
 			end = start.AddMinutes(20);
-			Assert.IsTrue(Service.UpdateEvent(@event.Id, @event.Version, "asd", "asd", null, new EventDateTime(start, end),
+			Assert.IsTrue(Service.UpdateEvent(@event.Id, @event.Version, "asd", "label", "asd", null, new EventDateTime(start, end),
 				new Address("Ekaterinburg", "dsa"), EEventType.Excursion, id, new TicketPrice[0], "asd"));
 			@event = Service.GetMyEvents().ToList()[0];
 			Assert.AreEqual("asd", @event.Name);
+			Assert.AreEqual("label", @event.Page.Label);
 			Assert.AreEqual("asd", @event.Url);
 			Assert.AreEqual(EEventType.Excursion, @event.Type);
 			Assert.AreEqual(start, @event.DateTime.Start);

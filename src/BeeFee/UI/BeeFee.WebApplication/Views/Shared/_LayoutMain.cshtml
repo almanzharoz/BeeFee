@@ -1,0 +1,61 @@
+﻿@using BeeFee.WebApplication.Models.Account
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+</head>
+<body>
+<div class="page">
+	<header class="header is-light" data-fixed-wrap="header">
+		@Html.Partial("_TopMenu")
+	</header>
+	<div class="fixed-box">
+		<div class="fixed-box--r" data-fixed="header">
+			<header class="header is-small">
+				@Html.Partial("_TopMenu")
+			</header>
+		</div>
+		@RenderSection("fixed_header", false)
+	</div>
+	@RenderBody()
+</div>
+@Html.Partial("_Footer")
+<div class="modals">
+	<div class="modals--overlay js-modals-close"></div>
+	<div class="modals--item" id="authModal">
+		<div class="modals--title">Вход и регистрация</div>
+		<div class="modals--body">
+			@Html.Partial("_LoginForm", new LoginViewModel() { ReturnUrl = "/" })
+		</div>
+	</div>    
+</div>
+<environment include="Development">
+	<script src="~/lib/jquery/dist/jquery.js"></script>
+	<script src="~/lib/datetimepicker/build/jquery.datetimepicker.full.js"></script>
+	<script src="~/scripts/site_script.js" asp-append-version="true"></script>
+	<script src="~/js/events.js" asp-append-version="true"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+</environment>
+<environment exclude="Development">
+	<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+			asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+			asp-fallback-test="window.jQuery"
+			crossorigin="anonymous"
+			integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+	</script>
+	<script src="~/lib/datetimepicker/build/jquery.datetimepicker.full.js"></script>
+	<script src="~/js/site.min.js" asp-append-version="true"></script>
+</environment>
+
+@RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -17,6 +17,9 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		[Required(ErrorMessage = "Name is required")]
 		public string Name { get; set; }
 
+		[Required(ErrorMessage = "Name is required")]
+		public string Label { get; set; }
+
 		public string Url { get; set; }
 		public string Cover { get; set; }
 
@@ -55,6 +58,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 			Id = @event.Id;
 			Version = @event.Version;
 			Name = @event.Name;
+			Label = @event.Page.Label;
 			Url = @event.Url;
 			Type = @event.Type;
 			CategoryId = @event.Category.Id;

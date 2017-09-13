@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SharpFuncExt;
 
 namespace Core.ElasticSearch.Domain
 {
@@ -21,6 +22,10 @@ namespace Core.ElasticSearch.Domain
 		[JsonIgnore]
 		public int Version { get; internal set; }
 
+		/// <summary>
+		/// Для IJoinProjection
+		/// </summary>
+		/// <param name="id"></param>
 		protected BaseEntityWithVersion(string id)
 		{
 			Id = id;
@@ -40,16 +45,23 @@ namespace Core.ElasticSearch.Domain
 	{
 		[JsonIgnore]
 		public string Id { get; internal set; }
+	}
 
-		protected BaseNewEntity() { }
+	/// <summary>
+	/// Используется для добавления новых документов c заданным Id. Такие объекты никогда не попадают в RequestContainer.
+	/// </summary>
+	public abstract class BaseNewEntityWithId
+	{
+		[JsonIgnore]
+		public string Id { get; }
 
 		/// <summary>
 		/// Используется, если хотим использовать свой Id при вставке
 		/// </summary>
 		/// <param name="id"></param>
-		protected BaseNewEntity(string id)
+		protected BaseNewEntityWithId(string id)
 		{
-			Id = id;
+			Id = id.HasNotNullArg(nameof(id));
 		}
 	}
 

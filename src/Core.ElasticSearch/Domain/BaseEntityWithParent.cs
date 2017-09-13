@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
+using SharpFuncExt;
 
 namespace Core.ElasticSearch.Domain
 {
+	//TODO: Сделать для IJoinProjection
 	public abstract class BaseEntityWithParent<T> : BaseEntity, IWithParent<T>
 		where T : IProjection
 	{
@@ -39,12 +41,19 @@ namespace Core.ElasticSearch.Domain
 
 		protected BaseNewEntityWithParent(T parent)
 		{
-			Parent = parent;
+			Parent = parent.HasNotNullArg(x => x.Id, nameof(parent));
 		}
+	}
 
-		protected BaseNewEntityWithParent(string id, T parent) : base(id)
+	public abstract class BaseNewEntityWithIdAndParent<T> : BaseNewEntityWithId, IWithParent<T>, IProjection
+		where T : IProjection
+	{
+		[JsonIgnore]
+		public T Parent { get; }
+
+		protected BaseNewEntityWithIdAndParent(string id, T parent) : base(id)
 		{
-			Parent = parent;
+			Parent = parent.HasNotNullArg(x => x.Id, nameof(parent));
 		}
 	}
 }

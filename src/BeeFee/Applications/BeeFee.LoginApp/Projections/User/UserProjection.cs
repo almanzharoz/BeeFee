@@ -2,7 +2,6 @@
 using BeeFee.Model.Embed;
 using Core.ElasticSearch.Domain;
 using Microsoft.AspNetCore.WebUtilities;
-using Newtonsoft.Json;
 
 namespace BeeFee.LoginApp.Projections.User
 {

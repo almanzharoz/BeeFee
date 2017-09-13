@@ -31,6 +31,7 @@ namespace Core.ElasticSearch.Tests
 		        .AddProjection<NewProducer, Producer>()
 		        .AddProjection<Category, Category>()
 		        .AddProjection<NewCategory, Category>()
+		        .AddProjection<NewCategoryWithId, Category>()
 		        .AddProjection<CategoryProjection, Category>()
 		        .AddProjection<CategoryJoin, Category>()
 		        .AddProjection<ProductProjection, Product>()

@@ -30,7 +30,7 @@
 				</div>
 				<div class="col-xs-4 col-md-6">
 					<div class="select">
-						<input class="select_hidden" id="selectCity1" type="hidden" value="@Model.Cities.FirstOrDefault(x => x.Selected)"/>
+						<input class="select_hidden" id="selectCity1" type="hidden" value="@(Model.Cities.FirstOrDefault(x => x.Selected)?.Text)"/>
 						<div class="select_in">
 							<div class="select_title"><span class="select_placeholder">Выберите город</span>
 							</div>
@@ -40,8 +40,8 @@
 								var index = 1;
 								foreach (var city in Model.Cities)
 								{
-									<li data-value="@city">
-										@city
+									<li data-value="@city.Text">
+										@city.Text
 									</li>
 									index++;
 								}

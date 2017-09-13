@@ -1,6 +1,7 @@
 @model BeeFee.WebApplication.Models.Event.EventFilterViewModel
 @{
     ViewData["Title"] = "Home Page";
+	Layout = "_LayoutMain";
 }
 @section fixed_header
 {
@@ -28,7 +29,7 @@
 				}
             </div>
         </div>
-        <div class="loader"></div>
+        @*<div class="loader"></div>*@
     </div>
 </div>
 @section Scripts{
