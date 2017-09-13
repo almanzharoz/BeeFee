@@ -26,6 +26,16 @@ namespace Core.ElasticSearch.Tests.Models
 		public DateTime CreatedOnUtc { get; set; }
 
 		public NewCategory() : base() { }
-		public NewCategory(string id) : base(id) { }
 	}
+
+	public class NewCategoryWithId : BaseNewEntityWithId, IProjection<Category>
+	{
+		[Keyword]
+		public CategoryJoin Top { get; set; }
+		public string Name { get; set; }
+		public DateTime CreatedOnUtc { get; set; }
+
+		public NewCategoryWithId(string id) : base(id) { }
+	}
+
 }

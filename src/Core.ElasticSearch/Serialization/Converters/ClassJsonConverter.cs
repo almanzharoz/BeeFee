@@ -92,20 +92,11 @@ namespace Core.ElasticSearch.Serialization
 			var target =  _creator.Creator(_creator.Parameters.Select(x => parameters[x.Key]).ToArray());
 			
 			foreach (var value in values)
-			{
 				_setters[value.Key](target, value.Value);
-				//_projectionItem.Properties.First(z => z.Name.ToLower() == value.Key).SetValue(target, value.Value);
-			}
+
 			if (target is IWithVersion && version > 0)
 				(target as BaseEntityWithVersion).Version = (int)version;
 
-			//var jsonObject = JObject.Load(reader);
-			//jsonObject.Remove("_type");
-			//var target = jsonObject.TryGetValue("parent", out var parent) ? _creator.func(jsonObject["id"].ToString(), parent) : _creator.func(jsonObject["id"].ToString());
-			//using (var r = jsonObject.CreateReader())
-			//	serializer.Populate(r, target);
-			//if (target is IWithVersion && jsonObject.TryGetValue("version", out var v))
-			//	((BaseEntityWithVersion) target).Version = (int)v;
 			return target;
 		}
 

@@ -76,9 +76,17 @@ namespace Core.ElasticSearch.Tests
 		    where T : BaseEntity, IProjection, IGetProjection
 		    => base.Insert<TNew, T>(entity);
 
-	    public new T InsertWithVersion<TNew, T>(TNew entity) where TNew : BaseNewEntity, IProjection
+		public new T InsertWithId<TNew, T>(TNew entity) where TNew : BaseNewEntityWithId, IProjection
+			where T : BaseEntity, IProjection, IGetProjection
+			=> base.InsertWithId<TNew, T>(entity);
+
+		public new T InsertWithVersion<TNew, T>(TNew entity) where TNew : BaseNewEntity, IProjection
 		    where T : BaseEntityWithVersion, IProjection, IGetProjection
 		    => base.InsertWithVersion<TNew, T>(entity);
+
+		public new T InsertWithIdAndVersion<TNew, T>(TNew entity) where TNew : BaseNewEntityWithId, IProjection
+			where T : BaseEntityWithVersion, IProjection, IGetProjection
+			=> base.InsertWithIdAndVersion<TNew, T>(entity);
 
 		public bool InsertWithParent<T, TParent>(T entity)
             where T : BaseNewEntityWithParent<TParent>
