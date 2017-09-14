@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Linq;
-using ImageSharp.Processing;
+using Newtonsoft.Json;
 
 namespace BeeFee.ImageApp
 {
 	public struct ImageSize
 	{
-		public int Width { get; }
-		public int Height { get; }
+		[JsonProperty]
+		public int Width { get; private set; }
+		[JsonProperty]
+		public int Height { get; private set; }
 
 		public ImageSize(int width, int height)
 		{

@@ -12,7 +12,7 @@
     <div class="container">
         
         <div class="form-group">
-            <input class="form-control" asp-for="Name" placeholder="Íàçâàíèå ìåðîïðèÿíèå"/>
+            <input class="form-control" asp-for="Name" placeholder="ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¼ÐµÑ€Ð¾Ð¿Ñ€Ð¸ÑÐ½Ð¸Ðµ"/>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
@@ -22,7 +22,7 @@
 	    </div>
 
 		<div class="form-group">
-			<input class="form-control" asp-for="Label" placeholder="Ïîäïèñü"/>
+			<input class="form-control" asp-for="Label" placeholder="ÐŸÐ¾Ð´Ð¿Ð¸ÑÑŒ"/>
 			<span asp-validation-for="Label" class="text-danger"></span>
 		</div>
 
@@ -119,10 +119,7 @@
 				var $this = $(this);
 				var fd = new FormData;
 				fd.append('file', $this.prop('files')[0]);
-				fd.append('sizes[0].width', 1023);
-				fd.append('sizes[0].height', 600);
-				fd.append('sizes[1].width', 368);
-				fd.append('sizes[1].height', 190);
+				fd.append('setting', 'event');
 				$.ajax({
 					url: '@(BeeFeeWebAppSettings.Instance.ImagesUrl)/api/home',
 					contentType: false,
@@ -131,7 +128,13 @@
 					method: "POST",
 					data: fd,
 					success: function (data) {
-						$this.after("<img src='@(BeeFeeWebAppSettings.Instance.ImagesUrl)/368_190/" + data.path + "' />");
+						$this.next("span").remove();
+						if (data.error != null) {
+							$this.after("<span class=error>"+data.error+"</span>");
+							return;
+						}
+						$this.next("img").remove();
+						$this.after("<img src='@(BeeFeeWebAppSettings.Instance.ImagesUrl)/368x190/" + data.path + "' />");
 						$("#Cover").val(data.path);
 					}
 				});

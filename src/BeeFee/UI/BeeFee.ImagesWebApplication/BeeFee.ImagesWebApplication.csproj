@@ -5,9 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="images\**" />
     <Compile Remove="wwwroot\**" />
+    <Content Remove="images\**" />
     <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="images\**" />
     <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="images\**" />
     <None Remove="wwwroot\**" />
   </ItemGroup>
 
@@ -24,6 +28,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Sharp7Func\Sharp7Func.csproj" />
     <ProjectReference Include="..\..\Applications\BeeFee.ImageApp\BeeFee.ImageApp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="imageServer.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,8 @@
+﻿@if (User.IsInRole("admin"))
+{
+	<li><a asp-area="Admin" asp-controller="Category" asp-action="Index">Categories</a></li>
+}
+@if (User.IsInRole("organizer"))
+{
+	<li><a asp-area="Org" asp-controller="Event" asp-action="Index">My Events</a></li>
+}

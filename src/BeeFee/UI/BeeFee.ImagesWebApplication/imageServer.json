@@ -1,0 +1,15 @@
+﻿{
+	"event": {
+		"KeepPublicOriginalSize": true,
+		"Sizes": [
+			{
+				"Width": 368,
+				"Height": 190
+			},
+			{
+				"Width": 1162,
+				"Height": 600
+			}
+		]
+	}
+}

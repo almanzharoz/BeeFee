@@ -100,6 +100,20 @@ namespace SharpFuncExt
 			return a;
 		}
 
+		public static Task<TResult> Try<T, TResult>(this T arg, Func<T, Task> func, Func<T, TResult> done,
+			Func<T, Exception, TResult> @catch)
+		{
+			try
+			{
+				return func(arg)
+					.ContinueWith(t => t.Exception != null ? @catch(arg, t.Exception) : done(arg));
+			}
+			catch (Exception e)
+			{
+				return Task.FromResult(@catch(arg, e));
+			}
+		}
+
 		public static async Task<T> Stopwatch<T>(this Task<T> arg, Stopwatch sw, Func<T, T> func)
 		{
 			var a = await arg;
@@ -135,11 +149,19 @@ namespace SharpFuncExt
 			return r;
 		}
 
-		public static async Task<TResult> Using<T, TResult>(this T arg, Func<T, Task<TResult>> func) where T : IDisposable
-		{
-			using (arg)
-				return await func(arg);
-		}
+		//public static async Task<TResult> Using<T, TResult>(this T arg, Func<T, Task<TResult>> func) where T : IDisposable
+		//{
+		//	using (arg)
+		//		return await func(arg);
+		//}
+		public static Task<TResult> Using<T, TResult>(this T arg, Func<T, Task<TResult>> func) where T : IDisposable
+			=> func(arg).ContinueWith(x =>
+			{
+				arg.Dispose();
+				return x.Result;
+			});
 
+		public static Task Using<T>(this T arg, Func<T, Task> func) where T : IDisposable
+			=> func(arg).ContinueWith(x => arg.Dispose());
 	}
 }

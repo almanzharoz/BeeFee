@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using BeeFee.ImageApp;
 using BeeFee.ImageApp.Services;
@@ -10,15 +8,9 @@ using SharpFuncExt;
 
 namespace BeeFee.ImagesWebApplication.Controllers
 {
-	public class ImgSize
-	{
-		public int Width { get; set; }
-		public int Height { get; set; }
-	}
-
 	public class Model
 	{
-		public ImgSize[] Sizes { get; set; }
+		public string Setting { get; set; }
 		public IFormFile File { get; set; }
 		public string Filename { get; set; }
 	}
@@ -50,8 +42,7 @@ namespace BeeFee.ImagesWebApplication.Controllers
 	    [HttpPost]
 	    public async Task<JsonResult> Post(Model model)
 		    => Json(await model.File.OpenReadStream()
-			    .Using(stream => _service.AddImage(stream, model.Filename ?? model.File.FileName,
-				    model.Sizes.Select(x => new ImageSize(x.Width, x.Height)).ToArray())));
+			    .Using(stream => _service.AddImage(stream, model.Filename ?? model.File.FileName, model.Setting)));
         
 
         // PUT api/values/5

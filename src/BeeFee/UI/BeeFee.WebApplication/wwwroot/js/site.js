@@ -243,40 +243,26 @@ $(document).ready(function () {
 
     // ----------
 
-    $('.input-field').each(function () {
-        var field = $(this);
-        var input = $(this).find('.input-field--i');
-
-        input.on({
-            focus: function () {
-                field.addClass('with-focus');
-            },
-
-            blur: function () {
-                field.removeClass('with-focus');
-            },
-
-            keyup: function () {
-                field.removeClass('with-error');
-
-                if ($(this).val() != '') {
-                    field.addClass('with-value');
-                } else {
-                    field.removeClass('with-value');
-                }
-            },
-
-            change: function () {
-                field.removeClass('with-error');
-
-                if ($(this).val() != '') {
-                    field.addClass('with-value');
-                } else {
-                    field.removeClass('with-value');
-                }
-            },
-        });
-    });
+	$(document).on("focus", '.input-field', function () { $(this).addClass('with-focus'); });
+	$(document).on("blur", '.input-field', function () { if ($('.input-field--i', this).val() === '') $(this).removeClass('with-focus'); });
+	$(document).on("keyup", '.input-field',
+		function () {
+			var field = $(this);
+			field.removeClass('with-error');
+			if ($('.input-field--i', this).val() != '')
+				field.addClass('with-value');
+			else
+				field.removeClass('with-value');
+		});
+	$(document).on("change", '.input-field',
+		function () {
+			var field = $(this);
+			field.removeClass('with-error');
+			if ($('.input-field--i', this).val() != '')
+				field.addClass('with-value');
+			else
+				field.removeClass('with-value');
+		});
 
     $('.vertical-field').each(function () {
         var field = $(this);

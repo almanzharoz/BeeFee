@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +8,7 @@ using ImageSharp.Formats;
 using ImageSharp.Processing;
 using Newtonsoft.Json;
 using SixLabors.Primitives;
+using SharpFuncExt;
 
 namespace BeeFee.ImageApp.Services
 {
@@ -17,10 +18,11 @@ namespace BeeFee.ImageApp.Services
 		private readonly string _publicOriginalFolder;
 		private readonly string _privateOriginalFolder;
 		private readonly ImageSize _maxOriginalSize;
-		private readonly Dictionary<string, ImageSettings> _settings;
-		private const string SettingsJsonFile = "settings.json";
+		private readonly ConcurrentDictionary<string, ImageSettings> _settings;
+		private readonly string _settingsJsonFile;
+		private readonly object _locker = new object();
 
-		public ImageService(string folder, string publicOriginalFolder, string privateOriginalFolder, ImageSize maxOriginalSize)
+		public ImageService(string folder, string publicOriginalFolder, string privateOriginalFolder, ImageSize maxOriginalSize, string settingsJsonFile)
 		{
 			_folder = folder;
 			if (!Directory.Exists(folder))
@@ -36,47 +38,66 @@ namespace BeeFee.ImageApp.Services
 
 			_maxOriginalSize = maxOriginalSize;
 
+			_settingsJsonFile = settingsJsonFile;
 			_settings = DeserializeSettings();
 		}
 
-		public async Task<ImageOperationResult> AddImage(Stream stream, string fileName, string settingName)
-		{
-			ImageSettings setting;
-			try
-			{
-				setting = _settings[settingName];
-			}
-			catch (KeyNotFoundException)
-			{
-				return new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}", EErrorType.SettingNotFound);
-			}
+		public Task<ImageOperationResult> AddImage(Stream stream, string fileName, string settingName)
+			=> _settings.GetValueOrDefault(settingName).Fluent(x => Console.WriteLine($"Add file {fileName}, setting: {settingName}"))
+				.IfNotNull(x => AddImage(stream, fileName, x),
+					Task.FromResult(new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}", EErrorType.SettingNotFound)));
+		//{
+		//	ImageSettings setting;
+		//	try
+		//	{
+		//		setting = _settings[settingName];
+		//	}
+		//	catch (KeyNotFoundException)
+		//	{
+		//		return Task.FromResult(new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}", EErrorType.SettingNotFound));
+		//	}
 
-			return await AddImage(stream, fileName, setting);
-		}
+		//	return AddImage(stream, fileName, setting);
+		//}
 
-		internal async Task<ImageOperationResult> AddImage(Stream stream, string fileName, ImageSettings setting)
-		{
-			var uniqueName = GetUniqueName(fileName);
-			try
-			{
-				using (stream)
-				{
-					var image = Image.Load(stream);
-					await Task.Run(() => SaveImage(Resize(image, _maxOriginalSize), _privateOriginalFolder, uniqueName));
-					if (setting.KeepPublicOriginalSize)
-						await Task.Run(() => SaveImage(Resize(image, _maxOriginalSize), _publicOriginalFolder, uniqueName));
+		internal Task<ImageOperationResult> AddImage(Stream stream, string fileName, ImageSettings setting)
+			=> GetUniqueName(fileName)
+				.Try(uniqueName => stream
+						.ThrowIf(
+							s => FileExists(setting.KeepPublicOriginalSize ? _publicOriginalFolder : _privateOriginalFolder, uniqueName),
+							n => new FileAlreadyExistsException($"File \"{uniqueName}\" already exists"))
+						.Using(s => Image.Load(s).Using(image => Task.WhenAll(new Task[0]
+							.Add(ResizeAndSaveImage(image, _maxOriginalSize,
+								setting.KeepPublicOriginalSize ? _publicOriginalFolder : _privateOriginalFolder, uniqueName))
+							.AddEach(setting.Sizes.Select(x => ResizeAndSaveImage(image, x, uniqueName))))
+						)),
+					x => new ImageOperationResult(EAddImageResut.Ok, x),
+					(x, e) => new ImageOperationResult(EAddImageResut.Error, x, e.Message, EErrorType.SaveImageError));
 
-					if (setting.Sizes != null) 
-						foreach (var size in setting.Sizes)
-							await Task.Run(() => SaveImage(Resize(image, size), size, uniqueName));
-				}
-			}
-			catch (ArgumentNullException e)
-			{
-				return new ImageOperationResult(EAddImageResut.Error, uniqueName, e.Message, EErrorType.SaveImageError);
-			}
-			return new ImageOperationResult(EAddImageResut.Ok, uniqueName);
-		}
+		private bool FileExists(string path, string filename)
+			=> File.Exists(Path.Combine(_folder, path, filename));
+		//{
+		//	var uniqueName = GetUniqueName(fileName);
+		//	try
+		//	{
+		//		using (stream)
+		//		{
+		//			var image = Image.Load(stream);
+		//			await Task.Run(() => SaveImage(Resize(image, _maxOriginalSize), _privateOriginalFolder, uniqueName));
+		//			if (setting.KeepPublicOriginalSize)
+		//				await Task.Run(() => SaveImage(Resize(image, _maxOriginalSize), _publicOriginalFolder, uniqueName));
+
+		//			if (setting.Sizes != null) 
+		//				foreach (var size in setting.Sizes)
+		//					await Task.Run(() => SaveImage(Resize(image, size), size, uniqueName));
+		//		}
+		//	}
+		//	catch (ArgumentNullException e)
+		//	{
+		//		return new ImageOperationResult(EAddImageResut.Error, uniqueName, e.Message, EErrorType.SaveImageError);
+		//	}
+		//	return new ImageOperationResult(EAddImageResut.Ok, uniqueName);
+		//}
 
 		public ImageOperationResult RemoveImage(string fileName)
 		{
@@ -118,12 +139,12 @@ namespace BeeFee.ImageApp.Services
 			{
 				setting = _settings[settingName];
 			}
-			catch (KeyNotFoundException)
+			catch (System.Collections.Generic.KeyNotFoundException)
 			{
 				return new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}", EErrorType.SettingNotFound);
 			}
 
-			var resolutions = new List<ImageSize>();
+			var resolutions = new System.Collections.Generic.List<ImageSize>();
 			foreach (var directory in Directory.GetDirectories(_folder))
 			{
 				if(File.Exists(Path.Combine(directory, fileName)))
@@ -144,6 +165,8 @@ namespace BeeFee.ImageApp.Services
 				new ImageSettings(resolutions.ToHashSet().ToArray(), _settings[settingName].KeepPublicOriginalSize));
 		}
 
+		#region Private Methods
+
 		private string GetUniqueName(string fileName)
 		{
 			var result = fileName;
@@ -161,10 +184,7 @@ namespace BeeFee.ImageApp.Services
 		}
 
 		private Image<Rgba32> Resize(Image<Rgba32> image, ImageSize size)
-		{
-			var result = new Image<Rgba32>(image);
-			return result.Resize(new ResizeOptions {Mode = ResizeMode.Max, Size = new Size(size.Width, size.Height)});
-		}
+			=> new Image<Rgba32>(image).Resize(new ResizeOptions {Mode = ResizeMode.Max, Size = new Size(size.Width, size.Height)});
 
 		private void SaveImage(Image<Rgba32> image, string sizePath, string fileName)
 		{
@@ -176,26 +196,32 @@ namespace BeeFee.ImageApp.Services
 			image.Save(fullPath, new JpegEncoder {Quality = 85});
 		}
 
-		private void SaveImage(Image<Rgba32> image, ImageSize size, string fileName)
-			=> SaveImage(image, size.ToString(), fileName);
+		private Task ResizeAndSaveImage(Image<Rgba32> image, ImageSize size, string fileName)
+			=> Resize(image, size).Using(img => Task.Run(() => SaveImage(img, size.ToString(), fileName)));
+
+		private Task ResizeAndSaveImage(Image<Rgba32> image, ImageSize size, string folder, string fileName)
+			=> Resize(image, size)
+				.Fluent(x => Console.WriteLine($"Resized file {fileName}, size: {size}"))
+			.Using(img => Task.Run(() => SaveImage(img, folder, fileName)));
 
 		public void SetSetting(string name, ImageSize[] sizes, bool keepPublicOriginalSize)
 		{
-			_settings.Add(name, new ImageSettings(sizes, keepPublicOriginalSize));
+			_settings.AddOrUpdate(name, x => new ImageSettings(sizes, keepPublicOriginalSize), (x, y) => y.Set(sizes, keepPublicOriginalSize));
 			SerializeSettings();
 		}
 
 		private void SerializeSettings()
 		{
-			var text = JsonConvert.SerializeObject(_settings);
-			File.WriteAllText(SettingsJsonFile, text);
+			lock (_locker)
+				File.WriteAllText(_settingsJsonFile, JsonConvert.SerializeObject(_settings));
 		}
 
-		private static Dictionary<string, ImageSettings> DeserializeSettings()
+		private ConcurrentDictionary<string, ImageSettings> DeserializeSettings()
 		{
-			var file = File.ReadAllText(SettingsJsonFile);
-			return JsonConvert.DeserializeObject<Dictionary<string, ImageSettings>>(file);
+			lock (_locker)
+				return JsonConvert.DeserializeObject<ConcurrentDictionary<string, ImageSettings>>(File.ReadAllText(_settingsJsonFile));
 		}
+		#endregion Private Methods
 
 	}
 }

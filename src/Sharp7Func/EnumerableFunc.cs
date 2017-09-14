@@ -46,6 +46,20 @@ namespace SharpFuncExt
 			list.Add(value);
 			return list;
 		}
+		public static T AddEach<T, TValue>(this T list, IEnumerable<TValue> values) where T : ICollection<TValue>
+		{
+			foreach(var value in values)
+				list.Add(value);
+			return list;
+		}
+
+		public static T[] Add<T>(this T[] list, T value)
+			=> list.Union(new []{value}).ToArray();
+
+		public static T[] AddEach<T>(this T[] list, IEnumerable<T> values)
+			=> list.Union(values).ToArray();
+
+
 		public static T TryAdd<T, TValue>(this T list, TValue value) where T : IProducerConsumerCollection<TValue>
 		{
 			list.TryAdd(value);

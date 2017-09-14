@@ -17,10 +17,11 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		[Required(ErrorMessage = "Name is required")]
 		public string Name { get; set; }
 
-		[Required(ErrorMessage = "Name is required")]
+		[Required(ErrorMessage = "Label is required")]
 		public string Label { get; set; }
 
 		public string Url { get; set; }
+		[Required(ErrorMessage = "Cover is required")]
 		public string Cover { get; set; }
 
 		public string CategoryId { get; set; }

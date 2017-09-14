@@ -2,7 +2,7 @@
 <form id="loginForm" asp-action="Login" asp-controller="Account" asp-area="" method="post">
 	@Html.HiddenFor(x => x.ReturnUrl)
 	<div class="modals--field">
-		<div class="input-field">
+		<div class="input-field@(!String.IsNullOrEmpty(Model.Login)?" with-focus":null)">
 			<div class="input-field--b">
 				<label class="input-field--l">Электронная почта</label>
 				@Html.TextBoxFor(x => x.Login, new { @class= "input-field--i" })

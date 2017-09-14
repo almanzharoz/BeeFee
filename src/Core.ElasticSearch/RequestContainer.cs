@@ -38,7 +38,7 @@ namespace Core.ElasticSearch
 		public RequestContainer(ElasticMapping<TSettings> mapping)
 		{
 			_mapping = mapping;
-			Debug.WriteLine("Create Container "+this.GetHashCode());
+			//Debug.WriteLine("Create Container "+this.GetHashCode());
 		}
 
 		//TODO: Возможно, нужно добавить GetOrAdd<T, TParent>(id, parent)

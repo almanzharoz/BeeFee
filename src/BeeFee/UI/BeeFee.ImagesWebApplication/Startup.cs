@@ -28,13 +28,13 @@ namespace BeeFee.ImagesWebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-	        services.Configure<ImagesWebSettings>(Configuration.GetSection("Settings"));
-	        services.AddSingleton(cfg => cfg.GetService<IOptions<ImagesWebSettings>>().Value);
+	        services.Configure<ImagesAppStartSettings>(Configuration.GetSection("Settings"));
+	        services.AddSingleton(cfg => cfg.GetService<IOptions<ImagesAppStartSettings>>().Value);
 
 			services.AddMvc();
 	        services.AddCors();
-	        services.AddScoped(x => new ImageService(x.GetService<IOptions<ImagesWebSettings>>().Value.ImagesFolder));
-        }
+			services.AddImageApp("imageServer.json");
+		}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

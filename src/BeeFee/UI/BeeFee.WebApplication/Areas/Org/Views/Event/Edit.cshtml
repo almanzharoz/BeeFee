@@ -1,4 +1,4 @@
-﻿@using BeeFee.Model.Embed
+@using BeeFee.Model.Embed
 @using BeeFee.WebApplication.Infrastructure
 @using FormMethod = Microsoft.AspNetCore.Mvc.Rendering.FormMethod
 @model BeeFee.WebApplication.Areas.Org.Models.EventEditModel
@@ -83,7 +83,7 @@
 		    <input class="form-control" placeholder="Cover" type="file" id="file" />
 			@if (!String.IsNullOrEmpty(Model.Cover))
 			{
-				<img src="@Url.GetImageUrl(Model.Cover, 100, 100)"/>
+				<img src="@Url.GetImageUrl(Model.Cover, 368, 190)"/>
 			}
 		    <input type="hidden" class="form-control" placeholder="Cover" asp-for="Cover"/>
 	    </div>
@@ -122,19 +122,22 @@
 		        var $this = $(this);
 		        var fd = new FormData;
 		        fd.append('file', $this.prop('files')[0]);
-		        //fd.append('sizes', [{width: 100, height: 100}]);
-		        fd.append('sizes[0].width', 368);
-		        fd.append('sizes[0].height', 190);
+				fd.append('setting', 'event');
 		        $.ajax({
-			        url: '@(BeeFeeWebAppSettings.Instance.ImagesUrl)/api/home',
+					url: '@(BeeFeeWebAppSettings.Instance.ImagesUrl)/api/home',
 			        contentType: false,
 			        processData: false,
 			        dataType: 'json',
 			        method: "POST",
 			        data: fd,
 					success: function (data) {
+						$this.next("span").remove();
+						if (data.error != null) {
+							$this.after("<span class=error>"+data.error+"</span>");
+							return;
+						}
 						$this.next("img").remove();
-				        $this.after("<img src='@(BeeFeeWebAppSettings.Instance.ImagesUrl)/368_190/" + data.path + "' />");
+				        $this.after("<img src='@(BeeFeeWebAppSettings.Instance.ImagesUrl)/368x190/" + data.path + "' />");
 				        $("#Cover").val(data.path);
 			        }
 		        });

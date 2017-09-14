@@ -251,6 +251,12 @@ namespace SharpFuncExt
 				return func(arg);
 		}
 
+		public static void Using<T>(this T arg, Action<T> func) where T : IDisposable
+		{
+			using (arg)
+				func(arg);
+		}
+
 		public static T ThrowIf<T, TException>(this T arg, Func<T, bool> check, Func<T, TException> func) where TException : Exception
 		{
 			if (check(arg))

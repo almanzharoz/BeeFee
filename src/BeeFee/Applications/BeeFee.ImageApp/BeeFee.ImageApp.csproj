@@ -6,7 +6,12 @@
 
   <ItemGroup>
     <PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00194" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Sharp7Func\Sharp7Func.csproj" />
   </ItemGroup>
 
 </Project>
