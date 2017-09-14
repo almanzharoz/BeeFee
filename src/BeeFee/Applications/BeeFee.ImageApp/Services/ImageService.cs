@@ -39,7 +39,7 @@ namespace BeeFee.ImageApp.Services
 			_settings = DeserializeSettings();
 		}
 
-		public async Task<AddImageResult> AddImage(Stream stream, string fileName, string settingName)
+		public async Task<ImageOperationResult> AddImage(Stream stream, string fileName, string settingName)
 		{
 			ImageSettings setting;
 			try
@@ -48,13 +48,13 @@ namespace BeeFee.ImageApp.Services
 			}
 			catch (KeyNotFoundException)
 			{
-				return new AddImageResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}");
+				return new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}", EErrorType.SettingNotFound);
 			}
 
 			return await AddImage(stream, fileName, setting);
 		}
 
-		internal async Task<AddImageResult> AddImage(Stream stream, string fileName, ImageSettings setting)
+		internal async Task<ImageOperationResult> AddImage(Stream stream, string fileName, ImageSettings setting)
 		{
 			var uniqueName = GetUniqueName(fileName);
 			try
@@ -71,43 +71,32 @@ namespace BeeFee.ImageApp.Services
 							await Task.Run(() => SaveImage(Resize(image, size), size, uniqueName));
 				}
 			}
-			catch (ArgumentException e)
+			catch (ArgumentNullException e)
 			{
-				return new AddImageResult(EAddImageResut.Error, uniqueName, e.Message);
+				return new ImageOperationResult(EAddImageResut.Error, uniqueName, e.Message, EErrorType.SaveImageError);
 			}
-			return new AddImageResult(EAddImageResut.Ok, uniqueName);
+			return new ImageOperationResult(EAddImageResut.Ok, uniqueName);
 		}
 
-		/// <summary>
-		/// Delete the file with fileName
-		/// </summary>
-		/// <param name="fileName"></param>
-		/// <exception cref="FileNotFoundException"></exception>
-		public void RemoveImage(string fileName)
+		public ImageOperationResult RemoveImage(string fileName)
 		{
 			if (!File.Exists(Path.Combine(_folder, _privateOriginalFolder, fileName))) 
-				throw new FileNotFoundException();
+				return new ImageOperationResult(EAddImageResut.Error, fileName, $"File {fileName} doesn't exists", EErrorType.FileDoesNotExists);
 
 			foreach (var directory in Directory.GetDirectories(_folder))
 			{
 				File.Delete(Path.Combine(directory, fileName));
 			}
+			return new ImageOperationResult(EAddImageResut.Ok, fileName);
 		}
 
-		/// <summary>
-		/// Rename the specified image
-		/// </summary>
-		/// <param name="oldName"></param>
-		/// <param name="newName"></param>
-		/// <param name="canChangeName"></param>
-		/// <exception cref="FileNotFoundException"></exception>
-		public void RenameImage(string oldName, string newName, bool canChangeName = true)
+		public ImageOperationResult RenameImage(string oldName, string newName, bool canChangeName = true)
 		{
 			if(!File.Exists(Path.Combine(_folder, _privateOriginalFolder, oldName)))
-				throw new FileNotFoundException();
+				return new ImageOperationResult(EAddImageResut.Error, oldName, $"File {oldName} doesn't exists", EErrorType.FileDoesNotExists);
 
 			if (!canChangeName && File.Exists(Path.Combine(_folder, _privateOriginalFolder, newName)))
-				throw new FileAlreadyExistsException();
+				return new ImageOperationResult(EAddImageResut.Error, newName, $"File {newName} already exists", EErrorType.FileAlreadyExists);
 
 			var uniqueName = GetUniqueName(newName);
 
@@ -115,19 +104,14 @@ namespace BeeFee.ImageApp.Services
 			{
 				File.Move(Path.Combine(directory, oldName), Path.Combine(directory, uniqueName));
 			}
+
+			return new ImageOperationResult(EAddImageResut.Ok, uniqueName);
 		}
 
-		/// <summary>
-		/// Update image with the same name
-		/// </summary>
-		/// <param name="stream"></param>
-		/// <param name="fileName"></param>
-		/// <param name="settingName"></param>
-		/// <exception cref="FileNotFoundException"></exception>
-		public async Task<AddImageResult> UpdateImage(Stream stream, string fileName, string settingName)
+		public async Task<ImageOperationResult> UpdateImage(Stream stream, string fileName, string settingName)
 		{
 			if (!File.Exists(Path.Combine(_folder, _privateOriginalFolder, fileName)))
-				throw new FileNotFoundException();
+				return new ImageOperationResult(EAddImageResut.Error, fileName, $"File {fileName} doesn't exists", EErrorType.FileDoesNotExists);
 
 			ImageSettings setting;
 			try
@@ -136,7 +120,7 @@ namespace BeeFee.ImageApp.Services
 			}
 			catch (KeyNotFoundException)
 			{
-				return new AddImageResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}");
+				return new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}", EErrorType.SettingNotFound);
 			}
 
 			var resolutions = new List<ImageSize>();

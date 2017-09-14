@@ -17,13 +17,13 @@
 //		    _folder = folder;
 //	    }
 
-//	    public async Task<AddImageResult> AddImage(Stream stream, string filename, ImageSize[] sizes)
+//	    public async Task<ImageOperationResult> AddImage(Stream stream, string filename, ImageSize[] sizes)
 //	    {
 //		    try
 //		    {
 //			    var fullpath = Path.Combine(_folder, filename);
 //			    if (File.Exists(fullpath))
-//				    return new AddImageResult(EAddImageResut.Exists, filename, null);
+//				    return new ImageOperationResult(EAddImageResut.Exists, filename, null);
 //				if (!Directory.Exists(Path.Combine(_folder, Path.GetDirectoryName(filename))))
 //				    Directory.CreateDirectory(Path.Combine(_folder, Path.GetDirectoryName(filename)));
 //			    using (stream)
@@ -42,22 +42,22 @@
 //						    }
 //						    catch (Exception e)
 //						    {
-//							    return new AddImageResult(EAddImageResut.Error, filename, e.Message);
+//							    return new ImageOperationResult(EAddImageResut.Error, filename, e.Message);
 //						    }
 //							finally
 //							{
 //							    image.Dispose();
 //						    }
-//						    return new AddImageResult(EAddImageResut.Ok, filename, null);
+//						    return new ImageOperationResult(EAddImageResut.Ok, filename, null);
 //					    }).ConfigureAwait(false);
 //				    }
 //			    }
 //		    }
 //		    catch (Exception e)
 //		    {
-//			    return new AddImageResult(EAddImageResut.Error, filename, e.Message);
+//			    return new ImageOperationResult(EAddImageResut.Error, filename, e.Message);
 //		    }
-//		    return new AddImageResult(EAddImageResut.Ok, filename, null);
+//		    return new ImageOperationResult(EAddImageResut.Ok, filename, null);
 //	    }
 
 //		public string GetImageUrl(ImageSize size, string filename)
@@ -80,7 +80,7 @@
 //		    dirInfo.EnumerateFiles(filename).ToList().ForEach(x => x.Delete());
 //	    }
 
-//	    public async Task<AddImageResult> Update(Stream stream, string filename, ImageSize[] sizes)
+//	    public async Task<ImageOperationResult> Update(Stream stream, string filename, ImageSize[] sizes)
 //	    {
 //		    var files = new DirectoryInfo(_folder).GetFiles(filename, SearchOption.AllDirectories);
 //		    foreach (var file in files)
@@ -89,7 +89,7 @@
 //				    .Any(size =>
 //					    file.Directory.Name
 //						    .Contains(size.ToString()));
-//			    if(!isExists) return new AddImageResult(EAddImageResut.Error, filename, "Not all sizes for changing");
+//			    if(!isExists) return new ImageOperationResult(EAddImageResut.Error, filename, "Not all sizes for changing");
 //		    }
 
 //		    Remove(filename);
