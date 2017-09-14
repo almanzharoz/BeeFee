@@ -7,9 +7,11 @@ namespace BeeFee.ImageApp
 	public struct ImageSize
 	{
 		[JsonProperty]
-		public int Width { get; private set; }
+		public int Width { get; }
 		[JsonProperty]
-		public int Height { get; private set; }
+		public int Height { get; }
+
+		private const char Delimiter = 'x';
 
 		public ImageSize(int width, int height)
 		{
@@ -19,7 +21,7 @@ namespace BeeFee.ImageApp
 
 		internal ImageSize(string resolution)
 		{
-			var sizes = resolution.Split('x').Select(int.Parse).ToArray();
+			var sizes = resolution.Split(Delimiter).Select(int.Parse).ToArray();
 			if(sizes.Length != 2) throw new ArgumentException();
 			Width = sizes[0];
 			Height = sizes[1];
@@ -27,7 +29,7 @@ namespace BeeFee.ImageApp
 
 		public override string ToString()
 		{
-			return $"{Width}x{Height}";
+			return $"{Width}{Delimiter}{Height}";
 		}
 
 		public override bool Equals(object obj)
