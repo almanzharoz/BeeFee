@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BeeFee.ImageApp;
+using BeeFee.ImageApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SharpFuncExt;
@@ -26,7 +27,7 @@ namespace BeeFee.ImagesWebApplication.Controllers
     public class HomeController : Controller
     {
 	    private readonly ImageService _service;
-	    public HomeController(ImageApp.ImageService service)
+	    public HomeController(ImageService service)
 	    {
 		    _service = service;
 	    }

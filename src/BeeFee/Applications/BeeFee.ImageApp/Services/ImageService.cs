@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using ImageSharp;
 using ImageSharp.Formats;
 using ImageSharp.Processing;
+using Newtonsoft.Json;
 using SixLabors.Primitives;
 
-namespace BeeFee.ImageApp
+namespace BeeFee.ImageApp.Services
 {
 	public class ImageService
 	{
@@ -15,6 +16,8 @@ namespace BeeFee.ImageApp
 		private readonly string _publicOriginalFolder;
 		private readonly string _privateOriginalFolder;
 		private readonly ImageSize _maxOriginalSize;
+		private readonly Dictionary<string, ImageSettings> _settings;
+		private const string SettingsJsonFile = "settings.json";
 
 		public ImageService(string folder, string publicOriginalFolder, string privateOriginalFolder, ImageSize maxOriginalSize)
 		{
@@ -22,10 +25,22 @@ namespace BeeFee.ImageApp
 			_publicOriginalFolder = publicOriginalFolder;
 			_privateOriginalFolder = privateOriginalFolder;
 			_maxOriginalSize = maxOriginalSize;
+
+			_settings = DeserializeSettings();
 		}
 
-		public async Task<AddImageResult> AddImage(Stream stream, string fileName, ImageSize[] sizes, bool makeOriginalPublic = false)
+		public async Task<AddImageResult> AddImage(Stream stream, string fileName, string settingName)
 		{
+			ImageSettings setting;
+			try
+			{
+				setting = _settings[settingName];
+			}
+			catch (KeyNotFoundException)
+			{
+				return new AddImageResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}");
+			}
+
 			var uniqueName = GetUniqueName(fileName);
 			try
 			{
@@ -33,11 +48,11 @@ namespace BeeFee.ImageApp
 				{
 					var image = Image.Load(stream);
 					await Task.Run(() => SaveImage(Resize(image, _maxOriginalSize), _privateOriginalFolder, uniqueName));
-					if (makeOriginalPublic)
+					if (setting.KeepPublicOriginalSize)
 						await Task.Run(() => SaveImage(Resize(image, _maxOriginalSize), _publicOriginalFolder, uniqueName));
 
-					if (sizes != null) 
-						foreach (var size in sizes)
+					if (setting.Sizes != null) 
+						foreach (var size in setting.Sizes)
 							await Task.Run(() => SaveImage(Resize(image, size), size, uniqueName));
 				}
 			}
@@ -82,5 +97,24 @@ namespace BeeFee.ImageApp
 
 		private void SaveImage(Image<Rgba32> image, ImageSize size, string fileName)
 			=> SaveImage(image, size.ToString(), fileName);
+
+		public void SetSetting(string name, ImageSize[] sizes, bool keepPublicOriginalSize)
+		{
+			_settings.Add(name, new ImageSettings(sizes, keepPublicOriginalSize));
+			SerializeSettings();
+		}
+
+		private void SerializeSettings()
+		{
+			var text = JsonConvert.SerializeObject(_settings);
+			File.WriteAllText(SettingsJsonFile, text);
+		}
+
+		private static Dictionary<string, ImageSettings> DeserializeSettings()
+		{
+			var file = File.ReadAllText(SettingsJsonFile);
+			return JsonConvert.DeserializeObject<Dictionary<string, ImageSettings>>(file);
+		}
+
 	}
 }

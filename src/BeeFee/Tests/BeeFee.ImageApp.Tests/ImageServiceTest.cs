@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using BeeFee.ImageApp.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BeeFee.ImageApp.Tests
