@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using ImageSharp;
 using ImageSharp.Formats;
@@ -22,8 +23,17 @@ namespace BeeFee.ImageApp.Services
 		public ImageService(string folder, string publicOriginalFolder, string privateOriginalFolder, ImageSize maxOriginalSize)
 		{
 			_folder = folder;
+			if (!Directory.Exists(folder))
+				Directory.CreateDirectory(folder);
+
 			_publicOriginalFolder = publicOriginalFolder;
+			if (!Directory.Exists(publicOriginalFolder))
+				Directory.CreateDirectory(Path.Combine(folder, publicOriginalFolder));
+
 			_privateOriginalFolder = privateOriginalFolder;
+			if (!Directory.Exists(privateOriginalFolder))
+				Directory.CreateDirectory(Path.Combine(folder, privateOriginalFolder));
+
 			_maxOriginalSize = maxOriginalSize;
 
 			_settings = DeserializeSettings();
@@ -41,6 +51,11 @@ namespace BeeFee.ImageApp.Services
 				return new AddImageResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}");
 			}
 
+			return await AddImage(stream, fileName, setting);
+		}
+
+		internal async Task<AddImageResult> AddImage(Stream stream, string fileName, ImageSettings setting)
+		{
 			var uniqueName = GetUniqueName(fileName);
 			try
 			{
@@ -61,6 +76,88 @@ namespace BeeFee.ImageApp.Services
 				return new AddImageResult(EAddImageResut.Error, uniqueName, e.Message);
 			}
 			return new AddImageResult(EAddImageResut.Ok, uniqueName);
+		}
+
+		/// <summary>
+		/// Delete the file with fileName
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <exception cref="FileNotFoundException"></exception>
+		public void RemoveImage(string fileName)
+		{
+			if (!File.Exists(Path.Combine(_folder, _privateOriginalFolder, fileName))) 
+				throw new FileNotFoundException();
+
+			foreach (var directory in Directory.GetDirectories(_folder))
+			{
+				File.Delete(Path.Combine(directory, fileName));
+			}
+		}
+
+		/// <summary>
+		/// Rename the specified image
+		/// </summary>
+		/// <param name="oldName"></param>
+		/// <param name="newName"></param>
+		/// <param name="canChangeName"></param>
+		/// <exception cref="FileNotFoundException"></exception>
+		public void RenameImage(string oldName, string newName, bool canChangeName = true)
+		{
+			if(!File.Exists(Path.Combine(_folder, _privateOriginalFolder, oldName)))
+				throw new FileNotFoundException();
+
+			if (!canChangeName && File.Exists(Path.Combine(_folder, _privateOriginalFolder, newName)))
+				throw new FileAlreadyExistsException();
+
+			var uniqueName = GetUniqueName(newName);
+
+			foreach (var directory in Directory.GetDirectories(_folder))
+			{
+				File.Move(Path.Combine(directory, oldName), Path.Combine(directory, uniqueName));
+			}
+		}
+
+		/// <summary>
+		/// Update image with the same name
+		/// </summary>
+		/// <param name="stream"></param>
+		/// <param name="fileName"></param>
+		/// <param name="settingName"></param>
+		/// <exception cref="FileNotFoundException"></exception>
+		public async Task<AddImageResult> UpdateImage(Stream stream, string fileName, string settingName)
+		{
+			if (!File.Exists(Path.Combine(_folder, _privateOriginalFolder, fileName)))
+				throw new FileNotFoundException();
+
+			ImageSettings setting;
+			try
+			{
+				setting = _settings[settingName];
+			}
+			catch (KeyNotFoundException)
+			{
+				return new AddImageResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}");
+			}
+
+			var resolutions = new List<ImageSize>();
+			foreach (var directory in Directory.GetDirectories(_folder))
+			{
+				if(File.Exists(Path.Combine(directory, fileName)))
+					try
+					{
+						resolutions.Add(new ImageSize(Path.GetDirectoryName(directory)));
+					}
+					catch (Exception)
+					{
+						// ignored
+					}
+			}
+
+			resolutions.AddRange(setting.Sizes);
+			
+			RemoveImage(fileName);
+			return await AddImage(stream, fileName,
+				new ImageSettings(resolutions.ToHashSet().ToArray(), _settings[settingName].KeepPublicOriginalSize));
 		}
 
 		private string GetUniqueName(string fileName)
