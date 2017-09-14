@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-	  <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
+	  <!--<MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>-->
 	  <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="npm-debug.log" />
     <None Remove="Scripts\site_script.ts" />
   </ItemGroup>
 
