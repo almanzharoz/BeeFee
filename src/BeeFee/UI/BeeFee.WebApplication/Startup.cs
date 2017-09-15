@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Security.Claims;
 using BeeFee.AdminApp;
 using BeeFee.ClientApp;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 
 namespace BeeFee.WebApplication
@@ -84,7 +86,13 @@ namespace BeeFee.WebApplication
 				app.UseExceptionHandler("/Home/Error");
 			}
 
-			app.UseStaticFiles();
+			app.UseFileServer(new FileServerOptions()
+			{
+				FileProvider = new PhysicalFileProvider(
+					Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot")),
+				RequestPath = new PathString(""),
+				EnableDirectoryBrowsing = false
+			});
 
 			app.UseMiddleware<NormalizeUrlMiddleware>();
 

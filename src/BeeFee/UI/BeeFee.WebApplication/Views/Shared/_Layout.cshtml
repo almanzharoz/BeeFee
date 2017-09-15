@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
 	<meta name="format-detection" content="telephone=no" />
 	<environment include="Development">
-		<link rel="stylesheet" href="~/css/site.css" />
+		<link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
 	</environment>
 	<environment exclude="Development">
 		<link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
@@ -28,6 +28,7 @@
 		</div>
 		@RenderBody()
 		@Html.Partial("_Footer")
+		@RenderSection("after_footer", false)
 		<div class="modals">
 			<div class="modals--overlay js-modals-close"></div>
 			<div class="modals--item" id="authModal">
@@ -39,7 +40,7 @@
 		</div>
 	</div>
 	<environment include="Development">
-		<script src="~/lib/jquery/dist/jquery.js"></script>
+		<script src="~/js/jquery.min.js" asp-append-version="true"></script>
 		<script src="~/lib/sticky-kit/jquery.sticky-kit.js"></script>
 		<script src="~/lib/datetimepicker/build/jquery.datetimepicker.full.js"></script>
 		@*<script src="~/lib/ScrollToFixed/jquery-scrolltofixed.js" asp-append-version="true"></script>*@
@@ -48,7 +49,7 @@
 		<script src="~/js/site.js" asp-append-version="true"></script>
 	</environment>
 	<environment exclude="Development">
-		<script src="~/lib/jquery/dist/jquery.js"></script>
+		<script src="~/js/jquery.min.js" asp-append-version="true"></script>
 		<script src="~/lib/sticky-kit/jquery.sticky-kit.js"></script>
 		<script src="~/lib/datetimepicker/build/jquery.datetimepicker.full.js"></script>
 		@*<script src="~/lib/ScrollToFixed/jquery-scrolltofixed.js" asp-append-version="true"></script>*@

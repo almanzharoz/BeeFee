@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = Model.Page.Title;
 }
+
 <div class="event">
 	<div data-fixed-wrap="info">
 		<div class="event-intro hidden-xs" style="background-image: url('@(Url.GetImageUrl(Model.Page.Cover, 1162, 600))');">
@@ -73,43 +74,46 @@
 	</div>
 </div>
 <div class="event-form hidden-xs">
-<div class="container">
-	<div class="event-form--title">На Queens of the Stone Age идут 1025 человек. Присоединяйтесь! </div>
-	<div class="row">
-		<div class="col-xs-4 col-md-3">
-			<div class="input-field">
-				<div class="input-field--b">
-					<label class="input-field--l">Ваше имя</label>
-					<input class="input-field--i" type="text" />
+	<div class="container">
+		<div class="event-form--title">На Queens of the Stone Age идут 1025 человек. Присоединяйтесь! </div>
+		<div class="row">
+			<div class="col-xs-4 col-md-3">
+				<div class="input-field">
+					<div class="input-field--b">
+						<label class="input-field--l">Ваше имя</label>
+						<input class="input-field--i" type="text" />
+					</div>
+					<div class="input-field--t"></div>
 				</div>
-				<div class="input-field--t"></div>
 			</div>
-		</div>
-		<div class="col-xs-4 col-md-3">
-			<div class="input-field">
-				<div class="input-field--b">
-					<label class="input-field--l">Номер телефона</label>
-					<input class="input-field--i" type="text" />
+			<div class="col-xs-4 col-md-3">
+				<div class="input-field">
+					<div class="input-field--b">
+						<label class="input-field--l">Номер телефона</label>
+						<input class="input-field--i" type="text" />
+					</div>
+					<div class="input-field--t"></div>
 				</div>
-				<div class="input-field--t"></div>
 			</div>
-		</div>
-		<div class="col-xs-4 col-md-3">
-			<div class="input-field">
-				<div class="input-field--b">
-					<label class="input-field--l">Электронная почта</label>
-					<input class="input-field--i" type="text" />
+			<div class="col-xs-4 col-md-3">
+				<div class="input-field">
+					<div class="input-field--b">
+						<label class="input-field--l">Электронная почта</label>
+						<input class="input-field--i" type="text" />
+					</div>
+					<div class="input-field--t"></div>
 				</div>
-				<div class="input-field--t"></div>
 			</div>
-		</div>
-		<div class="col-xs-4 col-md-3">
-			<button class="btn is-block" type="submit">Регистрация</button>
+			<div class="col-xs-4 col-md-3">
+				<button class="btn is-block" type="submit">Регистрация</button>
+			</div>
 		</div>
 	</div>
 </div>
-</div>
-<div class="hidden-xs" style="height: 156px;"></div>
+
+@section after_footer{
+	<div class="hidden-xs" style="height: 156px;"></div>
+}
 
 @*@section fixed_header
 {
