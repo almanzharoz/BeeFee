@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace BeeFee.ImagesWebApplication
 {
@@ -23,4 +17,13 @@ namespace BeeFee.ImagesWebApplication
                 .UseStartup<Startup>()
                 .Build();
     }
+
+	//TODO: Для работа рагрузки файлов на удаленный сервер в web.config
+	//<security>
+	//<requestFiltering>
+	//<!-- Measured in Bytes -->
+	//<requestLimits maxAllowedContentLength = "1073741824" />  < !--1 GB-->
+	//</requestFiltering>
+	//</security>
+
 }

@@ -103,6 +103,7 @@
 var topFixed, prevTop = 0, prevShowTop = 0;
 function initFixedBox() {
 	var container = $("div[data-fixed-wrap]>.container");
+	if (container.length == 0) return;
 	topFixed = container.offset().top + container.outerHeight();
 	prevTop = $(this).scrollTop();
 	prevShowTop = prevTop;

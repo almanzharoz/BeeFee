@@ -51,14 +51,14 @@ namespace Core.ElasticSearch.Serialization
 				return result;
 			if (!typeof(ICollection).IsAssignableFrom(result.UnderlyingType))
 			{
-				typeof(JsonContract).GetField("_onDeserializingCallbacks", BindingFlags.Instance | BindingFlags.NonPublic)
-					.SetValue(result, new List<SerializationCallback>() {(o, context) => sw2.Start()});
-				typeof(JsonContract).GetField("_onDeserializedCallbacks", BindingFlags.Instance | BindingFlags.NonPublic)
-					.SetValue(result, new List<SerializationCallback>() {(o, context) => sw2.Stop()});
-				typeof(JsonContract).GetField("_onSerializingCallbacks", BindingFlags.Instance | BindingFlags.NonPublic)
-					.SetValue(result, new List<SerializationCallback>() {(o, context) => sw1.Start()});
-				typeof(JsonContract).GetField("_onSerializedCallbacks", BindingFlags.Instance | BindingFlags.NonPublic)
-					.SetValue(result, new List<SerializationCallback>() {(o, context) => sw1.Stop()});
+				//typeof(JsonContract).GetField("_onDeserializingCallbacks", BindingFlags.Instance | BindingFlags.NonPublic)
+				//	.SetValue(result, new List<SerializationCallback>() {(o, context) => sw2.Start()});
+				//typeof(JsonContract).GetField("_onDeserializedCallbacks", BindingFlags.Instance | BindingFlags.NonPublic)
+				//	.SetValue(result, new List<SerializationCallback>() {(o, context) => sw2.Stop()});
+				//typeof(JsonContract).GetField("_onSerializingCallbacks", BindingFlags.Instance | BindingFlags.NonPublic)
+				//	.SetValue(result, new List<SerializationCallback>() {(o, context) => sw1.Start()});
+				//typeof(JsonContract).GetField("_onSerializedCallbacks", BindingFlags.Instance | BindingFlags.NonPublic)
+				//	.SetValue(result, new List<SerializationCallback>() {(o, context) => sw1.Stop()});
 			}
 			return result;
 		}
