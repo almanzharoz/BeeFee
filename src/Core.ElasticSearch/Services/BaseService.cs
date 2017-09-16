@@ -100,10 +100,12 @@ namespace Core.ElasticSearch
 	            return result(_client.Stopwatch(sw, x => func(_client))
 		            .Fluent(x =>
 			            Console.WriteLine("Try: " + sw.ElapsedMilliseconds
-			                              + ", Deserialize: " + ((IElasticSerializer) _client.Serializer)._sw.ElapsedMilliseconds
-			                              + ", Serialize: " + ((IElasticSerializer) _client.Serializer)._sw2.ElapsedMilliseconds
-			                              + ", Deserialize: " + ((IElasticSerializer)_client.Serializer).ContractResolver.sw2.ElapsedMilliseconds
-			                              + ", Serialize: " + ((IElasticSerializer)_client.Serializer).ContractResolver.sw1.ElapsedMilliseconds
+#if DEBUG
+										  + ", Deserialize: " + ((IElasticSerializer)_client.Serializer)._sw.ElapsedMilliseconds
+										  + ", Serialize: " + ((IElasticSerializer)_client.Serializer)._sw2.ElapsedMilliseconds
+										  + ", Deserialize: " + ((IElasticSerializer)_client.Serializer).ContractResolver.sw2.ElapsedMilliseconds
+										  + ", Serialize: " + ((IElasticSerializer)_client.Serializer).ContractResolver.sw1.ElapsedMilliseconds
+#endif
 										  ))
 		            .LogDebug(_logger, operationText ?? eventId.Name)
 		            .LogError(_logger, operationText ?? eventId.Name));
@@ -127,11 +129,13 @@ namespace Core.ElasticSearch
 				return result(f
 	                .Fluent(x =>
 		                Console.WriteLine("Try: " + sw.ElapsedMilliseconds
-		                                  + ", Deserialize: " + ((IElasticSerializer)_client.Serializer)._sw.ElapsedMilliseconds
+#if DEBUG
+										  + ", Deserialize: " + ((IElasticSerializer)_client.Serializer)._sw.ElapsedMilliseconds
 		                                  + ", Serialize: " + ((IElasticSerializer)_client.Serializer)._sw2.ElapsedMilliseconds
 		                                  + ", Deserialize: " + ((IElasticSerializer)_client.Serializer).ContractResolver.sw2.ElapsedMilliseconds
 		                                  + ", Serialize: " + ((IElasticSerializer)_client.Serializer).ContractResolver.sw1.ElapsedMilliseconds
-		                ))
+#endif
+						))
 					.LogDebug(_logger, operationText ?? eventId.Name)
                     .LogError(_logger, operationText ?? eventId.Name));
             }

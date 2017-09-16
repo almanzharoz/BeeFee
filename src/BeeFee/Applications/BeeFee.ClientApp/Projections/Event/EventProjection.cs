@@ -2,7 +2,6 @@
 using BeeFee.Model.Embed;
 using BeeFee.Model.Projections;
 using Core.ElasticSearch.Domain;
-using Nest;
 
 namespace BeeFee.ClientApp.Projections.Event
 {
@@ -12,7 +11,6 @@ namespace BeeFee.ClientApp.Projections.Event
 
 		public string Name { get; }
 
-		[Keyword]
 		public BaseCategoryProjection Category { get; }
 
 		public EEventType Type { get; }

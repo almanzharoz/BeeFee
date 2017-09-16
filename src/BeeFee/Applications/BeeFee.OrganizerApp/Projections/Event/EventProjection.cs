@@ -4,7 +4,6 @@ using BeeFee.Model.Helpers;
 using BeeFee.Model.Interfaces;
 using BeeFee.Model.Projections;
 using Core.ElasticSearch.Domain;
-using Nest;
 using SharpFuncExt;
 
 namespace BeeFee.OrganizerApp.Projections.Event
@@ -12,7 +11,6 @@ namespace BeeFee.OrganizerApp.Projections.Event
 	public class EventProjection : BaseEntityWithVersion, IProjection<Model.Models.Event>, IGetProjection, ISearchProjection,
 		IUpdateProjection, IRemoveProjection, IWithName, IWithOwner
 	{
-		[Keyword]
 		public BaseCategoryProjection Category { get; private set; }
 		public EventDateTime DateTime { get; private set; }
 		public Address Address { get; private set; }
@@ -22,7 +20,6 @@ namespace BeeFee.OrganizerApp.Projections.Event
 		public TicketPrice[] Prices { get; private set; }
 		public EventPage Page { get; private set; }
 
-		[Keyword]
 		public BaseUserProjection Owner { get; private set; }
 
 		internal EventProjection Change(string name, string label, string url, string cover, EventDateTime dateTime, Address address, EEventType type,

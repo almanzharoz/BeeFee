@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using BeeFee.ImageApp;
 using BeeFee.ImageApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -40,6 +39,7 @@ namespace BeeFee.ImagesWebApplication.Controllers
 
         // POST api/values
 	    [HttpPost]
+		[RequestSizeLimit(10000000)]
 	    public async Task<JsonResult> Post(Model model)
 		    => Json(await model.File.OpenReadStream()
 			    .Using(stream => _service.AddImage(stream, model.Filename ?? model.File.FileName, model.Setting)));

@@ -4,7 +4,6 @@ using BeeFee.Model.Helpers;
 using BeeFee.Model.Interfaces;
 using BeeFee.Model.Projections;
 using Core.ElasticSearch.Domain;
-using Nest;
 using SharpFuncExt;
 
 namespace BeeFee.OrganizerApp.Projections.Event
@@ -22,10 +21,8 @@ namespace BeeFee.OrganizerApp.Projections.Event
 
 		public EventPage Page { get; }
 
-		[Keyword]
 		public BaseCategoryProjection Category { get; }
 
-		[Keyword]
 		public BaseUserProjection Owner { get; }
 		public TicketPrice[] Prices { get; }
 
