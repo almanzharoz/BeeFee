@@ -18,10 +18,12 @@ namespace BeeFee.ImageApp.Tests
 			    Directory.CreateDirectory("images");
 		    foreach (var directory in new DirectoryInfo("images").GetDirectories())
 			    directory.Delete(true);
-		    _service = new ImageService(@"images", @"public", @"originals", new ImageSize(2000, 2000));
-	    }
+		    _service = new ImageService(@"images", @"public", @"originals", new ImageSize(2000, 2000), @"settings.json");
 
-	    private Stream GetTestImage(string filename) => File.OpenRead(filename);
+		    _service.SetSetting("test", new[] { new ImageSize(200, 200), new ImageSize(400, 200) }, false);
+		}
+
+		private Stream GetTestImage(string filename) => File.OpenRead(filename);
 
 	    [TestMethod]
 	    public void AddImageTest()
@@ -29,7 +31,7 @@ namespace BeeFee.ImageApp.Tests
 		    ImageOperationResult operationResult;
 			using (var stream = GetTestImage(TestImageName))
 			{
-				operationResult = _service.AddImage(stream, "priroda.jpg", null).Result;
+				operationResult = _service.AddImage(stream, "priroda.jpg", "test").Result;
 			}
 
 			Assert.AreEqual(EAddImageResut.Ok, operationResult.Result);
@@ -69,7 +71,7 @@ namespace BeeFee.ImageApp.Tests
 			ImageOperationResult operationResult;
 		    using (var stream = GetTestImage(TestImageName))
 		    {
-			    operationResult = _service.AddImage(stream, "priroda.jpg", new[] {new ImageSize(200, 200), new ImageSize(400, 200)})
+			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
 				    .Result;
 		    }
 
@@ -87,7 +89,7 @@ namespace BeeFee.ImageApp.Tests
 			ImageOperationResult operationResult;
 		    using (var stream = GetTestImage(TestImageName))
 		    {
-			    operationResult = _service.AddImage(stream, "priroda.jpg", new[] { new ImageSize(200, 200), new ImageSize(400, 200) })
+			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
 				    .Result;
 		    }
 
@@ -104,7 +106,7 @@ namespace BeeFee.ImageApp.Tests
 		    ImageOperationResult operationResult;
 		    using (var stream = GetTestImage(TestImageName))
 		    {
-			    operationResult = _service.AddImage(stream, "priroda.jpg", new[] { new ImageSize(200, 200), new ImageSize(400, 200) })
+			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
 				    .Result;
 		    }
 
@@ -122,7 +124,7 @@ namespace BeeFee.ImageApp.Tests
 			ImageOperationResult operationResult;
 		    using (var stream = GetTestImage(TestImageName))
 		    {
-			    operationResult = _service.AddImage(stream, "priroda.jpg", new[] { new ImageSize(200, 200), new ImageSize(400, 200) })
+			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
 				    .Result;
 		    }
 
@@ -133,5 +135,96 @@ namespace BeeFee.ImageApp.Tests
 		    //Assert.AreEqual("", _service.GetImageUrl(new ImageSize(300, 200), "priroda.jpg"));
 
 		}
-	}
+
+	    [TestMethod]
+	    public void AddExistingImage()
+	    {
+		    ImageOperationResult operationResult;
+		    using (var stream = GetTestImage(TestImageName))
+		    {
+			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
+				    .Result;
+		    }
+
+		    Assert.AreEqual(EAddImageResut.Ok, operationResult.Result);
+		    Assert.AreEqual(null, operationResult.Error);
+		    Assert.AreEqual("priroda.jpg", operationResult.Path);
+		}
+
+	    [TestMethod]
+	    public void RenameImageTest()
+	    {
+		    ImageOperationResult operationResult;
+			using(var stream = GetTestImage(TestImageName))
+			{
+				operationResult = _service.AddImage(stream, "priroda.jpg", "test")
+					.Result;
+			}
+
+		    Assert.AreEqual(EAddImageResut.Ok, operationResult.Result);
+		    Assert.AreEqual(null, operationResult.Error);
+		    Assert.AreEqual("priroda.jpg", operationResult.Path);
+
+		    var renameResult = _service.RenameImage("priroda.jpg", "test.jpg");
+
+			Assert.AreEqual(EAddImageResut.Ok, renameResult.Result);
+			Assert.AreEqual(null, renameResult.Error);
+			Assert.AreEqual("test.jpg", renameResult.Path);
+	    }
+
+	    [TestMethod]
+	    public void RenameImageWithoutUnique()
+	    {
+			ImageOperationResult operationResult;
+		    using (var stream = GetTestImage(TestImageName))
+		    {
+			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
+				    .Result;
+			}
+
+		    using (var stream = GetTestImage(TestImageName))
+		    {
+				var result = 
+					_service.AddImage(stream, "test.jpg", "test").Result;
+			}
+
+			Assert.AreEqual(EAddImageResut.Ok, operationResult.Result);
+		    Assert.AreEqual(null, operationResult.Error);
+		    Assert.AreEqual("priroda.jpg", operationResult.Path);
+
+		    var renameResult = _service.RenameImage("priroda.jpg", "test.jpg", false);
+
+		    Assert.AreEqual(EAddImageResut.Error, renameResult.Result);
+		    Assert.AreEqual(EErrorType.FileAlreadyExists, renameResult.ErrorType);
+		    Assert.AreEqual("test.jpg", renameResult.Path);
+		}
+
+	    [TestMethod]
+	    public void UpdateImageTest()
+	    {
+		    ImageOperationResult operationResult;
+		    using (var stream = GetTestImage(TestImageName))
+		    {
+			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
+				    .Result;
+		    }
+
+		    Assert.AreEqual(EAddImageResut.Ok, operationResult.Result);
+		    Assert.AreEqual(null, operationResult.Error);
+		    Assert.AreEqual("priroda.jpg", operationResult.Path);
+
+		    using (var stream = GetTestImage(TestImageName))
+		    {
+				_service.SetSetting("test2", new ImageSize[] {new ImageSize(600, 600)}, true);
+			    var updateResult = _service.UpdateImage(stream, "priroda.jpg", "test2").Result;
+
+				Assert.AreEqual(EAddImageResut.Ok, updateResult.Result);
+				Assert.AreEqual(null, updateResult.Error);
+				Assert.AreEqual("priroda.jpg", updateResult.Path);
+		    }
+
+			Assert.IsTrue(Directory.Exists(Path.Combine("images", "600x600")));
+			Assert.IsTrue(File.Exists(Path.Combine("images", "public", "priroda.jpg")));
+	    }
+    }
 }

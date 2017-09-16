@@ -39,7 +39,8 @@ namespace BeeFee.ImageApp.Services
 			_maxOriginalSize = maxOriginalSize;
 
 			_settingsJsonFile = settingsJsonFile;
-			_settings = DeserializeSettings();
+			if (!File.Exists(settingsJsonFile)) File.Create(settingsJsonFile);
+			_settings = DeserializeSettings() ?? new ConcurrentDictionary<string, ImageSettings>();
 		}
 
 		public Task<ImageOperationResult> AddImage(Stream stream, string fileName, string settingName)
@@ -63,8 +64,10 @@ namespace BeeFee.ImageApp.Services
 		internal Task<ImageOperationResult> AddImage(Stream stream, string fileName, ImageSettings setting)
 			=> GetUniqueName(fileName)
 				.Try(uniqueName => stream
+						//.If(s => FileExists(uniqueName),
+						//	n => new ImageOperationResult(EAddImageResut.Error, fileName, $"File {fileName} already exists", EErrorType.FileAlreadyExists))
 						.ThrowIf(
-							s => FileExists(setting.KeepPublicOriginalSize ? _publicOriginalFolder : _privateOriginalFolder, uniqueName),
+							s => FileExists(uniqueName),
 							n => new FileAlreadyExistsException($"File \"{uniqueName}\" already exists"))
 						.Using(s => Image.Load(s).Using(image => Task.WhenAll(new Task[0]
 							.Add(ResizeAndSaveImage(image, _maxOriginalSize,
@@ -74,8 +77,11 @@ namespace BeeFee.ImageApp.Services
 					x => new ImageOperationResult(EAddImageResut.Ok, x),
 					(x, e) => new ImageOperationResult(EAddImageResut.Error, x, e.Message, EErrorType.SaveImageError));
 
-		private bool FileExists(string path, string filename)
-			=> File.Exists(Path.Combine(_folder, path, filename));
+		private bool FileExists(string filename)
+			//=> File.Exists(Path.Combine(_folder, path, filename));
+			=> File.Exists(Path.Combine(_folder, _privateOriginalFolder, filename)) ||
+			   File.Exists(Path.Combine(_folder, _publicOriginalFolder, filename));
+
 		//{
 		//	var uniqueName = GetUniqueName(fileName);
 		//	try
@@ -123,6 +129,7 @@ namespace BeeFee.ImageApp.Services
 
 			foreach (var directory in Directory.GetDirectories(_folder))
 			{
+				if (!File.Exists(Path.Combine(directory, oldName))) continue;
 				File.Move(Path.Combine(directory, oldName), Path.Combine(directory, uniqueName));
 			}
 
