@@ -1,0 +1,22 @@
+﻿@model BeeFee.WebApplication.Areas.Org.Models.CompanyEditModel
+
+<form asp-action="Edit" asp-controller="Company" asp-route-id="@Model.Id" method="post" class="form-horizontal">
+	@Html.HiddenFor(x => x.Version)
+	<div class="validation" asp-validation-summary="ModelOnly"></div>
+	<div class="container">
+
+		<div class="form-group">
+			<input class="form-control" asp-for="Name" placeholder="Название компании" />
+			<span asp-validation-for="Name" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<input class="form-control" asp-for="Url" placeholder="Url" />
+			<span asp-validation-for="Url" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<input type="submit" value="Save" class="btn" />
+		</div>
+	</div>
+</form>

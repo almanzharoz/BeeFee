@@ -1,19 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
-using Core.ElasticSearch;
-using Core.ElasticSearch.Domain;
 using Core.ElasticSearch.Exceptions;
 using Core.ElasticSearch.Tests.Models;
 using Core.ElasticSearch.Tests.Projections;
-using Elasticsearch.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Nest;
-using SharpFuncExt;
 
 namespace Core.ElasticSearch.Tests
 {

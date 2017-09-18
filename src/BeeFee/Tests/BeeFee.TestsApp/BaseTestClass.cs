@@ -3,9 +3,7 @@ using Core.ElasticSearch;
 using Core.ElasticSearch.Mapping;
 using BeeFee.Model;
 using BeeFee.Model.Embed;
-using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
-using BeeFee.TestsApp.Projections;
 using BeeFee.TestsApp.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,8 +16,9 @@ namespace BeeFee.TestsApp
 		private readonly Func<ServiceRegistration<BeefeeElasticConnection>, ServiceRegistration<BeefeeElasticConnection>> _servicesRegistration;
 		private readonly Func<IElasticProjections<BeefeeElasticConnection>, IElasticProjections<BeefeeElasticConnection>> _useAppFunc;
 		private readonly EUserRole[] _roles;
-		private TestsEventService _eventService;
-		private TestsCaterogyService _categoryService;
+		protected TestsEventService _eventService;
+		protected TestsCaterogyService _categoryService;
+		protected TestsCompanyService _companyService;
 
 		protected BaseTestClass(
 			Func<ServiceRegistration<BeefeeElasticConnection>, ServiceRegistration<BeefeeElasticConnection>> servicesRegistration,
@@ -47,13 +46,18 @@ namespace BeeFee.TestsApp
 
 			_eventService = serviceProvider.GetService<TestsEventService>();
 			_categoryService = serviceProvider.GetService<TestsCaterogyService>();
+			_companyService = serviceProvider.GetService<TestsCompanyService>();
 
 		}
 
-		protected string AddEvent(string categoryId, string name, EventDateTime date, Address address=default(Address), EEventType type= EEventType.None, decimal price=0)
-			=> _eventService.AddEvent(name, date, address, type, categoryId, price);
+		protected string AddEvent(string companyId, string categoryId, string name, EventDateTime date, Address address=default(Address), EEventType type= EEventType.None, decimal price=0)
+			=> _eventService.AddEvent(companyId, name, date, address, type, categoryId, price);
 
 		protected string AddCategory(string name)
 			=> _categoryService.Add(name);
+
+		protected string AddCompany(string name)
+			=> _companyService.Add(name);
+
 	}
 }

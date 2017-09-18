@@ -10,6 +10,7 @@
 
 <form asp-action="Edit" asp-controller="Event" asp-route-id="@Model.Id" method="post" class="form-horizontal">
 	<div class="validation" asp-validation-summary="ModelOnly"></div>
+	<input type="hidden" asp-for="CompanyId" />
 	<input type="hidden" asp-for="Version"/>
     <div class="container">
 

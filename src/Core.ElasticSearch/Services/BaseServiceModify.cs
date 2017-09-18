@@ -80,12 +80,31 @@ namespace Core.ElasticSearch
 						RepositoryLoggingEvents.ES_UPDATE,
 						$"Update (Id: {id}, Version: {version})"));
 
+		protected bool Update<T, TParent>(string id, string parent, int version, Func<T, T> setter, bool refresh)
+			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection, IUpdateProjection
+			where TParent : class, IProjection
+			=> Get<T, TParent>(id, parent, version)
+				.Convert(entity =>
+					Try(
+						c => c.Update(
+								DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity)).Id), d => d
+									.Index(_mapping.GetIndexName<T>())
+									.Type(_mapping.GetTypeName<T>())
+									.Version(entity.Version)
+									.Parent(parent.HasNotNullArg(nameof(parent)))
+									.Doc(setter(entity))
+									.If(refresh, x => x.Refresh(Refresh.True)))
+							.Fluent(r => entity.Version = (int)r.Version),
+						r => r.Result == Result.Updated,
+						RepositoryLoggingEvents.ES_UPDATE,
+						$"Update (Id: {id}, Version: {version})"));
+
 		//protected bool Update<T>(string id, int version, Func<T, T> setter) where T : BaseEntityWithVersion, IGetProjection, IProjection, IUpdateProjection 
 		//	=> Update(id, version, setter, true);
 
 		//protected bool Update<T>(string id, Func<T, T> setter) where T : BaseEntity, IProjection, IGetProjection, IUpdateProjection 
 		//	=> Update(id, setter, true);
-		
+
 		protected bool Update<T>(string id, Func<T> setter, bool refresh) where T : BaseEntity, IProjection, IUpdateProjection
 			=> Try(
 				c => c.Update(

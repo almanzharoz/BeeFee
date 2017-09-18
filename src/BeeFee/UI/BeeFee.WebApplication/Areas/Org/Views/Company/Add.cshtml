@@ -1,0 +1,21 @@
+﻿@model BeeFee.WebApplication.Areas.Org.Models.AddCompanyEditModel
+
+<form asp-action="Add" asp-controller="Company" method="post" class="form-horizontal">
+	<div class="validation" asp-validation-summary="ModelOnly"></div>
+	<div class="container">
+
+		<div class="form-group">
+			<input class="form-control" asp-for="Name" placeholder="Название компании" />
+			<span asp-validation-for="Name" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<input class="form-control" asp-for="Url" placeholder="Url" />
+			<span asp-validation-for="Url" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<input type="submit" value="Save" class="btn" />
+		</div>
+	</div>
+</form>

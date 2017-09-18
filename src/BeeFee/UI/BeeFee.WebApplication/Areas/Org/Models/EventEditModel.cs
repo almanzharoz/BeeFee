@@ -11,7 +11,11 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 {
 	public class EventEditModel
 	{
+		[Required(ErrorMessage = "Id is required")]
 		public string Id { get; set; }
+		[Required(ErrorMessage = "Company is required")]
+		public string CompanyId { get; set; }
+		[Required(ErrorMessage = "Version is required")]
 		public int Version { get; set; }
 
 		[Required(ErrorMessage = "Name is required")]
@@ -53,10 +57,11 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 
 		public EventEditModel() { } // For binder
 
-		public EventEditModel(EventProjection @event, IReadOnlyCollection<CategoryProjection> categories)
+		public EventEditModel(EventProjection @event, IReadOnlyCollection<BaseCategoryProjection> categories)
 		{
 			Init(categories);
 			Id = @event.Id;
+			CompanyId = @event.Parent.Id;
 			Version = @event.Version;
 			Name = @event.Name;
 			Label = @event.Page.Label;
@@ -71,7 +76,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 			Cover = @event.Page.Cover;
 		}
 
-		public EventEditModel Init(IReadOnlyCollection<CategoryProjection> categories)
+		public EventEditModel Init(IReadOnlyCollection<BaseCategoryProjection> categories)
 		{
 			Categories = categories.Select(x => new SelectListItem() { Text = x.Name, Value = x.Id }).ToList();
 			return this;

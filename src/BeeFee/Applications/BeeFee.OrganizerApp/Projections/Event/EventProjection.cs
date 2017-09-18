@@ -3,13 +3,14 @@ using BeeFee.Model.Embed;
 using BeeFee.Model.Helpers;
 using BeeFee.Model.Interfaces;
 using BeeFee.Model.Projections;
+using BeeFee.OrganizerApp.Projections.Company;
 using Core.ElasticSearch.Domain;
 using SharpFuncExt;
 
 namespace BeeFee.OrganizerApp.Projections.Event
 {
-	public class EventProjection : BaseEntityWithVersion, IProjection<Model.Models.Event>, IGetProjection, ISearchProjection,
-		IUpdateProjection, IRemoveProjection, IWithName, IWithOwner
+	public class EventProjection : BaseEntityWithParentAndVersion<CompanyJoinProjection>, IProjection<Model.Models.Event>, IGetProjection, ISearchProjection,
+		IUpdateProjection, IRemoveProjection, IWithName, IWithUrl, IWithOwner
 	{
 		public BaseCategoryProjection Category { get; private set; }
 		public EventDateTime DateTime { get; private set; }
@@ -36,7 +37,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 			return this;
 		}
 
-		public EventProjection(string id, int version) : base(id, version)
+		public EventProjection(string id, CompanyJoinProjection parent, int version) : base(id, parent, version)
 		{
 		}
 	}

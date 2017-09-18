@@ -14,11 +14,11 @@ namespace BeeFee.TestsApp.Services
 		{
 		}
 
-		public string AddEvent(string name, EventDateTime dateTime, Address address, EEventType type, string categoryId, decimal price)
+		public string AddEvent(string companyId, string name, EventDateTime dateTime, Address address, EEventType type, string categoryId, decimal price)
 		{
 			var category = Get<BaseCategoryProjection>(categoryId.HasNotNullArg(nameof(categoryId))).HasNotNullArg("category");
 
-			return new NewEvent(Get<BaseUserProjection>(User.Id).HasNotNullArg("owner"), name)
+			return new NewEvent(Get<BaseCompanyProjection>(companyId), Get<BaseUserProjection>(User.Id).HasNotNullArg("owner"), name)
 				{
 					DateTime = dateTime,
 					Address = address,
@@ -28,7 +28,7 @@ namespace BeeFee.TestsApp.Services
 					Prices = new TicketPrice[1]
 						{new TicketPrice() {Description = "description price", Name = "price", Price = price}}
 				}
-				.Fluent(x => Insert(x, true))
+				.Fluent(x => Insert<NewEvent, BaseCompanyProjection>(x, true))
 				.Id;
 		}
 	}

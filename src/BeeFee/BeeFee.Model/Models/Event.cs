@@ -1,16 +1,17 @@
-﻿using System;
-using Core.ElasticSearch.Domain;
+﻿using Core.ElasticSearch.Domain;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Interfaces;
+using BeeFee.Model.Projections;
 using Nest;
 
 namespace BeeFee.Model.Models
 {
-	/// <summary>
-	/// Модель мероприятия для фильтрации и отображения ячеек
-	/// </summary>
-	public abstract class Event : BaseEntityWithVersion, IModel, IProjection, IWithName
+	public abstract class Event : IModel, IWithVersion, IWithParent<BaseCompanyProjection>, IProjection, IWithName, IWithUrl
 	{
+		public string Id { get; set; }
+		public int Version { get; set; }
+		[Keyword]
+		public BaseCompanyProjection Parent { get; set; }
 		[Keyword]
 		public Category Category { get; set; }
 		[Keyword]
@@ -26,7 +27,5 @@ namespace BeeFee.Model.Models
 		public TicketPrice[] Prices { get; set; }
 
 		public EventPage Page { get; set; }
-
-		protected Event() : base(null) { }
 	}
 }

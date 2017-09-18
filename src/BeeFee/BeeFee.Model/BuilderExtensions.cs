@@ -26,14 +26,16 @@ namespace BeeFee.Model
 			    .AddMapping<User>(x => x.UserIndexName)
 			    .AddMapping<Event>(x => x.EventIndexName)
 			    .AddMapping<Category>(x => x.EventIndexName)
+			    .AddMapping<Company>(x => x.EventIndexName)
 			    // внутренние документы
 			    .AddStruct<TicketPrice>()
 			    .AddStruct<Address>()
 			    .AddStruct<EventDateTime>()
 			    .AddStruct<EventPage>()
+			    .AddStruct<CompanyUser>()
 				// проекции
 				.AddProjection<BaseUserProjection, User>()
 			    .AddProjection<BaseCategoryProjection, Category>()
-			    .AddProjection<CategoryProjection, Category>();
+			    .AddProjection<BaseCompanyProjection, Company>();
     }
 }

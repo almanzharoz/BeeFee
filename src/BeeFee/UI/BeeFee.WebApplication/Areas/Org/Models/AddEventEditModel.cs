@@ -10,6 +10,9 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 {
 	public class AddEventEditModel
 	{
+		[Required(ErrorMessage = "Company is required")]
+		public string CompanyId { get; set; }
+
 		[Required(ErrorMessage = "Name is required")]
 		public string Name { get; set; }
 
@@ -50,10 +53,13 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 
 		public AddEventEditModel() { } // For binder
 
-		public AddEventEditModel(IReadOnlyCollection<CategoryProjection> categories)
-			=> Init(categories);
+		public AddEventEditModel(string companyId, IReadOnlyCollection<BaseCategoryProjection> categories)
+		{
+			CompanyId = companyId;
+			Init(categories);
+		}
 
-		public AddEventEditModel Init(IReadOnlyCollection<CategoryProjection> categories)
+		public AddEventEditModel Init(IReadOnlyCollection<BaseCategoryProjection> categories)
 		{
 			Categories = categories.Select(x => new SelectListItem(){Text = x.Name, Value = x.Id}).ToList();
 			return this;

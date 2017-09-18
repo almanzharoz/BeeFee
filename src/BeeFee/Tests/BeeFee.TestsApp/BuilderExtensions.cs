@@ -15,6 +15,7 @@ namespace BeeFee.TestsApp
 			return serviceRegistration
 				.AddService<TestsUserService>()
 				.AddService<TestsEventService>()
+				.AddService<TestsCompanyService>()
                 .AddService<TestsCaterogyService>();
 		}
 
@@ -23,6 +24,7 @@ namespace BeeFee.TestsApp
 			return services
 				.AddProjection<NewUser, User>()
 				.AddProjection<NewEvent, Event>()
+				.AddProjection<NewCompany, Company>()
 				.AddProjection<NewCategory, Category>();
 		}
 	}

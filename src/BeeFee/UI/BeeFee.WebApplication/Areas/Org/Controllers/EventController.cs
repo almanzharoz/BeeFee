@@ -18,27 +18,26 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 		{
 		}
 
-		public IActionResult Index()
-	    {
-		    return View(Service.GetMyEvents());
-	    }
+		public IActionResult Index(string id)
+		{
+			ViewBag.CompanyId = id;
+			return View(Service.GetMyEvents(id));
+		}
 
 		[HttpGet]
-	    public IActionResult Add()
-		{
-			return View(new AddEventEditModel(CategoryService.GetAllCategories<CategoryProjection>())
+	    public IActionResult Add(string companyId)
+			=> View(new AddEventEditModel(companyId, CategoryService.GetAllCategories<BaseCategoryProjection>())
 			{
 				StartDateTime = DateTime.Now,
 				FinishDateTime = DateTime.Now.AddDays(1)
 			});
-		}
 
 	    [HttpPost]
 	    public IActionResult Add(AddEventEditModel model)
 	    {
 		    if (ModelState.IsValid)
 		    {
-			    Service.AddEvent(
+			    Service.AddEvent(model.CompanyId,
 				    model.CategoryId,
 				    model.Name,
 					model.Label,
@@ -50,18 +49,18 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				    //new[] {new TicketPrice {Price = new Price(model.Price)}},
 					null,
 				    model.Html);
-			    return RedirectToAction("Index");
+			    return RedirectToAction("Index", new { model.CompanyId });
 		    }
-		    return View(model.Init(CategoryService.GetAllCategories<CategoryProjection>()));
+		    return View(model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
 	    }
 
 		[HttpGet]
-		public IActionResult Edit(string id)
+		public IActionResult Edit(string id, string companyId)
 		{
-			var @event = Service.GetEvent(id);
+			var @event = Service.GetEvent(id, companyId);
 			if (@event == null)
 				return NotFound();
-			return View(new EventEditModel(@event, CategoryService.GetAllCategories<CategoryProjection>()));
+			return View(new EventEditModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>()));
 		}
 
 		[HttpPost]
@@ -71,6 +70,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 			{
 				Service.UpdateEvent(
 				 model.Id,
+				 model.CompanyId,
 				 model.Version,
 				 model.Name,
 				 model.Label,
@@ -83,16 +83,16 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				 //new[] { new TicketPrice() { Price = new Price(model.Price) } },
 				 null,
 				 model.Html);
-				return RedirectToAction("Index");
+				return RedirectToAction("Index", new { model.CompanyId });
 			}
-			model.Init(CategoryService.GetAllCategories<CategoryProjection>());
+			model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>());
 			return View(model);
 		}
 
-		public IActionResult Remove(string id, int version)
+		public IActionResult Remove(string id, string companyId, int version)
 	    {
-			Service.RemoveEvent(id, version);
-		    return RedirectToAction("Index");
+			Service.RemoveEvent(id, companyId, version);
+		    return RedirectToAction("Index", new { companyId });
 	    }
     }
 }
