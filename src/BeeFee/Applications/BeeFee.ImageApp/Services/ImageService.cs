@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using BeeFee.ImageApp.Exceptions;
 using ImageSharp;
 using ImageSharp.Formats;
 using ImageSharp.Processing;
@@ -43,10 +44,14 @@ namespace BeeFee.ImageApp.Services
 			_settings = DeserializeSettings() ?? new ConcurrentDictionary<string, ImageSettings>();
 		}
 
-		public Task<ImageOperationResult> AddImage(Stream stream, string fileName, string settingName)
-			=> _settings.GetValueOrDefault(settingName).Fluent(x => Console.WriteLine($"Add file {fileName}, setting: {settingName}"))
-				.IfNotNull(x => AddImage(stream, fileName, x),
-					Task.FromResult(new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}", EErrorType.SettingNotFound)));
+		public Task<ImageOperationResult> AddImage(Stream stream, string eventName, string fileName, string settingName,
+			string key)
+			=> _settings
+				.ThrowIf(x => !CheckKey(eventName, key), x => new AccessDeniedException())
+				.GetValueOrDefault(settingName).Fluent(x => Console.WriteLine($"Add file {fileName}, setting: {settingName}"))
+				.IfNotNull(x => AddImage(stream, eventName, fileName, x, key),
+					Task.FromResult(new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}",
+						EErrorType.SettingNotFound)));
 		//{
 		//	ImageSettings setting;
 		//	try
@@ -61,8 +66,10 @@ namespace BeeFee.ImageApp.Services
 		//	return AddImage(stream, fileName, setting);
 		//}
 
-		internal Task<ImageOperationResult> AddImage(Stream stream, string fileName, ImageSettings setting)
-			=> GetUniqueName(fileName)
+		internal Task<ImageOperationResult> AddImage(Stream stream, string eventName, string fileName, ImageSettings setting,
+			string key)
+			=> GetUniqueName(eventName, fileName)
+				.ThrowIf(x => !CheckKey(eventName, key), x => new AccessDeniedException())
 				.Try(uniqueName => stream
 						//.If(s => FileExists(uniqueName),
 						//	n => new ImageOperationResult(EAddImageResut.Error, fileName, $"File {fileName} already exists", EErrorType.FileAlreadyExists))
@@ -72,10 +79,11 @@ namespace BeeFee.ImageApp.Services
 						.Using(s => Image.Load(s).Using(image => Task.WhenAll(new Task[0]
 							.Add(ResizeAndSaveImage(image, _maxOriginalSize,
 								setting.KeepPublicOriginalSize ? _publicOriginalFolder : _privateOriginalFolder, uniqueName))
-							.AddEach(setting.Sizes.Select(x => ResizeAndSaveImage(image, x, uniqueName))))
+							.AddEach(setting.Sizes.Select(x => ResizeAndSaveImage(image, x, eventName, uniqueName))))
 						)),
 					x => new ImageOperationResult(EAddImageResut.Ok, x),
 					(x, e) => new ImageOperationResult(EAddImageResut.Error, x, e.Message, EErrorType.SaveImageError));
+		
 
 		private bool FileExists(string filename)
 			//=> File.Exists(Path.Combine(_folder, path, filename));
@@ -105,27 +113,31 @@ namespace BeeFee.ImageApp.Services
 		//	return new ImageOperationResult(EAddImageResut.Ok, uniqueName);
 		//}
 
-		public ImageOperationResult RemoveImage(string fileName)
+		public ImageOperationResult RemoveImage(string eventName, string fileName, string key)
 		{
-			if (!File.Exists(Path.Combine(_folder, _privateOriginalFolder, fileName))) 
+			if(!CheckKey(eventName, key)) throw new AccessDeniedException();
+
+			if (!File.Exists(Path.Combine(_folder, eventName, _privateOriginalFolder, fileName))) 
 				return new ImageOperationResult(EAddImageResut.Error, fileName, $"File {fileName} doesn't exists", EErrorType.FileDoesNotExists);
 
-			foreach (var directory in Directory.GetDirectories(_folder))
+			foreach (var directory in Directory.GetDirectories(Path.Combine(_folder, eventName)))
 			{
 				File.Delete(Path.Combine(directory, fileName));
 			}
 			return new ImageOperationResult(EAddImageResut.Ok, fileName);
 		}
 
-		public ImageOperationResult RenameImage(string oldName, string newName, bool canChangeName = true)
+		public ImageOperationResult RenameImage(string eventName, string oldName, string newName, string key, bool canChangeName = true)
 		{
+			if(!CheckKey(eventName, key)) throw new AccessDeniedException();
+
 			if(!File.Exists(Path.Combine(_folder, _privateOriginalFolder, oldName)))
 				return new ImageOperationResult(EAddImageResut.Error, oldName, $"File {oldName} doesn't exists", EErrorType.FileDoesNotExists);
 
 			if (!canChangeName && File.Exists(Path.Combine(_folder, _privateOriginalFolder, newName)))
 				return new ImageOperationResult(EAddImageResut.Error, newName, $"File {newName} already exists", EErrorType.FileAlreadyExists);
 
-			var uniqueName = GetUniqueName(newName);
+			var uniqueName = GetUniqueName(eventName, newName);
 
 			foreach (var directory in Directory.GetDirectories(_folder))
 			{
@@ -136,8 +148,10 @@ namespace BeeFee.ImageApp.Services
 			return new ImageOperationResult(EAddImageResut.Ok, uniqueName);
 		}
 
-		public async Task<ImageOperationResult> UpdateImage(Stream stream, string fileName, string settingName)
+		public async Task<ImageOperationResult> UpdateImage(Stream stream, string eventName, string fileName, string settingName, string key)
 		{
+			if(!CheckKey(eventName, key)) throw new AccessDeniedException();
+
 			if (!File.Exists(Path.Combine(_folder, _privateOriginalFolder, fileName)))
 				return new ImageOperationResult(EAddImageResut.Error, fileName, $"File {fileName} doesn't exists", EErrorType.FileDoesNotExists);
 
@@ -167,18 +181,29 @@ namespace BeeFee.ImageApp.Services
 
 			resolutions.AddRange(setting.Sizes);
 			
-			RemoveImage(fileName);
-			return await AddImage(stream, fileName,
-				new ImageSettings(resolutions.ToHashSet().ToArray(), _settings[settingName].KeepPublicOriginalSize));
+			RemoveImage(eventName, fileName, key);
+			return await AddImage(stream, eventName, fileName,
+				new ImageSettings(resolutions.ToHashSet().ToArray(), _settings[settingName].KeepPublicOriginalSize), key);
 		}
+
+		public void RegisterEvent(string eventName, string key)
+		{
+			if (Directory.Exists(Path.Combine(_folder, eventName))) throw new DirectoryAlreadyExistsException();
+
+			Directory.CreateDirectory(Path.Combine(_folder, eventName));
+			File.Create($"{key}.key");
+		}
+
+		private bool CheckKey(string eventName, string key)
+			=> File.Exists(Path.Combine(_folder, eventName, $"{key}.key"));
 
 		#region Private Methods
 
-		private string GetUniqueName(string fileName)
+		private string GetUniqueName(string eventName, string fileName)
 		{
 			var result = fileName;
 			var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-			var fullName = Path.Combine(_folder, _privateOriginalFolder, fileName);
+			var fullName = Path.Combine(_folder, eventName, _privateOriginalFolder, fileName);
 			var index = 0;
 
 			while (File.Exists(fullName))
@@ -193,9 +218,9 @@ namespace BeeFee.ImageApp.Services
 		private Image<Rgba32> Resize(Image<Rgba32> image, ImageSize size)
 			=> new Image<Rgba32>(image).Resize(new ResizeOptions {Mode = ResizeMode.Max, Size = new Size(size.Width, size.Height)});
 
-		private void SaveImage(Image<Rgba32> image, string sizePath, string fileName)
+		private void SaveImage(Image<Rgba32> image, string eventName, string sizePath, string fileName)
 		{
-			var directory = Path.Combine(_folder, sizePath);
+			var directory = Path.Combine(_folder, eventName, sizePath);
 			if (!Directory.Exists(directory))
 				Directory.CreateDirectory(directory);
 			var fullPath = Path.Combine(directory, fileName);
@@ -203,13 +228,13 @@ namespace BeeFee.ImageApp.Services
 			image.Save(fullPath, new JpegEncoder {Quality = 85});
 		}
 
-		private Task ResizeAndSaveImage(Image<Rgba32> image, ImageSize size, string fileName)
-			=> Resize(image, size).Using(img => Task.Run(() => SaveImage(img, size.ToString(), fileName)));
+		private Task ResizeAndSaveImage(Image<Rgba32> image, ImageSize size, string eventName, string fileName)
+			=> Resize(image, size).Using(img => Task.Run(() => SaveImage(img, eventName, size.ToString(), fileName)));
 
-		private Task ResizeAndSaveImage(Image<Rgba32> image, ImageSize size, string folder, string fileName)
+		private Task ResizeAndSaveImage(Image<Rgba32> image, ImageSize size, string eventName, string originalImageFolder, string fileName)
 			=> Resize(image, size)
 				.Fluent(x => Console.WriteLine($"Resized file {fileName}, size: {size}"))
-			.Using(img => Task.Run(() => SaveImage(img, folder, fileName)));
+			.Using(img => Task.Run(() => SaveImage(img, eventName, originalImageFolder, fileName)));
 
 		public void SetSetting(string name, ImageSize[] sizes, bool keepPublicOriginalSize)
 		{

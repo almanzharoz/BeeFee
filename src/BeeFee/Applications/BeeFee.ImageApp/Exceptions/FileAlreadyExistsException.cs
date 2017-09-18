@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace BeeFee.ImageApp
+namespace BeeFee.ImageApp.Exceptions
 {
 	public class FileAlreadyExistsException : Exception
 	{
