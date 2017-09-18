@@ -52,19 +52,7 @@ namespace BeeFee.ImageApp.Services
 				.IfNotNull(x => AddImage(stream, eventName, fileName, x, key),
 					Task.FromResult(new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}",
 						EErrorType.SettingNotFound)));
-		//{
-		//	ImageSettings setting;
-		//	try
-		//	{
-		//		setting = _settings[settingName];
-		//	}
-		//	catch (KeyNotFoundException)
-		//	{
-		//		return Task.FromResult(new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}", EErrorType.SettingNotFound));
-		//	}
-
-		//	return AddImage(stream, fileName, setting);
-		//}
+		
 
 		internal Task<ImageOperationResult> AddImage(Stream stream, string eventName, string fileName, ImageSettings setting,
 			string key)
@@ -89,29 +77,6 @@ namespace BeeFee.ImageApp.Services
 			//=> File.Exists(Path.Combine(_folder, path, filename));
 			=> File.Exists(Path.Combine(_folder, _privateOriginalFolder, filename)) ||
 			   File.Exists(Path.Combine(_folder, _publicOriginalFolder, filename));
-
-		//{
-		//	var uniqueName = GetUniqueName(fileName);
-		//	try
-		//	{
-		//		using (stream)
-		//		{
-		//			var image = Image.Load(stream);
-		//			await Task.Run(() => SaveImage(Resize(image, _maxOriginalSize), _privateOriginalFolder, uniqueName));
-		//			if (setting.KeepPublicOriginalSize)
-		//				await Task.Run(() => SaveImage(Resize(image, _maxOriginalSize), _publicOriginalFolder, uniqueName));
-
-		//			if (setting.Sizes != null) 
-		//				foreach (var size in setting.Sizes)
-		//					await Task.Run(() => SaveImage(Resize(image, size), size, uniqueName));
-		//		}
-		//	}
-		//	catch (ArgumentNullException e)
-		//	{
-		//		return new ImageOperationResult(EAddImageResut.Error, uniqueName, e.Message, EErrorType.SaveImageError);
-		//	}
-		//	return new ImageOperationResult(EAddImageResut.Ok, uniqueName);
-		//}
 
 		public ImageOperationResult RemoveImage(string eventName, string fileName, string key)
 		{
