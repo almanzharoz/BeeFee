@@ -31,6 +31,7 @@ namespace BeeFee.WebApplication.Infrastructure.Binders
 
             DateTime outDateValue;
             if (!DateTime.TryParseExact(valStr, "dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture,
+                    DateTimeStyles.AdjustToUniversal, out outDateValue) && !DateTime.TryParseExact(valStr, "dd.MM.yyyy", CultureInfo.InvariantCulture,
                     DateTimeStyles.AdjustToUniversal, out outDateValue))
                 DateTime.TryParse(valStr, out outDateValue);
 

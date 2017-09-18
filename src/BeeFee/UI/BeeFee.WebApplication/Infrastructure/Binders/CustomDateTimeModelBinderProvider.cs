@@ -14,7 +14,7 @@ namespace BeeFee.WebApplication.Infrastructure.Binders
 
         public IModelBinder GetBinder(ModelBinderProviderContext context)
         {
-            return context.Metadata.ModelType == typeof(DateTime) ? binder : null;
+            return context.Metadata.ModelType == typeof(DateTime)|| context.Metadata.ModelType == typeof(DateTime?) ? binder : null;
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿function eventsPageInit(filters, listcontainerselector) {
     if (typeof filters == "undefined" || filters == null || filters.length === 0)
         return;
-    //searchtextselector, cityselector, enddateselector, chkconcertselector, chkexhibitionselector, chkexcursionselector, maxpriceselector, btnloadselector, listcontainerselector) {
-    var page = 0;
+    var page = 1;
     var size = 10;
     var allLoaded = false;
     var loading = false;
@@ -10,124 +9,160 @@
         if (allLoaded || loading)
             return;
         loading = true;
-        //var categories = [];
-        //$(".class-category").each(function () {
-        //    if ($(this).prop("checked"))
-        //        categories.push($(this).val());
-        //});
-        var loadingContainer = $("<div class='col-xs-4 col-md-12'>Загружаю события...</div>");
-        if (page == 0)
-            $(listcontainerselector).html("");
-        $(listcontainerselector).append(loadingContainer);
 
         Events.loadEvents($(filter.searchtextselector).val(),
-            //$("#startDate").val(),
             $(filter.enddateselector).val(),
             $(filter.cityselector).val(),
             $(filter.chkconcertselector).prop("checked"),
             $(filter.chkexhibitionselector).prop("checked"),
             $(filter.chkexcursionselector).prop("checked"),
-            //$("#chkAllCategories").prop("checked") ? [] : categories,
             [],
             page,
             size,
-            $(filter.maxpriceselector).val()).done(function (events) {
-                if (events.length < size)
-                    allLoaded = true;
-                if (events.length > 0) {
-                    $.each(events,
-                        function (i, item) {
-                            $(listcontainerselector).append("<div class=\"col-xs-4 col-md-4\">"+
-                                "<div class=\"grid--item\">"+
-                                "<a class=\"item\" href=\"#\"><span class=\"item--poster\" style=\"background-image: url(" + item.url + ");\"></span>" +
-                                "<span class=\"item--date\">" + item.page.date + "</span></span><span class=\"item--title\">" +
-                                item.page.caption+"</span ></a ></div ></div >");
-                                //"<tr><td><a target='_blank' href='/event/event/" + item.url + "'>" +
-                                //item.page.caption +
-                                //"</a></td><td>" +
-                                //item.page.date +
-                                //"</td><td>" +
-                                //item.page.cover +
-                                //"</td></tr>");
-                        });
-                } else
-                    $(listcontainerselector).html("<div class='col-xs-4 col-md-12'>Событий не найдено</div>");
+            $(filter.maxpriceselector).val()).done(function (result) {
+                allLoaded = result.allLoaded;
+                if (result.html.length > 0) {
+                    $(listcontainerselector).append(result.html);
+                }
                 page++;
-                loadingContainer.remove();
-            }).fail(function () { $(listcontainerselector).html("<div class='col-xs-4 col-md-12'>Событий не найдено</div>"); }).always(function () { loading = false; });
+            }).fail(function () { }).always(function () { loading = false; });
     };
-    $.each(filters, function (i, filter) {
-        $(filter.btnloadselector).click(function () {
-            allLoaded = false;
-            page = 0;
-            $(listcontainerselector).html("");
-            loadEvents(filter);
-        });
-    });
-    //$(btnloadselector).click(function () {
-    //    allLoaded = false;
-    //    page = 0;
-    //    $(listcontainerselector).html("");
-    //    loadEvents();
-    //});
-    //$('#startDate').datetimepicker({
-    //    format: "DD.MM.YYYY HH:mm"
-    //});
-    //$('#endDate').datetimepicker({
-    //    format: "DD.MM.YYYY HH:mm"
-    //});
-    //$("#chkAllCategories").change(function () {
-    //    if (!$('.class-category').prop('checked'))
-    //        $("#chkAllCategories").prop("checked", true);
-    //    else
-    //        if ($(this).prop("checked")) {
-    //            $('.class-category').prop('checked', true);
-    //        }
-    //});
-    //$(".class-category").change(function () {
-    //    if (!$('.class-category').prop('checked'))
-    //        $("#chkAllCategories").prop("checked", true);
-    //    else
-    //        if (!$(this).prop("checked")) {
-    //            $("#chkAllCategories").prop("checked", false);
-    //        }
-    //});
-    $(filters[0].btnloadselector).click();
     $(window).scroll(function () {
         if ($(window).scrollTop() + $(window).height() == $(document).height()) {
             loadEvents();
         }
     });
 }
+//function eventsPageInit(filters, listcontainerselector) {
+//    if (typeof filters == "undefined" || filters == null || filters.length === 0)
+//        return;
+//    //searchtextselector, cityselector, enddateselector, chkconcertselector, chkexhibitionselector, chkexcursionselector, maxpriceselector, btnloadselector, listcontainerselector) {
+//    var page = 0;
+//    var size = 10;
+//    var allLoaded = false;
+//    var loading = false;
+//    var loadEvents = function (filter) {
+//        if (allLoaded || loading)
+//            return;
+//        loading = true;
+//        //var categories = [];
+//        //$(".class-category").each(function () {
+//        //    if ($(this).prop("checked"))
+//        //        categories.push($(this).val());
+//        //});
+//        var loadingContainer = $("<div class='col-xs-4 col-md-12'>Загружаю события...</div>");
+//        if (page == 0)
+//            $(listcontainerselector).html("");
+//        $(listcontainerselector).append(loadingContainer);
+
+//        Events.loadEvents($(filter.searchtextselector).val(),
+//            //$("#startDate").val(),
+//            $(filter.enddateselector).val(),
+//            $(filter.cityselector).val(),
+//            $(filter.chkconcertselector).prop("checked"),
+//            $(filter.chkexhibitionselector).prop("checked"),
+//            $(filter.chkexcursionselector).prop("checked"),
+//            //$("#chkAllCategories").prop("checked") ? [] : categories,
+//            [],
+//            page,
+//            size,
+//            $(filter.maxpriceselector).val()).done(function (events) {
+//                if (events.length < size)
+//                    allLoaded = true;
+//                if (events.length > 0) {
+//                    $.each(events,
+//                        function (i, item) {
+//                            $(listcontainerselector).append("<div class=\"col-xs-4 col-md-4\">"+
+//                                "<div class=\"grid--item\">"+
+//                                "<a class=\"item\" href=\"/event/"+item.page.Url+"\"><span class=\"item--poster\" style=\"background-image: url(" + item.url + ");\"></span>" +
+//                                "<span class=\"item--date\">" + item.page.date + "</span></span><span class=\"item--title\">" +
+//                                item.page.caption+"</span ></a ></div ></div >");
+//                                //"<tr><td><a target='_blank' href='/event/event/" + item.url + "'>" +
+//                                //item.page.caption +
+//                                //"</a></td><td>" +
+//                                //item.page.date +
+//                                //"</td><td>" +
+//                                //item.page.cover +
+//                                //"</td></tr>");
+//                        });
+//                } else
+//                    $(listcontainerselector).html("<div class='col-xs-4 col-md-12'>Событий не найдено</div>");
+//                page++;
+//                loadingContainer.remove();
+//            }).fail(function () { $(listcontainerselector).html("<div class='col-xs-4 col-md-12'>Событий не найдено</div>"); }).always(function () { loading = false; });
+//    };
+//    $.each(filters, function (i, filter) {
+//        $(filter.btnloadselector).click(function () {
+//            allLoaded = false;
+//            page = 0;
+//            $(listcontainerselector).html("");
+//            loadEvents(filter);
+//        });
+//    });
+//    //$(btnloadselector).click(function () {
+//    //    allLoaded = false;
+//    //    page = 0;
+//    //    $(listcontainerselector).html("");
+//    //    loadEvents();
+//    //});
+//    //$('#startDate').datetimepicker({
+//    //    format: "DD.MM.YYYY HH:mm"
+//    //});
+//    //$('#endDate').datetimepicker({
+//    //    format: "DD.MM.YYYY HH:mm"
+//    //});
+//    //$("#chkAllCategories").change(function () {
+//    //    if (!$('.class-category').prop('checked'))
+//    //        $("#chkAllCategories").prop("checked", true);
+//    //    else
+//    //        if ($(this).prop("checked")) {
+//    //            $('.class-category').prop('checked', true);
+//    //        }
+//    //});
+//    //$(".class-category").change(function () {
+//    //    if (!$('.class-category').prop('checked'))
+//    //        $("#chkAllCategories").prop("checked", true);
+//    //    else
+//    //        if (!$(this).prop("checked")) {
+//    //            $("#chkAllCategories").prop("checked", false);
+//    //        }
+//    //});
+//    $(filters[0].btnloadselector).click();
+//    $(window).scroll(function () {
+//        if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+//            loadEvents();
+//        }
+//    });
+//}
 
 var topFixed, prevTop = 0, prevShowTop = 0;
 function initFixedBox() {
-	var container = $("div[data-fixed-wrap]>.container");
-	if (container.length == 0) return;
-	topFixed = container.offset().top + container.outerHeight();
-	prevTop = $(this).scrollTop();
-	prevShowTop = prevTop;
-	$(window).scroll(function (event) {
-		var y = $(this).scrollTop();
-		//console.log(y, prevTop);
-		if (y > prevTop || y < topFixed) {
-			$(".fixed-box").removeClass('is-shown');
-			//console.log("hide");
-			prevTop = y;
-			return;
-		}
-		if (y < prevTop) {
-			if (y >= topFixed && y+2 < prevTop) {
-				if (!$(".fixed-box").hasClass('is-shown')) {
-					$(".fixed-box").addClass('is-shown').slideDown(200);
-					//console.log("show");
-				}
-			} 
-			prevTop = y;
-		}
-		if (!$(".fixed-box").hasClass('is-shown')) 
-			prevTop = y;
-	});
+    var container = $("div[data-fixed-wrap]>.container");
+    if (container.length == 0) return;
+    topFixed = container.offset().top + container.outerHeight();
+    prevTop = $(this).scrollTop();
+    prevShowTop = prevTop;
+    $(window).scroll(function (event) {
+        var y = $(this).scrollTop();
+        //console.log(y, prevTop);
+        if (y > prevTop || y < topFixed) {
+            $(".fixed-box").removeClass('is-shown');
+            //console.log("hide");
+            prevTop = y;
+            return;
+        }
+        if (y < prevTop) {
+            if (y >= topFixed && y + 2 < prevTop) {
+                if (!$(".fixed-box").hasClass('is-shown')) {
+                    $(".fixed-box").addClass('is-shown').slideDown(200);
+                    //console.log("show");
+                }
+            }
+            prevTop = y;
+        }
+        if (!$(".fixed-box").hasClass('is-shown'))
+            prevTop = y;
+    });
 }
 $(document).ready(function () {
 
@@ -137,11 +172,11 @@ $(document).ready(function () {
         }
     });
 
-	// -- Login Form
+    // -- Login Form
 
-	initLoginDialog();
+    initLoginDialog();
     // ----------
-	initFixedBox();
+    initFixedBox();
     //var didScroll;
     //var lastScrollTop = 0;
     //var delta = 5;
@@ -244,26 +279,26 @@ $(document).ready(function () {
 
     // ----------
 
-	$(document).on("focus", '.input-field', function () { $(this).addClass('with-focus'); });
-	$(document).on("blur", '.input-field', function () { if ($('.input-field--i', this).val() === '') $(this).removeClass('with-focus'); });
-	$(document).on("keyup", '.input-field',
-		function () {
-			var field = $(this);
-			field.removeClass('with-error');
-			if ($('.input-field--i', this).val() != '')
-				field.addClass('with-value');
-			else
-				field.removeClass('with-value');
-		});
-	$(document).on("change", '.input-field',
-		function () {
-			var field = $(this);
-			field.removeClass('with-error');
-			if ($('.input-field--i', this).val() != '')
-				field.addClass('with-value');
-			else
-				field.removeClass('with-value');
-		});
+    $(document).on("focus", '.input-field', function () { $(this).addClass('with-focus'); });
+    $(document).on("blur", '.input-field', function () { if ($('.input-field--i', this).val() === '') $(this).removeClass('with-focus'); });
+    $(document).on("keyup", '.input-field',
+        function () {
+            var field = $(this);
+            field.removeClass('with-error');
+            if ($('.input-field--i', this).val() != '')
+                field.addClass('with-value');
+            else
+                field.removeClass('with-value');
+        });
+    $(document).on("change", '.input-field',
+        function () {
+            var field = $(this);
+            field.removeClass('with-error');
+            if ($('.input-field--i', this).val() != '')
+                field.addClass('with-value');
+            else
+                field.removeClass('with-value');
+        });
 
     $('.vertical-field').each(function () {
         var field = $(this);
