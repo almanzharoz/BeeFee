@@ -19,7 +19,7 @@
 	</environment>
 </head>
 <body>
-	<nav class="navbar navbar-inverse navbar-fixed-top">
+	<nav class="navbar navbar-inverse">
 		<div class="container">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -39,7 +39,7 @@
 					}
 					@if (User.IsInRole("organizer"))
 					{
-						<li><a asp-area="Org" asp-controller="Event" asp-action="Index">My Events</a></li>
+						<li><a asp-area="Org" asp-controller="Company" asp-action="Index">My Companies</a></li>
 					}
 				</ul>
 			</div>

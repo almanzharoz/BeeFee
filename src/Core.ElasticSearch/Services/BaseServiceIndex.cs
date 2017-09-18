@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Core.ElasticSearch.Domain;
 using Elasticsearch.Net;
-using Nest;
 using SharpFuncExt;
 
 namespace Core.ElasticSearch

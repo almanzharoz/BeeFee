@@ -3,12 +3,13 @@ using BeeFee.Model.Embed;
 using BeeFee.Model.Helpers;
 using BeeFee.Model.Interfaces;
 using BeeFee.Model.Projections;
+using BeeFee.OrganizerApp.Projections.Company;
 using Core.ElasticSearch.Domain;
 using SharpFuncExt;
 
 namespace BeeFee.OrganizerApp.Projections.Event
 {
-	internal class NewEvent : BaseNewEntity, IProjection<Model.Models.Event>, IWithName, IWithOwner
+	internal class NewEvent : BaseNewEntityWithParent<CompanyJoinProjection>, IProjection<Model.Models.Event>, IWithName, IWithOwner
 	{
 		public string Name { get; }
 		public string Url { get; }
@@ -26,12 +27,10 @@ namespace BeeFee.OrganizerApp.Projections.Event
 		public BaseUserProjection Owner { get; }
 		public TicketPrice[] Prices { get; }
 
-		public NewEvent() { }
-
 		private readonly ThrowCollection _throws = new ThrowCollection();
 
-		public NewEvent(BaseUserProjection owner, BaseCategoryProjection category, string name, string label, string url, string cover, EEventType type,
-			EventDateTime dateTime, Address address, TicketPrice[] prices, string html)
+		public NewEvent(CompanyJoinProjection company, BaseUserProjection owner, BaseCategoryProjection category, string name, string label, string url, string cover, EEventType type,
+			EventDateTime dateTime, Address address, TicketPrice[] prices, string html) : base(company)
 		{
 			Owner = owner.HasNotNullEntity(_throws, nameof(owner));
 			Category = category.HasNotNullEntity(_throws, nameof(category));

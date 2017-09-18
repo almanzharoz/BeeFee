@@ -13,7 +13,7 @@ namespace BeeFee.WebApplication.Models.Event
 {
     public class EventFilterViewModel
     {
-		public EventFilterViewModel(LoadEventsRequest request, IReadOnlyCollection<string> cities, IReadOnlyCollection<CategoryProjection> categories, Pager<EventGridItem> events)
+		public EventFilterViewModel(LoadEventsRequest request, IReadOnlyCollection<string> cities, IReadOnlyCollection<BaseCategoryProjection> categories, Pager<EventGridItem> events)
 		{
 			Cities = cities.Select(x => new SelectListItem {Text = x, Selected = request.City.NotNullOrDefault(x.Equals)}).ToArray();
 			Categories = categories.Select(c => new SelectListItem {Value = c.Id, Text = c.Name, Selected = request.Categories?.Contains(c.Id) ?? false}).ToArray();

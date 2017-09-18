@@ -18,13 +18,13 @@ namespace BeeFee.AdminApp.Services
 		{
 		}
 
-		public EventProjection GetEvent(string id) => GetWithVersion<EventProjection>(id);
+		public EventProjection GetEvent(string id, string companyId) => GetWithVersion<EventProjection, BaseCompanyProjection>(id, companyId);
 
 		public BaseCategoryProjection GetCategory(string id) => Get<BaseCategoryProjection>(id);
 
 		///<exception cref="RemoveEntityException"></exception>
-		public bool RemoveEvent(string id, int version)
-			=> Remove<EventProjection>(id, version, true)
+		public bool RemoveEvent(string id, string companyId, int version)
+			=> Remove<EventProjection, BaseCompanyProjection>(id, companyId, version, true)
 				.ThrowIfNot<RemoveEntityException>();
 
 		public IReadOnlyCollection<EventProjection> SearchByName(string query) // TODO: Переделать на поиск по другому полю, т.к. Name везде Keyword
@@ -33,8 +33,8 @@ namespace BeeFee.AdminApp.Services
 					.Field(x => x.Name)
 					.Query(query)));
 
-		public bool SetCategoryToEvent(string eventId, string categoryId, int version)
-			=> Update<EventProjection>(eventId, version,
+		public bool SetCategoryToEvent(string eventId, string companyId, string categoryId, int version)
+			=> Update<EventProjection, BaseCompanyProjection>(eventId, companyId, version,
 				u => u.ChangeCategory(
 					GetCategory(categoryId.HasNotNullArg("new category id")).HasNotNullArg("new category")),
 				true);

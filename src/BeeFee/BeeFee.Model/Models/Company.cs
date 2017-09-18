@@ -1,22 +1,33 @@
 ﻿using Core.ElasticSearch.Domain;
 using BeeFee.Model.Embed;
+using BeeFee.Model.Interfaces;
 using BeeFee.Model.Projections;
+using Nest;
 
 namespace BeeFee.Model.Models
 {
-	public class Company : BaseEntity
+	public abstract class Company : IModel, IWithVersion, IWithName, IWithUrl
 	{
+		public string Id { get; set; }
+		public int Version { get; set; }
+		[Keyword]
 		public string Name { get; set; }
+		[Keyword]
+		public string Url { get; set; }
 		public CompanyUser[] Users { get; set; }
-
-		public Company(string id) : base(id)
-		{
-		}
 	}
 
 	public struct CompanyUser
 	{
-		public BaseUserProjection User { get; set; }
-		public ECompanyUserRole Role { get; set; }
+		[Keyword]
+		public BaseUserProjection User { get; }
+		[Keyword]
+		public ECompanyUserRole Role { get; }
+
+		public CompanyUser(BaseUserProjection user, ECompanyUserRole role)
+		{
+			User = user;
+			Role = role;
+		}
 	}
 }

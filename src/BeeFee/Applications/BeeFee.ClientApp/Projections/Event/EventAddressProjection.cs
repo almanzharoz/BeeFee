@@ -1,13 +1,14 @@
 ﻿using BeeFee.Model.Embed;
+using BeeFee.Model.Projections;
 using Core.ElasticSearch.Domain;
 
 namespace BeeFee.ClientApp.Projections.Event
 {
-	public class EventAddressProjection : BaseEntityWithVersion, IProjection<Model.Models.Event>, ISearchProjection
+	public class EventAddressProjection : BaseEntityWithParent<BaseCompanyProjection>, IProjection<Model.Models.Event>, ISearchProjection
 	{
 		public Address Address { get; }
 
-		public EventAddressProjection(string id, int version, Address address) : base(id, version)
+		public EventAddressProjection(string id, BaseCompanyProjection company, Address address) : base(id, company)
 		{
 			Address = address;
 		}

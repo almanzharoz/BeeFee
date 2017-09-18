@@ -6,7 +6,7 @@ using Nest;
 
 namespace BeeFee.AdminApp.Projections.Event
 {
-	public class EventProjection : BaseEntityWithVersion, IProjection<Model.Models.Event>, IGetProjection, ISearchProjection, IRemoveProjection, IUpdateProjection, IWithName, IWithOwner
+	public class EventProjection : BaseEntityWithParentAndVersion<BaseCompanyProjection>, IProjection<Model.Models.Event>, IGetProjection, ISearchProjection, IRemoveProjection, IUpdateProjection, IWithName, IWithOwner
 	{
 		[Keyword]
 		public BaseCategoryProjection Category { get; private set; }
@@ -24,7 +24,7 @@ namespace BeeFee.AdminApp.Projections.Event
 			return this;
 		}
 
-		public EventProjection(string id, int version, BaseUserProjection owner, BaseCategoryProjection category, string name, EventDateTime datetime, Address address, EEventType type) : base(id, version)
+		public EventProjection(string id, BaseCompanyProjection parent, int version, BaseUserProjection owner, BaseCategoryProjection category, string name, EventDateTime datetime, Address address, EEventType type) : base(id, parent, version)
 		{
 			Owner = owner;
 			Category = category;

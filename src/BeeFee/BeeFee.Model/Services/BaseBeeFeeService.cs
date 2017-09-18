@@ -1,8 +1,6 @@
 ﻿using Core.ElasticSearch;
 using Core.ElasticSearch.Domain;
-using BeeFee.Model;
 using BeeFee.Model.Interfaces;
-using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
 using Microsoft.Extensions.Logging;
 using Nest;
@@ -20,8 +18,11 @@ namespace BeeFee.Model
 			User = user;
 		}
 
-		protected QueryContainer UserQuery<T>(QueryContainer query) where T : class, IWithOwner, ISearchProjection
+		protected QueryContainer UserQuery<T>(QueryContainer query = null) where T : class, IWithOwner, ISearchProjection
 			=> Query<T>.Term(p => p.Owner, User.HasNotNullArg(x => x.Id, "user").Id) && query;
+
+		protected bool ExistsByUrl<T>(string url) where T : class, ISearchProjection, IWithUrl
+			=> FilterCount<T>(f => f.Term(p => p.Url, url.HasNotNullArg(nameof(url))))>0;
 
 		public UserName UseUserName(string userId)
 			=> User = new UserName(userId);

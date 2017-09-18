@@ -34,7 +34,7 @@ namespace Core.ElasticSearch.Serialization
 				if (v.IsNull(property.PropertyType))
 					continue;
 				writer.WritePropertyName(property.Name.ToLower());
-				var o = JToken.FromObject(v, serializer);
+				var o = JToken.FromObject(new InnerValue(v), serializer);
 				o.WriteTo(writer);
 			}
 			writer.WriteEndObject();

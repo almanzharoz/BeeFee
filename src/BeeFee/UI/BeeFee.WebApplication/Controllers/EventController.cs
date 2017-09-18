@@ -1,17 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-using BeeFee.ClientApp.Projections.Event;
-using BeeFee.Model.Embed;
 using BeeFee.ClientApp.Services;
-using BeeFee.Model.Projections;
 using BeeFee.Model.Services;
 using BeeFee.WebApplication.Models.Event;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using SharpFuncExt;
 
 namespace BeeFee.WebApplication.Controllers
 {
@@ -37,13 +28,13 @@ namespace BeeFee.WebApplication.Controllers
 		//    return View(model);
 		//}
 
-		[Route("/event/{id}")]
-		public async Task<IActionResult> Event(string id)
+		[Route("/event/{cid}/{id}")]
+		public async Task<IActionResult> Event(string id, string cid)
 			//=> id.IfNotNull(x => _service.GetEventByUrl(id)
 			//  .IfNotNull<EventProjection, IActionResult>(View, NotFound),
 			// () => Task.FromResult((IActionResult)NotFound())); // рабочий пример, когда не надо юзать fluent :)
 		{
-			var model = await Service.GetEventByUrl(id);
+			var model = await Service.GetEventByUrl(cid, id);
 			if (model == null)
 				return NotFound();
 			return View(model);

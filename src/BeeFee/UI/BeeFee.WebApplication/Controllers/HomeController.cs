@@ -14,7 +14,7 @@ namespace BeeFee.WebApplication.Controllers
         }
 
         public async Task<IActionResult> Index(LoadEventsRequest request)
-            => View(new EventFilterViewModel(request, Service.GetAllCities(), CategoryService.GetAllCategories<CategoryProjection>(), 
+            => View(new EventFilterViewModel(request, Service.GetAllCities(), CategoryService.GetAllCategories<BaseCategoryProjection>(), 
 				await Service.SearchEvents(request.Text, request.City, request.Categories, request.Types, request.StartDate, request.EndDate, request.MaxPrice, 9, request.PageIndex)));
 
         public IActionResult Error()

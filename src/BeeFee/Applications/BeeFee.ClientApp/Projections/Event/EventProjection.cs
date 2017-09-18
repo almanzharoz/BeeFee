@@ -5,7 +5,7 @@ using Core.ElasticSearch.Domain;
 
 namespace BeeFee.ClientApp.Projections.Event
 {
-	public class EventProjection : BaseEntity, IProjection<Model.Models.Event>, IGetProjection, ISearchProjection
+	public class EventProjection : BaseEntityWithParent<BaseCompanyProjection>, IProjection<Model.Models.Event>, IGetProjection, ISearchProjection
 	{
 		public string Url { get; }
 
@@ -19,7 +19,7 @@ namespace BeeFee.ClientApp.Projections.Event
 
 		public EventPage Page { get; }
 
-		public EventProjection(string id, string url, string name, BaseCategoryProjection category, EEventType type, TicketPrice[] prices, EventPage page) : base(id)
+		public EventProjection(string id, BaseCompanyProjection company, string url, string name, BaseCategoryProjection category, EEventType type, TicketPrice[] prices, EventPage page) : base(id, company)
 		{
 			Url = url;
 			Name = name;
