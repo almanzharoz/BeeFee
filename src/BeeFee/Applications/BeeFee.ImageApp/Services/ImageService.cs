@@ -13,6 +13,8 @@ using SharpFuncExt;
 
 namespace BeeFee.ImageApp.Services
 {
+	// TODO: использовать пути publicOrig/event, privateOrig/event, resized/event
+	// TODO: Добавить RenameEvent (менять название папки по url мероприятия)
 	public class ImageService
 	{
 		private readonly string _folder;
@@ -68,7 +70,8 @@ namespace BeeFee.ImageApp.Services
 						)),
 					x => new ImageOperationResult(EAddImageResut.Ok, x),
 					(x, e) => new ImageOperationResult(EAddImageResut.Error, x, e.Message, EErrorType.SaveImageError));
-		
+
+		// TODO: Проверять дату создания картинки
 		public ImageOperationResult RemoveImage(string eventName, string fileName, string key)
 		{
 			if(!CheckKey(eventName, key)) throw new AccessDeniedException();
