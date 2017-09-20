@@ -1,11 +1,16 @@
-﻿using Core.ElasticSearch.Domain;
+﻿using BeeFee.Model.Embed;
+using Core.ElasticSearch.Domain;
+using System;
 
 namespace BeeFee.Model.Models
 {
-	public class Transaction : BaseEntity
+	//TODO: Переопределить проекции для изменения статуса и для создания
+	public abstract class Transaction
 	{
-		public Transaction(string id) : base(id)
-		{
-		}
+		public DateTime Date { get; }
+		public Contact Contact { get; }
+		public float Sum { get; }
+		public ETransactionType Type { get; }
+		public ETransactionState State { get; private set; }
 	}
 }
