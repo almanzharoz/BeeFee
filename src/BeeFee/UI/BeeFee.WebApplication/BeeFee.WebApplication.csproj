@@ -38,4 +38,10 @@
     <TypeScriptCompile Include="Scripts\site_script.ts" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Home\_EventGridItem.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

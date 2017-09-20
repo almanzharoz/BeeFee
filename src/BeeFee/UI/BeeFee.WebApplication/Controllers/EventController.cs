@@ -40,10 +40,15 @@ namespace BeeFee.WebApplication.Controllers
 			return View(model);
 		}
 
-		[HttpGet]
-		public IActionResult LoadEvents(LoadEventsRequest request)
-			=> Json(Service.SearchEvents(request.Text, request.City, request.Categories, request.Types, request.StartDate,
-				request.EndDate, request.MaxPrice, request.PageSize, request.PageIndex));
+	    //[HttpGet]
+	    //public async Task<IActionResult> LoadEvents(LoadEventsRequest request)
+	    //{
+	    //    var events =await  Service.SearchEvents(request.Text, request.City, request.Categories, request.Types,
+	    //        request.StartDate,
+	    //        request.EndDate, request.MaxPrice, request.PageSize, request.PageIndex);
+
+     //       return Json(new {allLoaded = events.Count<events.Limit, html = ViewComponent("Eve", new { maxPriority = 3, isDone = false }). });
+	    //}
 
 	}
 }

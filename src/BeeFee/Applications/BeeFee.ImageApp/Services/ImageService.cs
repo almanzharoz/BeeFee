@@ -13,8 +13,6 @@ using SharpFuncExt;
 
 namespace BeeFee.ImageApp.Services
 {
-	// TODO: использовать пути publicOrig/event, privateOrig/event, resized/event
-	// TODO: Добавить RenameEvent (менять название папки по url мероприятия)
 	public class ImageService
 	{
 		private readonly string _folder;
@@ -46,25 +44,22 @@ namespace BeeFee.ImageApp.Services
 			_settings = DeserializeSettings() ?? new ConcurrentDictionary<string, ImageSettings>();
 		}
 
-		public Task<ImageOperationResult> AddImage(Stream stream, string eventName, string fileName, string settingName,
-			string key)
+		public Task<ImageOperationResult> AddImage(Stream stream, string eventName, string fileName, string settingName, string key)
 			=> _settings
-				.ThrowIf(x => !CheckKey(eventName, key), x => new AccessDeniedException())
 				.GetValueOrDefault(settingName).Fluent(x => Console.WriteLine($"Add file {fileName}, setting: {settingName}"))
 				.IfNotNull(x => AddImage(stream, eventName, fileName, x, key),
 					Task.FromResult(new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}",
 						EErrorType.SettingNotFound)));
 		
 
-		internal Task<ImageOperationResult> AddImage(Stream stream, string eventName, string fileName, ImageSettings setting,
-			string key)
+		internal Task<ImageOperationResult> AddImage(Stream stream, string eventName, string fileName, ImageSettings setting, string key)
 			=> GetUniqueName(eventName, fileName)
 				.ThrowIf(x => !CheckKey(eventName, key), x => new AccessDeniedException())
 				.Try(uniqueName => stream
 						//.If(s => FileExists(uniqueName),
 						//	n => new ImageOperationResult(EAddImageResut.Error, fileName, $"File {fileName} already exists", EErrorType.FileAlreadyExists))
 						.ThrowIf(
-							s => FileExists(uniqueName),
+							s => FileExists(uniqueName, setting.KeepPublicOriginalSize),
 							n => new FileAlreadyExistsException($"File \"{uniqueName}\" already exists"))
 						.Using(s => Image.Load(s).Using(image => Task.WhenAll(new Task[0]
 							.Add(ResizeAndSaveImage(image, _maxOriginalSize,
@@ -74,13 +69,6 @@ namespace BeeFee.ImageApp.Services
 					x => new ImageOperationResult(EAddImageResut.Ok, x),
 					(x, e) => new ImageOperationResult(EAddImageResut.Error, x, e.Message, EErrorType.SaveImageError));
 		
-
-		private bool FileExists(string filename)
-			//=> File.Exists(Path.Combine(_folder, path, filename));
-			=> File.Exists(Path.Combine(_folder, _privateOriginalFolder, filename)) ||
-			   File.Exists(Path.Combine(_folder, _publicOriginalFolder, filename));
-
-		// TODO: Проверять дату создания картинки
 		public ImageOperationResult RemoveImage(string eventName, string fileName, string key)
 		{
 			if(!CheckKey(eventName, key)) throw new AccessDeniedException();
@@ -162,10 +150,14 @@ namespace BeeFee.ImageApp.Services
 			File.Create($"{key}.key");
 		}
 
+		#region Private Methods
+
 		private bool CheckKey(string eventName, string key)
 			=> File.Exists(Path.Combine(_folder, eventName, $"{key}.key"));
 
-		#region Private Methods
+		private bool FileExists(string filename, bool keepPublicOriginalSize)
+			=> !keepPublicOriginalSize && File.Exists(Path.Combine(_folder, _privateOriginalFolder, filename)) ||
+				File.Exists(Path.Combine(_folder, _publicOriginalFolder, filename));
 
 		private string GetUniqueName(string eventName, string fileName)
 		{
@@ -206,14 +198,8 @@ namespace BeeFee.ImageApp.Services
 
 		public void SetSetting(string name, ImageSize[] sizes, bool keepPublicOriginalSize)
 		{
-			// TODO: При Update менять картинки
-			_settings.AddOrUpdate(name, x => new ImageSettings(sizes, keepPublicOriginalSize), (x, y) => UpdateSetting(x, y, sizes));
+			_settings.AddOrUpdate(name, x => new ImageSettings(sizes, keepPublicOriginalSize), (x, y) => y.Set(sizes, keepPublicOriginalSize));
 			SerializeSettings();
-		}
-
-		private ImageSettings UpdateSetting(string name, ImageSettings old, ImageSize[] sizes)
-		{
-			return old.Set(sizes, old.KeepPublicOriginalSize);
 		}
 
 		private void SerializeSettings()

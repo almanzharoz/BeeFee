@@ -4,9 +4,9 @@ namespace BeeFee.Model.Embed
 {
     public enum EEventType : byte
     {
-		None=0,
+        None = 0,
         Concert = 1,
         Exhibition = 2,
-        Excursion
+        Excursion = 3
     }
 }
