@@ -41,7 +41,8 @@ namespace BeeFee.WebApplication.Controllers
 			var claims = new List<Claim>
 			{
 				new Claim(ClaimTypes.Name, user.Name),
-				new Claim(ClaimTypes.NameIdentifier, user.Id),
+			    new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
 				new Claim("IP", Request.Host.Host, ClaimValueTypes.String),
 				new Claim("permission-foo", "grant")
 			};
