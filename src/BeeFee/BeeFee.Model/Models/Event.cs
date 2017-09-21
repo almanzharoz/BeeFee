@@ -24,10 +24,15 @@ namespace BeeFee.Model.Models
 		public Address Address { get; set; }
 		[Keyword]
 		public EEventType Type { get; set; }
-		public TicketPrice[] Prices { get; set; }
 
 		public EventPage Page { get; set; }
 
-		public Transaction[] Transactions { get; }
+		[Nested]
+		public TicketPrice[] Prices { get; set; }
+
+		public int TicketsLeft { get; set; }
+
+		[Nested]
+		public Transaction[] Transactions { get; set; }
 	}
 }

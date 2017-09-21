@@ -26,10 +26,26 @@ namespace Core.ElasticSearch
 				: member.Body).ToString()
 			.Convert(x => x.Substring(x.IndexOf(".") + 1).ToLower());
 
+		private string PathNested<TNested, TValue>(Expression<Func<TNested, TValue>> member) =>
+			(member.Body is UnaryExpression
+				? ((UnaryExpression)member.Body).Operand
+				: member.Body).ToString()
+			.Convert(x => x.Substring(x.IndexOf(".") + 1).ToLower());
+
 		public UpdateByQueryBuilder<T> Inc<TValue>(Expression<Func<T, TValue>> member, TValue value)
 		{
 			var p = Path(member);
 			_script.Append($"if (ctx._source.containsKey('{p}')) ctx._source.{p}+=params.param_{_paramsDictionary.Count}; else ctx._source.{p}=params.param_{_paramsDictionary.Count};");
+			_paramsDictionary.Add("param_" + _paramsDictionary.Count, value);
+			return this;
+		}
+
+		public UpdateByQueryBuilder<T> IncNested<TNested, TValue>(Expression<Func<T, TNested>> nested, Expression<Func<TNested, TValue>> member, Guid nestedId, TValue value)
+		{
+			var p_nested = Path(nested);
+			var p = PathNested(member);
+			_script.Append($"for (int i = 0; i < ctx._source.{p_nested}.size(); i++){{if(ctx._source.{p_nested}[i].id == {nestedId}){{ctx._source.{p_nested}[i].{p}+=params.param_{_paramsDictionary.Count};}}}}");
+			//_script.Append($"if (ctx._source.containsKey('{p}')) ctx._source.{p}+=params.param_{_paramsDictionary.Count}; else ctx._source.{p}=params.param_{_paramsDictionary.Count};");
 			_paramsDictionary.Add("param_" + _paramsDictionary.Count, value);
 			return this;
 		}

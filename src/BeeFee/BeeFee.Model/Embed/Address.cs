@@ -1,6 +1,4 @@
 ﻿
-using Newtonsoft.Json;
-
 namespace BeeFee.Model.Embed
 {
     public struct Address

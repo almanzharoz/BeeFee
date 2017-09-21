@@ -15,7 +15,7 @@ namespace Core.ElasticSearch
 					DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity)).Id), d => d
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
-						.Doc(entity)
+						.Doc(entity) //TODO: Было бы круто апдейтить только set - поля
 						.If(refresh, x => x.Refresh(Refresh.True))),
 				r => r.Result == Result.Updated,
 				RepositoryLoggingEvents.ES_UPDATE,

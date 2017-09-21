@@ -49,7 +49,7 @@ namespace BeeFee.ImageApp.Services
 		public Task<ImageOperationResult> AddImage(Stream stream, string eventName, string fileName, string settingName, string key)
 			=> _settings
 				.GetValueOrDefault(settingName).Fluent(x => Console.WriteLine($"Add file {fileName}, setting: {settingName}"))
-				.IfNotNull(x => AddImage(stream, eventName, fileName, x, key),
+				.IfNotNull(x => AddImage(stream, eventName.HasNotNullArg(nameof(eventName)), fileName.HasNotNullArg(nameof(fileName)), x, key.HasNotNullArg(nameof(key))),
 					Task.FromResult(new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}",
 						EErrorType.SettingNotFound)));
 		
@@ -145,12 +145,14 @@ namespace BeeFee.ImageApp.Services
 				new ImageSettings(resolutions.ToHashSet().ToArray(), _settings[settingName].KeepPublicOriginalSize), key);
 		}
 
-		public void RegisterEvent(string eventName, string key)
+		public string RegisterEvent(string eventName)
 		{
 			if (Directory.Exists(Path.Combine(_folder, eventName))) throw new DirectoryAlreadyExistsException();
 
+			var key = Guid.NewGuid().ToString();
 			Directory.CreateDirectory(Path.Combine(_folder, eventName));
-			File.Create($"{key}.key");
+			File.Create($"{key}.key");  // TODO: Добавить хэш
+			return key;
 		}
 
 		#region Private Methods

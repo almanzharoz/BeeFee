@@ -12,6 +12,8 @@ namespace BeeFee.ImagesWebApplication.Controllers
 		public string Setting { get; set; }
 		public IFormFile File { get; set; }
 		public string Filename { get; set; }
+		public string EventName { get; set; }
+		public string Key { get; set; }
 	}
 
     [Route("api/[controller]")]
@@ -23,38 +25,24 @@ namespace BeeFee.ImagesWebApplication.Controllers
 		    _service = service;
 	    }
 
-        // GET api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
 	    [HttpPost]
 		[RequestSizeLimit(10000000)]
 	    public async Task<JsonResult> Post(Model model)
 		    => Json(await model.File.OpenReadStream()
-			    .Using(stream => _service.AddImage(stream, model.Filename ?? model.File.FileName, model.Setting)));
+			    .Using(stream => _service.AddImage(stream, model.EventName, model.Filename ?? model.File.FileName, model.Setting, model.Key)));
         
 
-        // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
+        public string Put(string id)
+		{
+			// TODO: Решить как обеспечить безопасность при регистрации мероприятия, чтобы нельзя было нарегистрировать кучу мероприятий.
+			return _service.RegisterEvent(id);
+		}
 
-        // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        public JsonResult Delete(string id, string filename, string key)
+		{
+			return new JsonResult(_service.RemoveImage(id, filename, key));
+		}
     }
 }

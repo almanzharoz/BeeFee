@@ -1,5 +1,4 @@
 ﻿using BeeFee.Model.Embed;
-using Core.ElasticSearch.Domain;
 using System;
 
 namespace BeeFee.Model.Models
@@ -7,6 +6,7 @@ namespace BeeFee.Model.Models
 	//TODO: Переопределить проекции для изменения статуса и для создания
 	public abstract class Transaction
 	{
+		public Guid PriceId { get; }
 		public DateTime Date { get; }
 		public Contact Contact { get; }
 		public float Sum { get; }
