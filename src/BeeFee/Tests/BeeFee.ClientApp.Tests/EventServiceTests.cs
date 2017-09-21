@@ -197,22 +197,30 @@ namespace BeeFee.ClientApp.Tests
 			var categoryId = AddCategory("Category 1");
 			var companyId = AddCompany("test");
 
-			var eventId = AddEvent(companyId, categoryId, "Event 1", new EventDateTime(DateTime.Now, DateTime.Now.AddDays(1)), new Address("Yekaterinburg", ""), EEventType.Concert, 0, 10);
+			var eventId = AddEvent(companyId, categoryId, "Event 1", new EventDateTime(DateTime.Now, DateTime.Now.AddDays(1)), new Address("Yekaterinburg", ""), EEventType.Concert, 0, 1);
 
 			var e = Service.GetEventByUrl("test", "event-1");
 			e.Wait();
 			Assert.IsNotNull(e.Result);
 			Assert.AreEqual(e.Result.Id, eventId);
-			Assert.AreEqual(e.Result.Prices.First().Left, 10);
+			Assert.AreEqual(e.Result.Prices.First().Left, 1);
 
 			Assert.IsTrue(Service.RegisterToEvent(eventId, companyId, "test@email.ru", "my name", "12345", e.Result.Prices.First().Id));
 
 			var fe = GetEventById(eventId, companyId);
-			Assert.AreEqual(fe.TicketsLeft, 9);
-			Assert.AreEqual(fe.Prices.First().Left, 9);
+			Assert.AreEqual(fe.TicketsLeft, 0);
+			Assert.AreEqual(fe.Prices.First().Left, 0);
 			Assert.AreEqual(fe.Transactions.Count(), 1);
 			Assert.AreEqual(fe.Transactions.First().State, ETransactionState.New);
 
+			Assert.IsFalse(Service.RegisterToEvent(eventId, companyId, "test@email.ru", "my name", "12345", e.Result.Prices.First().Id));
+
+			var fe2 = GetEventById(eventId, companyId);
+			Assert.IsFalse(Object.ReferenceEquals(fe, fe2));
+			Assert.AreEqual(fe2.TicketsLeft, 0);
+			Assert.AreEqual(fe2.Prices.First().Left, 0);
+			Assert.AreEqual(fe2.Transactions.Count(), 1);
+			Assert.AreEqual(fe2.Transactions.First().State, ETransactionState.New);
 		}
 	}
 }
