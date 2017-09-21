@@ -82,7 +82,7 @@ namespace Core.ElasticSearch
 
 		protected bool Update<T, TParent>(string id, string parent, int version, Func<T, T> setter, bool refresh)
 			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection, IUpdateProjection
-			where TParent : class, IProjection
+			where TParent : class, IProjection, IJoinProjection
 			=> Get<T, TParent>(id, parent, version)
 				.Convert(entity =>
 					Try(

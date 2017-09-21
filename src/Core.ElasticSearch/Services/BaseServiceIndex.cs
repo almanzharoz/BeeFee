@@ -50,7 +50,7 @@ namespace Core.ElasticSearch
 
 		protected bool Insert<T, TParent>(T entity, bool refresh)
 			where T : BaseNewEntityWithParent<TParent>
-			where TParent : IProjection
+			where TParent : IProjection, IJoinProjection
 			=> Try(
 				c => c.Index(entity.HasNotNullArg(nameof(entity)), s => s
 						.Index(_mapping.GetIndexName<T>())
@@ -63,7 +63,7 @@ namespace Core.ElasticSearch
 
 		protected bool InsertWithId<T, TParent>(T entity, bool refresh)
 			where T : BaseNewEntityWithIdAndParent<TParent>
-			where TParent : IProjection
+			where TParent : IProjection, IJoinProjection
 			=> Try(
 				c => c.Index(entity.HasNotNullArg(nameof(entity)), s => s
 						.Index(_mapping.GetIndexName<T>())

@@ -17,13 +17,13 @@ namespace BeeFee.Model.Helpers
 
 		public static T HasNotNullEntityWithParent<T, TParent>(this T arg, string argName)
 			where T : IEntity, IWithParent<TParent>
-			where TParent : IProjection
+			where TParent : IProjection, IJoinProjection
 			=> arg.ThrowIfNull(x => x.Id, () => new ArgumentNullException(argName))
 				.Fluent(x => x.Parent.HasNotNullEntity(argName));
 
 		public static T HasNotNullEntityWithParentAndVersion<T, TParent>(this T arg, string argName)
 			where T : IEntity, IWithParent<TParent>, IWithVersion
-			where TParent : IProjection
+			where TParent : IProjection, IJoinProjection
 			=> arg.ThrowIfNull(x => x.Id, x => x.Version, () => new ArgumentNullException(argName))
 				.Fluent(x => x.Parent.HasNotNullEntity(argName));
 
@@ -35,13 +35,13 @@ namespace BeeFee.Model.Helpers
 
 		public static T HasNotNullEntityWithParent<T, TParent>(this T arg, ThrowCollection collection, string argName)
 			where T : IEntity, IWithParent<TParent>
-			where TParent : IProjection
+			where TParent : IProjection, IJoinProjection
 			=> arg.ThrowIfNull(collection, x => x.Id, () => new ArgumentNullException(argName))
 				.Fluent(x => x.Parent.HasNotNullEntity(collection, argName));
 
 		public static T HasNotNullEntityWithParentAndVersion<T, TParent>(this T arg, ThrowCollection collection, string argName)
 			where T : IEntity, IWithParent<TParent>, IWithVersion
-			where TParent : IProjection
+			where TParent : IProjection, IJoinProjection
 			=> arg.ThrowIfNull(collection, x => x.Id, x => x.Version, () => new ArgumentNullException(argName))
 				.Fluent(x => x.Parent.HasNotNullEntity(collection, argName));
 	}

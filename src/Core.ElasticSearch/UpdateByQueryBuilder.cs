@@ -40,12 +40,13 @@ namespace Core.ElasticSearch
 			return this;
 		}
 
-		public UpdateByQueryBuilder<T> IncNested<TNested, TValue>(Expression<Func<T, TNested>> nested, Expression<Func<TNested, TValue>> member, Guid nestedId, TValue value)
+		public UpdateByQueryBuilder<T> IncNested<TNested, TValue>(Expression<Func<T, TNested[]>> nested, Expression<Func<TNested, TValue>> member, Guid nestedId, TValue value)
 		{
 			var p_nested = Path(nested);
 			var p = PathNested(member);
-			_script.Append($"for (int i = 0; i < ctx._source.{p_nested}.size(); i++){{if(ctx._source.{p_nested}[i].id == {nestedId}){{ctx._source.{p_nested}[i].{p}+=params.param_{_paramsDictionary.Count};}}}}");
+			_script.Append($"for (int i = 0; i < ctx._source.{p_nested}.size(); i++){{if(ctx._source.{p_nested}[i].id == params.param_{_paramsDictionary.Count}){{ctx._source.{p_nested}[i].{p}+=params.param_{_paramsDictionary.Count+1};}}}}");
 			//_script.Append($"if (ctx._source.containsKey('{p}')) ctx._source.{p}+=params.param_{_paramsDictionary.Count}; else ctx._source.{p}=params.param_{_paramsDictionary.Count};");
+			_paramsDictionary.Add("param_" + _paramsDictionary.Count, nestedId.ToString());
 			_paramsDictionary.Add("param_" + _paramsDictionary.Count, value);
 			return this;
 		}

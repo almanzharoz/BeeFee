@@ -1,4 +1,5 @@
-﻿using Core.ElasticSearch;
+﻿using System;
+using Core.ElasticSearch;
 using BeeFee.Model;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Projections;
@@ -14,7 +15,7 @@ namespace BeeFee.TestsApp.Services
 		{
 		}
 
-		public string AddEvent(string companyId, string name, EventDateTime dateTime, Address address, EEventType type, string categoryId, decimal price)
+		public string AddEvent(string companyId, string name, EventDateTime dateTime, Address address, EEventType type, string categoryId, decimal price, int count=10)
 		{
 			var category = Get<BaseCategoryProjection>(categoryId.HasNotNullArg(nameof(categoryId))).HasNotNullArg("category");
 
@@ -25,11 +26,14 @@ namespace BeeFee.TestsApp.Services
 					Type = type,
 					Category = category,
 					Page = new EventPage(name, "label", category.Name, "", dateTime.ToString(), address, "<p>Html text</p>"),
-					Prices = new TicketPrice[1]
-						{new TicketPrice() {Description = "description price", Name = "price", Price = price}}
+					Prices = new TicketPrice[1] {new TicketPrice(Guid.Empty, "Ticket", "default", price, count, count)},
+					TicketsLeft = count
 				}
 				.Fluent(x => Insert<NewEvent, BaseCompanyProjection>(x, true))
 				.Id;
 		}
+
+		public FullEvent GetEventById(string eventId, string companyId)
+			=> GetWithVersion<FullEvent, BaseCompanyProjection>(eventId, companyId);
 	}
 }

@@ -24,14 +24,25 @@ namespace BeeFee.Model.Models
 		public Address Address { get; set; }
 		[Keyword]
 		public EEventType Type { get; set; }
-
+		
+		/// <summary>
+		/// Данные для отображения мероприятия пользователю
+		/// </summary>
 		public EventPage Page { get; set; }
 
+		/// <summary>
+		/// Настройка цен и наличие билетов
+		/// </summary>
 		[Nested]
 		public TicketPrice[] Prices { get; set; }
-
+		/// <summary>
+		/// Общее количество оставшихся билетов
+		/// </summary>
 		public int TicketsLeft { get; set; }
 
+		/// <summary>
+		/// Транзакции покупки билетов
+		/// </summary>
 		[Nested]
 		public Transaction[] Transactions { get; set; }
 	}

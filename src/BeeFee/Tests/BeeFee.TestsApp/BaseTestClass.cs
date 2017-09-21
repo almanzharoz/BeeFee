@@ -4,6 +4,7 @@ using Core.ElasticSearch.Mapping;
 using BeeFee.Model;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Projections;
+using BeeFee.TestsApp.Projections;
 using BeeFee.TestsApp.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -50,14 +51,17 @@ namespace BeeFee.TestsApp
 
 		}
 
-		protected string AddEvent(string companyId, string categoryId, string name, EventDateTime date, Address address=default(Address), EEventType type= EEventType.None, decimal price=0)
-			=> _eventService.AddEvent(companyId, name, date, address, type, categoryId, price);
+		protected string AddEvent(string companyId, string categoryId, string name, EventDateTime date, Address address=default(Address), EEventType type= EEventType.None, decimal price=0, int count = 10)
+			=> _eventService.AddEvent(companyId, name, date, address, type, categoryId, price, count);
 
 		protected string AddCategory(string name)
 			=> _categoryService.Add(name);
 
 		protected string AddCompany(string name)
 			=> _companyService.Add(name);
+
+		protected FullEvent GetEventById(string eventId, string companyId)
+			=> _eventService.GetEventById(eventId, companyId);
 
 	}
 }

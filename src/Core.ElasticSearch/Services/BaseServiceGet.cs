@@ -55,7 +55,7 @@ namespace Core.ElasticSearch
 
 		protected T Get<T, TParent>(string id, string parent, bool load = true)
 			where T : BaseEntityWithParent<TParent>, IProjection, IGetProjection
-			where TParent : class, IProjection
+			where TParent : class, IProjection, IJoinProjection
 			=> _mapping.GetProjectionItem<T>()
 				.Convert(
 					projection => Try(
@@ -70,7 +70,7 @@ namespace Core.ElasticSearch
 
 		protected T GetWithVersion<T, TParent>(string id, string parent, bool load = true)
 			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection
-			where TParent : class, IProjection
+			where TParent : class, IProjection, IJoinProjection
 			=> _mapping.GetProjectionItem<T>()
 				.Convert(
 					projection => Try(
@@ -85,7 +85,7 @@ namespace Core.ElasticSearch
 
 		protected T Get<T, TParent>(string id, string parent, int version, bool load = true)
 			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection
-			where TParent : class, IProjection
+			where TParent : class, IProjection, IJoinProjection
 			=> _mapping.GetProjectionItem<T>()
 				.Convert(
 					projection => Try(
@@ -140,7 +140,7 @@ namespace Core.ElasticSearch
 
 		protected TProjection Get<T, TProjection, TParent>(string id, string parent, Func<QueryContainerDescriptor<T>, QueryContainer> query, bool load = true)
 			where TProjection : BaseEntityWithParent<TParent>, IProjection<T>, IGetProjection
-			where TParent : class, IProjection
+			where TParent : class, IProjection, IJoinProjection
 			where T : class, IModel
 			=> _mapping.GetProjectionItem<TProjection>()
 				.Convert(
@@ -158,7 +158,7 @@ namespace Core.ElasticSearch
 		
 		protected TProjection GetWithVersion<T, TProjection, TParent>(string id, string parent, Func<QueryContainerDescriptor<T>, QueryContainer> query, bool load = true)
 			where TProjection : BaseEntityWithParentAndVersion<TParent>, IProjection<T>, IGetProjection
-			where TParent : class, IProjection
+			where TParent : class, IProjection, IJoinProjection
 			where T : class, IModel
 			=> _mapping.GetProjectionItem<TProjection>()
 				.Convert(

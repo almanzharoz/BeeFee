@@ -25,7 +25,8 @@ namespace BeeFee.TestsApp
 				.AddProjection<NewUser, User>()
 				.AddProjection<NewEvent, Event>()
 				.AddProjection<NewCompany, Company>()
-				.AddProjection<NewCategory, Category>();
+				.AddProjection<NewCategory, Category>()
+				.AddProjection<FullEvent, Event>();
 		}
 	}
 }

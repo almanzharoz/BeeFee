@@ -5,7 +5,7 @@ namespace Core.ElasticSearch.Domain
 {
 	//TODO: Сделать для IJoinProjection
 	public abstract class BaseEntityWithParent<T> : IEntity, IWithParent<T>
-		where T : IProjection
+		where T : IProjection, IJoinProjection
 	{
 		[JsonIgnore]
 		public string Id { get; }
@@ -24,7 +24,7 @@ namespace Core.ElasticSearch.Domain
 	}
 
 	public abstract class BaseEntityWithParentAndVersion<T> : IEntity, IWithParent<T>, IWithVersion
-		where T : IProjection
+		where T : IProjection, IJoinProjection
 	{
 		[JsonIgnore]
 		public string Id { get; }
@@ -50,7 +50,7 @@ namespace Core.ElasticSearch.Domain
 	}
 
 	public abstract class BaseNewEntityWithParent<T> : IWithParent<T>, IProjection
-		where T : IProjection
+		where T : IProjection, IJoinProjection
 	{
 		[JsonIgnore]
 		public string Id { get; internal set; }
@@ -64,7 +64,7 @@ namespace Core.ElasticSearch.Domain
 	}
 
 	public abstract class BaseNewEntityWithIdAndParent<T> : IWithParent<T>, IProjection
-		where T : IProjection
+		where T : IProjection, IJoinProjection
 	{
 		[JsonIgnore]
 		public string Id { get; }

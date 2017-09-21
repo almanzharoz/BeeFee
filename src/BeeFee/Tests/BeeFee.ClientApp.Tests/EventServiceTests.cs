@@ -190,5 +190,29 @@ namespace BeeFee.ClientApp.Tests
 
             Assert.IsTrue(cities.Any(c => c.Equals("Yekaterinburg", StringComparison.OrdinalIgnoreCase)));
         }
-    }
+
+		[TestMethod]
+		public void RegisterToEvent()
+		{
+			var categoryId = AddCategory("Category 1");
+			var companyId = AddCompany("test");
+
+			var eventId = AddEvent(companyId, categoryId, "Event 1", new EventDateTime(DateTime.Now, DateTime.Now.AddDays(1)), new Address("Yekaterinburg", ""), EEventType.Concert, 0, 10);
+
+			var e = Service.GetEventByUrl("test", "event-1");
+			e.Wait();
+			Assert.IsNotNull(e.Result);
+			Assert.AreEqual(e.Result.Id, eventId);
+			Assert.AreEqual(e.Result.Prices.First().Left, 10);
+
+			Assert.IsTrue(Service.RegisterToEvent(eventId, companyId, "test@email.ru", "my name", "12345", e.Result.Prices.First().Id));
+
+			var fe = GetEventById(eventId, companyId);
+			Assert.AreEqual(fe.TicketsLeft, 9);
+			Assert.AreEqual(fe.Prices.First().Left, 9);
+			Assert.AreEqual(fe.Transactions.Count(), 1);
+			Assert.AreEqual(fe.Transactions.First().State, ETransactionState.New);
+
+		}
+	}
 }

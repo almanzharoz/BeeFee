@@ -36,7 +36,7 @@ namespace Core.ElasticSearch
 
 		protected bool Remove<T, TParent>(T entity, bool refresh)
 			where T : BaseEntityWithParent<TParent>, IProjection, IRemoveProjection
-			where TParent : class, IProjection
+			where TParent : class, IProjection, IJoinProjection
 			=> Try(
 				c => c.Delete(DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity))), x => x
 					.Index(_mapping.GetIndexName<T>())
@@ -49,7 +49,7 @@ namespace Core.ElasticSearch
 
 		protected bool RemoveWithVersion<T, TParent>(T entity, bool refresh)
 			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IRemoveProjection
-			where TParent : class, IProjection
+			where TParent : class, IProjection, IJoinProjection
 			=> Try(
 				c => c.Delete(DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity))), x => x
 					.Index(_mapping.GetIndexName<T>())
@@ -87,7 +87,7 @@ namespace Core.ElasticSearch
 
 		protected bool Remove<T, TParent>(string id, string parent, bool refresh)
 			where T : BaseEntityWithParent<TParent>, IProjection, IRemoveProjection
-			where TParent : class, IProjection
+			where TParent : class, IProjection, IJoinProjection
 			=> Try(
 				c => c.Delete(DocumentPath<T>.Id(id.HasNotNullArg(nameof(id))), x => x
 					.Index(_mapping.GetIndexName<T>())
@@ -100,7 +100,7 @@ namespace Core.ElasticSearch
 
 		protected bool Remove<T, TParent>(string id, string parent, int version, bool refresh)
 			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IRemoveProjection
-			where TParent : class, IProjection
+			where TParent : class, IProjection, IJoinProjection
 			=> Try(
 				c => c.Delete(DocumentPath<T>.Id(id.HasNotNullArg(nameof(id))), x => x
 					.Index(_mapping.GetIndexName<T>())

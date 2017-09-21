@@ -1,12 +1,15 @@
 ﻿using System;
+using Nest;
 using SharpFuncExt;
 
 namespace BeeFee.Model.Embed
 {
     public struct TicketPrice
     {
+		[Keyword]
 		public Guid Id { get; }
 		public string Name { get; }
+		[Keyword(Index = false)]
 		public string Description { get; }
 		public decimal Price { get; }
 		/// <summary>
