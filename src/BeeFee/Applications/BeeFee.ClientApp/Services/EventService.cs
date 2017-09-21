@@ -87,7 +87,7 @@ namespace BeeFee.ClientApp.Services
 				f.ParentId(p => p.Id(companyId.HasNotNullArg(nameof(companyId)))) &&
 				f.Nested(n => n.Path(p=>p.Prices).Query(q => q.Term(t => t.Prices.First().Id, ticketId) && q.Range(r => r.Field(p => p.Prices.First().Left).GreaterThan(0.0)))),
 				u => u
-				.Inc(p=>p.Ti)
+				.Inc(p=>p.TicketsLeft, -1)
 				.IncNested(p => p.Prices, p=>p.First().Left, ticketId, -1)
 				.Add(p => p.Transactions, new RegisterToEventTransaction(ticketId, DateTime.Now, new Contact(name, email, phoneNumber),0, ETransactionType.Registrition))
 				, true) > 0;
