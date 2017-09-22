@@ -18,7 +18,6 @@ namespace BeeFee.TestsApp.Projections
 		public EEventType Type { get; set; }
 		public TicketPrice[] Prices { get; set; }
 		public EventPage Page { get; set; }
-		public int TicketsLeft { get; set; }
 
 		public NewEvent(BaseCompanyProjection company, BaseUserProjection owner, string name, string url=null) : base(company)
 		{

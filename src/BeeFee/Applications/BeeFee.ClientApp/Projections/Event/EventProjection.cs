@@ -17,11 +17,9 @@ namespace BeeFee.ClientApp.Projections.Event
 
 		public TicketPrice[] Prices { get; }
 
-		public int TicketsLeft { get; }
-		
 		public EventPage Page { get; }
 
-		public EventProjection(string id, BaseCompanyProjection company, string url, string name, BaseCategoryProjection category, EEventType type, TicketPrice[] prices, EventPage page, int ticketsLeft) : base(id, company)
+		public EventProjection(string id, BaseCompanyProjection company, string url, string name, BaseCategoryProjection category, EEventType type, TicketPrice[] prices, EventPage page) : base(id, company)
 		{
 			Url = url;
 			Name = name;
@@ -29,7 +27,6 @@ namespace BeeFee.ClientApp.Projections.Event
 			Type = type;
 			Prices = prices;
 			Page = page;
-			TicketsLeft = ticketsLeft;
 		}
 	}
 }

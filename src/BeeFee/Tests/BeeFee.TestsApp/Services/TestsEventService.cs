@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Core.ElasticSearch;
 using BeeFee.Model;
 using BeeFee.Model.Embed;
@@ -26,14 +27,18 @@ namespace BeeFee.TestsApp.Services
 					Type = type,
 					Category = category,
 					Page = new EventPage(name, "label", category.Name, "", dateTime.ToString(), address, "<p>Html text</p>"),
-					Prices = new TicketPrice[1] {new TicketPrice(Guid.Empty, "Ticket", "default", price, count, count)},
-					TicketsLeft = count
+					Prices = new TicketPrice[1] {new TicketPrice(Guid.Empty, "Ticket", "default", price, count, count)}
 				}
 				.Fluent(x => Insert<NewEvent, BaseCompanyProjection>(x, true))
-				.Id;
+				.Fluent(x => Insert(new NewEventTransaction(x), true)).Id;
 		}
 
 		public FullEvent GetEventById(string eventId, string companyId)
 			=> GetWithVersion<FullEvent, BaseCompanyProjection>(eventId, companyId);
+
+		public FullEventTransaction GetEventTransactionById(string eventId, string companyId)
+			=> Filter<FullEventTransaction>(q =>
+				q.Term(p => p.Event, eventId.HasNotNullArg(nameof(eventId))) &&
+				q.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId)))).FirstOrDefault();
 	}
 }

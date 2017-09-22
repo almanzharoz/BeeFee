@@ -141,7 +141,7 @@ namespace Core.ElasticSearch
 					.Index(_mapping.GetIndexName<T>())
 					.Type(_mapping.GetTypeName<T>())
 					.Query(q => q.Bool(b => b.Filter(query)))
-					.Version()
+					//.Version()
 					.If(refresh, y => y.Refresh())
 					.Script(s => s.Inject(new UpdateByQueryBuilder<T>(), update, (s1, u) => s1.Inline(u).Params(u.GetParams)))),
 				r => (int) r.Updated,

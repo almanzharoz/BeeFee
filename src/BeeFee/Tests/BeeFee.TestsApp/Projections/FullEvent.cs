@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BeeFee.Model;
+﻿using BeeFee.Model;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
@@ -22,11 +19,8 @@ namespace BeeFee.TestsApp.Projections
 
 		public TicketPrice[] Prices { get; private set; }
 
-		public int TicketsLeft { get; private set; }
-
 		public EventPage Page { get; private set; }
 
-		public Transaction[] Transactions { get; private set; }
 
 		public FullEvent(string id, BaseCompanyProjection parent, int version) : base(id, parent, version)
 		{

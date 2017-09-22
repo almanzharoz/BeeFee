@@ -83,8 +83,7 @@ namespace BeeFee.ClientApp.Services
 
 		public bool RegisterToEvent(string id, string companyId, string email, string name, string phoneNumber, Guid ticketId)
 			=> Update<RegisterToEventProjection>(f => f
-					.Ids(p => p.Values(id)) &&
-					f.ParentId(p => p.Id(companyId.HasNotNullArg(nameof(companyId)))) &&
+			.Term(p => p.Event, id.HasNotNullArg(nameof(id))) && f.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId))) &&
 					f.Nested(n => n.Path(p=>p.Prices).Query(q => q.Term(t => t.Prices.First().Id, ticketId) && q.Range(r => r.Field(p => p.Prices.First().Left).GreaterThan(0.0)))),
 				u => u
 					.Inc(p=>p.TicketsLeft, -1)
