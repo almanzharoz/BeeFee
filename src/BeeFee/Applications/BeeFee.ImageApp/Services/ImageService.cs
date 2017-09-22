@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Exceptions;
 using ImageSharp;
 using ImageSharp.Formats;
@@ -13,8 +14,6 @@ using SharpFuncExt;
 
 namespace BeeFee.ImageApp.Services
 {
-	// TODO: использовать пути publicOrig/event, privateOrig/event, resized/event
-	// TODO: Добавить RenameEvent (менять название папки по url мероприятия)
 	public partial class ImageService
 	{
 		private readonly string _folder;
@@ -25,7 +24,7 @@ namespace BeeFee.ImageApp.Services
 		private readonly ConcurrentDictionary<string, ImageSettings> _settings;
 		private readonly string _settingsJsonFile;
 		private readonly object _locker = new object();
-		private readonly TimeSpan RemoveImageAvailabilityTime;
+		private readonly TimeSpan _removeImageAvailabilityTime;
 
 		public ImageService(string folder, string publicOriginalFolder, string privateOriginalFolder, string resizedFolder,
 			ImageSize maxOriginalSize, string settingsJsonFile, TimeSpan removeImageAvailabilityTime)
@@ -49,17 +48,17 @@ namespace BeeFee.ImageApp.Services
 			_maxOriginalSize = maxOriginalSize;
 
 			_settingsJsonFile = settingsJsonFile;
-			if (!File.Exists(settingsJsonFile)) File.Create(settingsJsonFile);
+			if (!File.Exists(settingsJsonFile)) File.Create(settingsJsonFile).Dispose();
 			_settings = DeserializeSettings() ?? new ConcurrentDictionary<string, ImageSettings>();
 
-			RemoveImageAvailabilityTime = removeImageAvailabilityTime;
+			_removeImageAvailabilityTime = removeImageAvailabilityTime;
 		}
 
 		public Task<ImageOperationResult> AddImage(Stream stream, string eventName, string fileName, string settingName, string key)
 			=> _settings
 				.GetValueOrDefault(settingName).Fluent(x => Console.WriteLine($"Add file {fileName}, setting: {settingName}"))
 				.IfNotNull(x => AddImage(stream, eventName.HasNotNullArg(nameof(eventName)), fileName.HasNotNullArg(nameof(fileName)), x, key.HasNotNullArg(nameof(key))),
-					Task.FromResult(new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}",
+					Task.FromResult(new ImageOperationResult(EImageOperationResult.Error, fileName, $"Cannot found a setting {settingName}",
 						EErrorType.SettingNotFound)));
 		
 
@@ -68,58 +67,67 @@ namespace BeeFee.ImageApp.Services
 				.ThrowIf(x => !CheckKey(eventName, key), x => new AccessDeniedException())
 				.Try(uniqueName => stream
 						//.If(s => FileExists(uniqueName),
-						//	n => new ImageOperationResult(EAddImageResut.Error, fileName, $"File {fileName} already exists", EErrorType.FileAlreadyExists))
+						//	n => new ImageOperationResult(EImageOperationResult.Error, fileName, $"File {fileName} already exists", EErrorType.FileAlreadyExists))
 						.ThrowIf(
 							s => FileExists(uniqueName, eventName),
 							n => new FileAlreadyExistsException($"File \"{uniqueName}\" already exists"))
 						.Using(s => Image.Load(s).Using(image => Task.WhenAll(new Task[0]
-							.Add(ResizeAndSaveImage(image, _maxOriginalSize,
-								setting.KeepPublicOriginalSize ? _publicOriginalFolder : _privateOriginalFolder, uniqueName))
+							.Add(ResizeAndSaveImage(image, _maxOriginalSize, eventName,
+								setting.KeepPublicOriginalSize, uniqueName))
 							.AddEach(setting.Sizes.Select(x => ResizeAndSaveImage(image, x, eventName, uniqueName))))
 						)),
-					x => new ImageOperationResult(EAddImageResut.Ok, x),
-					(x, e) => new ImageOperationResult(EAddImageResut.Error, x, e.Message, EErrorType.SaveImageError));
+					x => new ImageOperationResult(EImageOperationResult.Ok, x),
+					(x, e) => new ImageOperationResult(EImageOperationResult.Error, x, e.Message, EErrorType.SaveImageError));
 
-		// TODO: Проверять дату создания картинки
 		public ImageOperationResult RemoveImage(string eventName, string fileName, string key)
 		{
 			if(!CheckKey(eventName, key)) throw new AccessDeniedException();
 
 			if (!FileExists(fileName, eventName)) 
-				return new ImageOperationResult(EAddImageResut.Error, fileName, $"File {fileName} doesn't exists", EErrorType.FileDoesNotExists);
+				return new ImageOperationResult(EImageOperationResult.Error, fileName, $"File {fileName} doesn't exists", EErrorType.FileDoesNotExists);
 
 			var privateFile = Path.Combine(GetPathToPrivateOriginalFolder(eventName), fileName);
 			var publicFile = Path.Combine(GetPathToPublicOriginalFolder(eventName), fileName);
-			if (File.Exists(privateFile) && File.GetCreationTimeUtc(privateFile).Add(RemoveImageAvailabilityTime) < DateTime.UtcNow ||
-				File.Exists(publicFile) && File.GetCreationTimeUtc(publicFile).Add(RemoveImageAvailabilityTime) < DateTime.UtcNow)
+			if (File.Exists(privateFile) && File.GetCreationTimeUtc(privateFile).Add(_removeImageAvailabilityTime) < DateTime.UtcNow ||
+				File.Exists(publicFile) && File.GetCreationTimeUtc(publicFile).Add(_removeImageAvailabilityTime) < DateTime.UtcNow)
 				throw new AccessDeniedException("Time for remove file is over");
 
 			foreach (var directory in Directory.GetDirectories(GetPathToResizedFolder(eventName)))
 			{
 				File.Delete(Path.Combine(directory, fileName));
 			}
-			return new ImageOperationResult(EAddImageResut.Ok, fileName);
+			return new ImageOperationResult(EImageOperationResult.Ok, fileName);
 		}
 
 		public ImageOperationResult RenameImage(string eventName, string oldName, string newName, string key, bool canChangeName = true)
 		{
 			if(!CheckKey(eventName, key)) throw new AccessDeniedException();
 
-			if(!File.Exists(Path.Combine(GetPathToPrivateOriginalFolder(eventName), oldName)))
-				return new ImageOperationResult(EAddImageResut.Error, oldName, $"File {oldName} doesn't exists", EErrorType.FileDoesNotExists);
+			if(!FileExists(oldName, eventName))
+				return new ImageOperationResult(EImageOperationResult.Error, oldName, $"File {oldName} doesn't exists", EErrorType.FileDoesNotExists);
 
-			if (!canChangeName && File.Exists(Path.Combine(GetPathToPrivateOriginalFolder(eventName), newName)))
-				return new ImageOperationResult(EAddImageResut.Error, newName, $"File {newName} already exists", EErrorType.FileAlreadyExists);
+			if (!canChangeName && FileExists(oldName, eventName))
+				return new ImageOperationResult(EImageOperationResult.Error, newName, $"File {newName} already exists", EErrorType.FileAlreadyExists);
 
 			var uniqueName = GetUniqueName(eventName, newName);
 
+			var resized = GetPathToResizedFolder(eventName);
+			var directories = Directory.GetDirectories(GetPathToResizedFolder(eventName));
 			foreach (var directory in Directory.GetDirectories(GetPathToResizedFolder(eventName)))
 			{
 				if (!File.Exists(Path.Combine(directory, oldName))) continue;
 				File.Move(Path.Combine(directory, oldName), Path.Combine(directory, uniqueName));
 			}
 
-			return new ImageOperationResult(EAddImageResut.Ok, uniqueName);
+			if (File.Exists(Path.Combine(GetPathToPrivateOriginalFolder(eventName), oldName)))
+				File.Move(Path.Combine(GetPathToPrivateOriginalFolder(eventName), oldName),
+					Path.Combine(GetPathToPrivateOriginalFolder(eventName), uniqueName));
+
+			if (File.Exists(Path.Combine(GetPathToPublicOriginalFolder(eventName), oldName)))
+				File.Move(Path.Combine(GetPathToPublicOriginalFolder(eventName), oldName),
+					Path.Combine(GetPathToPrivateOriginalFolder(eventName), uniqueName));
+
+			return new ImageOperationResult(EImageOperationResult.Ok, uniqueName);
 		}
 
 		public async Task<ImageOperationResult> UpdateImage(Stream stream, string eventName, string fileName, string settingName, string key)
@@ -127,7 +135,7 @@ namespace BeeFee.ImageApp.Services
 			if(!CheckKey(eventName, key)) throw new AccessDeniedException();
 
 			if (!File.Exists(Path.Combine(GetPathToPrivateOriginalFolder(eventName), fileName)))
-				return new ImageOperationResult(EAddImageResut.Error, fileName, $"File {fileName} doesn't exists", EErrorType.FileDoesNotExists);
+				return new ImageOperationResult(EImageOperationResult.Error, fileName, $"File {fileName} doesn't exists", EErrorType.FileDoesNotExists);
 
 			ImageSettings setting;
 			try
@@ -136,7 +144,7 @@ namespace BeeFee.ImageApp.Services
 			}
 			catch (System.Collections.Generic.KeyNotFoundException)
 			{
-				return new ImageOperationResult(EAddImageResut.Error, fileName, $"Cannot found a setting {settingName}", EErrorType.SettingNotFound);
+				return new ImageOperationResult(EImageOperationResult.Error, fileName, $"Cannot found a setting {settingName}", EErrorType.SettingNotFound);
 			}
 
 			var resolutions = new System.Collections.Generic.List<ImageSize>();
@@ -177,6 +185,12 @@ namespace BeeFee.ImageApp.Services
 			Directory.Move(GetPathToPrivateOriginalFolder(oldName), GetPathToPrivateOriginalFolder(newName));
 			Directory.Move(GetPathToPublicOriginalFolder(oldName), GetPathToPublicOriginalFolder(newName));
 			Directory.Move(GetPathToResizedFolder(oldName), GetPathToResizedFolder(newName));
+		}
+
+		public void SetSetting(string name, ImageSize[] sizes, bool keepPublicOriginalSize)
+		{
+			_settings.AddOrUpdate(name, x => new ImageSettings(sizes, keepPublicOriginalSize), (x, y) => y.Set(sizes, keepPublicOriginalSize));
+			SerializeSettings();
 		}
 	}
 }

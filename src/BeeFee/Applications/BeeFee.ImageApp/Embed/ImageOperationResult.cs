@@ -1,6 +1,6 @@
-﻿namespace BeeFee.ImageApp
+﻿namespace BeeFee.ImageApp.Embed
 {
-	public enum EAddImageResut
+	public enum EImageOperationResult
 	{
 		Ok,
 		Error
@@ -18,12 +18,12 @@
 
 	public struct ImageOperationResult
 	{
-		public EAddImageResut Result { get; }
+		public EImageOperationResult Result { get; }
 		public EErrorType ErrorType { get; }
 		public string Error { get; }
 		public string Path { get; }
 
-		public ImageOperationResult(EAddImageResut result, string path, string error = null, EErrorType errorType = EErrorType.None)
+		public ImageOperationResult(EImageOperationResult result, string path, string error = null, EErrorType errorType = EErrorType.None)
 		{
 			Result = result;
 			Path = path;

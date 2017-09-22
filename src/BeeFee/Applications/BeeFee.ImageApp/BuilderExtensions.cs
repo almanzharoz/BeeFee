@@ -12,8 +12,9 @@ namespace BeeFee.ImageApp
 			{
 				var setting = x.GetService<ImagesAppStartSettings>();
 				return new ImageApp.Services.ImageService(setting.ImagesFolder, setting.PublicOriginalFolder,
-					setting.PrivateOriginalFolder,
-					new ImageSize(setting.MaxOriginalWidth, setting.MaxOriginalHeight), settingsJsonFile);
+					setting.PrivateOriginalFolder, setting.ResizedFolder,
+					new ImageSize(setting.MaxOriginalWidth, setting.MaxOriginalHeight), settingsJsonFile,
+					setting.RemoveImageAvailabilityTime);
 			});
 	}
 }
