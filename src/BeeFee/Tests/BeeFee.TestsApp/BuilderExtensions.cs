@@ -24,9 +24,12 @@ namespace BeeFee.TestsApp
 			return services
 				.AddProjection<NewUser, User>()
 				.AddProjection<NewEvent, Event>()
+				.AddProjection<NewEventTransaction, EventTransaction>()
 				.AddProjection<NewCompany, Company>()
 				.AddProjection<NewCategory, Category>()
-				.AddProjection<FullEvent, Event>();
+				.AddProjection<FullEvent, Event>()
+				.AddProjection<EventJoinProjection, Event>()
+				.AddProjection<FullEventTransaction, EventTransaction>();
 		}
 	}
 }

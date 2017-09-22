@@ -63,5 +63,7 @@ namespace BeeFee.TestsApp
 		protected FullEvent GetEventById(string eventId, string companyId)
 			=> _eventService.GetEventById(eventId, companyId);
 
+		protected FullEventTransaction GetEventTransactionById(string eventId, string companyId)
+			=> _eventService.GetEventTransactionById(eventId, companyId);
 	}
 }

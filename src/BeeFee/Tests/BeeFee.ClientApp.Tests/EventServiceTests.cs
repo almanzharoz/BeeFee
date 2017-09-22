@@ -207,7 +207,7 @@ namespace BeeFee.ClientApp.Tests
 
 			Assert.IsTrue(Service.RegisterToEvent(eventId, companyId, "test@email.ru", "my name", "12345", e.Result.Prices.First().Id));
 
-			var fe = GetEventById(eventId, companyId);
+			var fe = GetEventTransactionById(eventId, companyId);
 			Assert.AreEqual(fe.TicketsLeft, 0);
 			Assert.AreEqual(fe.Prices.First().Left, 0);
 			Assert.AreEqual(fe.Transactions.Count(), 1);
@@ -215,7 +215,7 @@ namespace BeeFee.ClientApp.Tests
 
 			Assert.IsFalse(Service.RegisterToEvent(eventId, companyId, "test@email.ru", "my name", "12345", e.Result.Prices.First().Id));
 
-			var fe2 = GetEventById(eventId, companyId);
+			var fe2 = GetEventTransactionById(eventId, companyId);
 			Assert.IsFalse(Object.ReferenceEquals(fe, fe2));
 			Assert.AreEqual(fe2.TicketsLeft, 0);
 			Assert.AreEqual(fe2.Prices.First().Left, 0);

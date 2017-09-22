@@ -30,20 +30,8 @@ namespace BeeFee.Model.Models
 		/// </summary>
 		public EventPage Page { get; set; }
 
-		/// <summary>
-		/// Настройка цен и наличие билетов
-		/// </summary>
 		[Nested]
 		public TicketPrice[] Prices { get; set; }
-		/// <summary>
-		/// Общее количество оставшихся билетов
-		/// </summary>
-		public int TicketsLeft { get; set; }
 
-		/// <summary>
-		/// Транзакции покупки билетов
-		/// </summary>
-		[Nested]
-		public Transaction[] Transactions { get; set; }
 	}
 }

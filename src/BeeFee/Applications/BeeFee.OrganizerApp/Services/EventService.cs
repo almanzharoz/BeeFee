@@ -34,15 +34,27 @@ namespace BeeFee.OrganizerApp.Services
 		// TODO: добавить проверку 
 		public bool AddEvent(string companyId, string categoryId, string name, string label, string url, string cover,
 			EEventType type, EventDateTime dateTime, Address address, TicketPrice[] prices, string html)
-			=> !ExistsByUrl<EventProjection>(url.IfNull(name, CommonHelper.UriTransliterate)) && Insert<NewEvent, CompanyJoinProjection>(
-					new NewEvent(companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)), Get<BaseUserProjection>(User.Id).HasNotNullEntity("user"),
-						Get<BaseCategoryProjection>(categoryId), name, label, url, cover, type,
-						dateTime, address, prices, html), true);
+		{
+			var newEvent = new NewEvent(
+				companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)),
+				Get<BaseUserProjection>(User.Id).HasNotNullEntity("user"),
+				Get<BaseCategoryProjection>(categoryId), name, label, url, cover, type,
+				dateTime, address, prices, html);
+			return !ExistsByUrl<EventProjection>(url.IfNull(name, CommonHelper.UriTransliterate)) &&
+				Insert<NewEvent, CompanyJoinProjection>(
+					newEvent, true) && Insert(new NewEventTransaction(newEvent), false);
+		}
+
+		private EventTransactionProjection GetEventTransactionById(string eventId, string companyId)
+			=> Filter<EventTransactionProjection>(q =>
+				q.Term(p => p.Event, eventId.HasNotNullArg(nameof(eventId))) &&
+				q.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId)))).FirstOrDefault();
 
 		///<exception cref="RemoveEntityException"></exception>
 		public bool RemoveEvent(string id, string company, int version)
 			// TODO: Добавить проверку пользователя
-			=> Remove<EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version, true);
+			=> Remove<EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version, true)
+			&& Remove(GetEventTransactionById(id, company), false);
 
 		///<exception cref="UpdateEntityException"></exception>
 		public bool UpdateEvent(string id, string company, int version, string name, string label, string url, string cover,
