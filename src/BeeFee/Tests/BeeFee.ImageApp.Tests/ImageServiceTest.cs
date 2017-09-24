@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace BeeFee.ImageApp.Tests
 {
 	[TestClass]
-	public class ImageServiceNewTest
+	public class ImageServiceTest
 	{
 		private ImageService _service;
 		private const string TestImageName = "IMG_3946.JPG";
