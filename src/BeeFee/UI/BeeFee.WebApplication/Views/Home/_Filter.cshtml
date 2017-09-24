@@ -16,7 +16,7 @@
                                     <label class="vertical-field--l"><span>Поиск по ключевым словам</span></label>
                                 </div>
                                 <div class="col-xs-4 col-md-6">
-                                    @Html.TextBoxFor(x => x.Text, new { @class = "vertical-field--i", id = "txtSearchText1", placeholder = "текст для поиска..." })
+                                    @Html.TextBoxFor(x => x.Text, new { @class = "vertical-field--i", placeholder = "текст для поиска..." })
                                 </div>
                                 <div class="col-xs-4 col-xs-offset-l-0 col-md-9 col-md-offset-l-3">
                                     <div class="vertical-field--t"></div>
@@ -32,7 +32,7 @@
                                 </div>
                                 <div class="col-xs-4 col-md-6">
                                     <div class="select">
-                                        @Html.HiddenFor(x => x.City, new { @class = "select_hidden", id = "selectCity1" })
+                                        @Html.HiddenFor(x => x.City, new { @class = "select_hidden" })
                                         @*<input class="select_hidden" id="selectCity1" type="hidden" value="@(Model.Cities.FirstOrDefault(x => x.Selected)?.Text)"/>*@
                                         <div class="select_in">
                                             <div class="select_title">
@@ -111,7 +111,7 @@
                                                     }
                                                      <div class="col-xs-2 col-md-3">
                                                          <label class="checkbox">
-                                                             <input value="@((int) type)" name="Types" class="checkbox--input" type="checkbox" @(isChecked ? "checked=\"checked\"" : "") id="chk@(type)"/>
+                                                             <input value="@((int) type)" name="Types" class="checkbox--input type-checkbox" type="checkbox" @(isChecked ? "checked=\"checked\"" : "") id="chk@(type)"/>
                                                              <div class="checkbox--label">@title</div>
                                                          </label>
                                                      </div>
@@ -151,7 +151,7 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-4 col-md-6 col-md-offset-l-3">
-                            <button class="btn is-block" type="submit" id="btnLoad1">Найти мероприятия</button>
+                            <button class="btn is-block" type="submit">Найти мероприятия</button>
                         </div>
                     </div>
                 </div>

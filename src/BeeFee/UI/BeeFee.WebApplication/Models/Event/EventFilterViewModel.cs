@@ -14,7 +14,7 @@ namespace BeeFee.WebApplication.Models.Event
 {
     public class EventFilterViewModel
     {
-        public EventFilterViewModel(LoadEventsRequest request, IReadOnlyCollection<string> cities, IReadOnlyCollection<BaseCategoryProjection> categories, Pager<EventGridItem> events)
+        public EventFilterViewModel(LoadEventsRequest request, IReadOnlyCollection<string> cities, IReadOnlyCollection<BaseCategoryProjection> categories, (bool allLoaded, string html) loadEventsResult)
         {
             Cities = cities.Select(x => new SelectListItem { Text = x, Selected = request.City.NotNullOrDefault(x.Equals) }).ToArray();
             Categories = categories.Select(c => new SelectListItem { Value = c.Id, Text = c.Name, Selected = request.Categories?.Contains(c.Id) ?? false }).ToArray();
@@ -24,7 +24,9 @@ namespace BeeFee.WebApplication.Models.Event
             City = request.City;
             MaxPrice = request.MaxPrice;
             Types = request.Types;
-            Events = events;
+            EventHtml = loadEventsResult.html;
+            AllLoaded = loadEventsResult.allLoaded;
+            //Events = events;
         }
 
         public SelectListItem[] Cities { get; }
@@ -40,7 +42,10 @@ namespace BeeFee.WebApplication.Models.Event
         public decimal? MaxPrice { get; }
         public EEventType[] Types { get; }
 
-        public Pager<EventGridItem> Events { get; }
+        public string EventHtml { get; }
+        public bool AllLoaded { get; }
+
+        //public Pager<EventGridItem> Events { get; }
 
     }
 }

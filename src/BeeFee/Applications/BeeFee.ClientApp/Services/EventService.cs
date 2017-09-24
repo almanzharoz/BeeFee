@@ -38,7 +38,7 @@ namespace BeeFee.ClientApp.Services
 		//            .Must(Query<Event>.Match(m => m.Field(x => x.Name).Query(query)) &&
 		//                  Query<Event>.Match(m => m.Field(x => x.Address.City).Query(city)))));
 
-		public Task<Pager<EventGridItem>> SearchEvents(string query = null, string city = null, string[] categories = null, EEventType[] types = null, DateTime? startDateTime = null, DateTime? endDateTime = null, decimal? maxPrice = null, int? pageSize = 9, int pageIndex = 0)
+		public Task<Pager<EventGridItem>> SearchEvents(string query = null, string city = null, string[] categories = null, EEventType[] types = null, DateTime? startDateTime = null, DateTime? endDateTime = null, decimal? maxPrice = null, int pageSize = 9, int pageIndex = 0)
 		{
 			List<QueryContainer> qc = new List<QueryContainer>();
 			if (!string.IsNullOrEmpty(query))
@@ -77,7 +77,7 @@ namespace BeeFee.ClientApp.Services
 				.Bool(b => b
 					.Must(qc.ToArray())
 					//.IfAny(notqf, x => x.MustNot(notqf.ToArray()))
-					.Filter(qf.ToArray())), pageIndex, pageSize.Value, null, false);
+					.Filter(qf.ToArray())), pageIndex, pageSize, null, false);
 		}
 
 

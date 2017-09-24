@@ -6,6 +6,7 @@ using BeeFee.ClientApp.Projections.Event;
 using BeeFee.ClientApp.Services;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Services;
+using BeeFee.WebApplication.Infrastructure.Services;
 using BeeFee.WebApplication.Models.Event;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,8 +14,10 @@ namespace BeeFee.WebApplication.Controllers
 {
     public class EventController : BaseController<EventService>
     {
-        public EventController(EventService service, CategoryService categoryService) : base(service, categoryService)
+        private readonly EventUIService _eventUIService;
+        public EventController(EventService service, CategoryService categoryService, EventUIService eventUiService) : base(service, categoryService)
         {
+            _eventUIService = eventUiService;
         }
 
         //public IActionResult Index()
@@ -74,15 +77,12 @@ namespace BeeFee.WebApplication.Controllers
             return View("Event", model);
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> LoadEvents(LoadEventsRequest request)
-        //{
-        //    var events =await  Service.SearchEvents(request.Text, request.City, request.Categories, request.Types,
-        //        request.StartDate,
-        //        request.EndDate, request.MaxPrice, request.PageSize, request.PageIndex);
-
-        //       return Json(new {allLoaded = events.Count<events.Limit, html = ViewComponent("Eve", new { maxPriority = 3, isDone = false }). });
-        //}
+        [HttpGet]
+        public async Task<IActionResult> LoadEvents(LoadEventsRequest request)
+        {
+            var result = await _eventUIService.GetEventsListRenderAsync(request);
+            return Json(new { allLoaded = result.AllLoaded, html = result.Html });
+        }
 
     }
 }

@@ -23,9 +23,7 @@
     <div class="container">
         <div class="grid">
             <div class="row">
-                @{
-                    Html.RenderPartial("_EventGrid", Model.Events);
-                }
+                @Html.Raw(Model.EventHtml)
             </div>
         </div>
         @*<div class="loader"></div>*@
@@ -33,9 +31,9 @@
 </div>
 @section Scripts{
     <script type="text/javascript">
-        //$(function () {
-        //    eventsPageInit([{ enddateselector: "#txtSearchText2", cityselector: "#selectCity2", chkconcertselector: "#chkConcert2", chkexhibitionselector: "#chkExhibition2", chkexcursionselector: "#chkExcursion2", maxpriceselector: "#maxPrice2", btnloadselector: "#btnLoad2" },
-        //    { enddateselector: "#txtSearchText1", cityselector: "#selectCity1", chkconcertselector: "#chkConcert1", chkexhibitionselector: "#chkExhibition1", chkexcursionselector: "#chkExcursion1", maxpriceselector: "#maxPrice1", btnloadselector: "#btnLoad1" }], ".container .grid .row");
-        //});
+        $(function () {
+            initIndexPage([/*{ enddateselector: "#txtSearchText2", cityselector: "#selectCity2", chkconcertselector: "#chkConcert2", chkexhibitionselector: "#chkExhibition2", chkexcursionselector: "#chkExcursion2", maxpriceselector: "#maxPrice2", btnloadselector: "#btnLoad2" },*/
+                { searchtextselector: "#@Html.IdFor(m=>m.Text)",enddateselector: "#@Html.IdFor(m=>m.EndDate)", cityselector: "#@Html.IdFor(m=>m.City)", typesselector: ".type-checkbox", maxpriceselector: "#@Html.IdFor(m=>m.MaxPrice)" }], ".container .grid .row", @(Model.AllLoaded?"true":"false"));
+        });
     </script>
 }

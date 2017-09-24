@@ -9,6 +9,7 @@ using BeeFee.Model.Projections;
 using BeeFee.OrganizerApp;
 using BeeFee.WebApplication.Infrastructure;
 using BeeFee.WebApplication.Infrastructure.Binders;
+using BeeFee.WebApplication.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -65,7 +66,11 @@ namespace BeeFee.WebApplication
 				return null;
 			});
 
-			services
+		    services.AddScoped<ViewRenderService>();
+
+		    services.AddScoped<EventUIService>();
+
+            services
 				.AddBeefeeModel(new Uri("http://localhost:9200/"), s => s
 					.AddBeefeeLoginApp()
 					.AddBeefeeClientApp()

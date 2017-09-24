@@ -1,21 +1,20 @@
-﻿function eventsPageInit(filters, listcontainerselector) {
+﻿function initIndexPage(filters, listcontainerselector, allLoaded) {
     if (typeof filters == "undefined" || filters == null || filters.length === 0)
         return;
-    var page = 1;
-    var size = 10;
-    var allLoaded = false;
+    var page = 2;
+    var size = 9;
+    allLoaded = typeof allLoaded != "boolean" ? false : allLoaded;
     var loading = false;
     var loadEvents = function (filter) {
         if (allLoaded || loading)
             return;
         loading = true;
-
-        Events.loadEvents($(filter.searchtextselector).val(),
+        var types = [];
+        $.each($(filter.typesselector + ":checked"), function (index, inp) { types.push($(inp).val()) });
+        Events.loadEvents($(filter.searchtextselector).val(), "",
             $(filter.enddateselector).val(),
             $(filter.cityselector).val(),
-            $(filter.chkconcertselector).prop("checked"),
-            $(filter.chkexhibitionselector).prop("checked"),
-            $(filter.chkexcursionselector).prop("checked"),
+            types,
             [],
             page,
             size,
@@ -28,10 +27,13 @@
             }).fail(function () { }).always(function () { loading = false; });
     };
     $(window).scroll(function () {
-        if ($(window).scrollTop() + $(window).height() == $(document).height()) {
-            loadEvents();
+        if (($(window).scrollTop() + $(window).height()) == $(document).height()) {
+            loadEvents(filters[0]);
         }
     });
+}
+function initEventPage(phoneselector) {
+    $(phoneselector).mask("+7 (999) 999-9999", { placeholder: "+7 (___) ___-____" });
 }
 //function eventsPageInit(filters, listcontainerselector) {
 //    if (typeof filters == "undefined" || filters == null || filters.length === 0)
