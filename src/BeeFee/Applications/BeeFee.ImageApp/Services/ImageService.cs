@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -55,8 +56,7 @@ namespace BeeFee.ImageApp.Services
 		}
 
 		public Task<ImageOperationResult> AddImage(Stream stream, string eventName, string fileName, string settingName, string key)
-			=> _settings
-				.GetValueOrDefault(settingName).Fluent(x => Console.WriteLine($"Add file {fileName}, setting: {settingName}"))
+			=> EnumerableFunc.GetValueOrDefault(_settings, settingName).Fluent(x => Console.WriteLine($"Add file {fileName}, setting: {settingName}"))
 				.IfNotNull(x => AddImage(stream, eventName.HasNotNullArg(nameof(eventName)), fileName.HasNotNullArg(nameof(fileName)), x, key.HasNotNullArg(nameof(key))),
 					Task.FromResult(new ImageOperationResult(EImageOperationResult.Error, fileName, $"Cannot found a setting {settingName}",
 						EErrorType.SettingNotFound)));
@@ -90,7 +90,12 @@ namespace BeeFee.ImageApp.Services
 			var publicFile = Path.Combine(GetPathToPublicOriginalFolder(eventName), fileName);
 			if (File.Exists(privateFile) && File.GetCreationTimeUtc(privateFile).Add(_removeImageAvailabilityTime) < DateTime.UtcNow ||
 				File.Exists(publicFile) && File.GetCreationTimeUtc(publicFile).Add(_removeImageAvailabilityTime) < DateTime.UtcNow)
-				throw new AccessDeniedException("Time for remove file is over");
+				throw new AccessDeniedException("Time for remove the file is over");
+
+			if(File.Exists(privateFile))
+				File.Delete(privateFile);
+			if(File.Exists(publicFile))
+				File.Delete(publicFile);
 
 			foreach (var directory in Directory.GetDirectories(GetPathToResizedFolder(eventName)))
 			{
@@ -147,7 +152,7 @@ namespace BeeFee.ImageApp.Services
 				return new ImageOperationResult(EImageOperationResult.Error, fileName, $"Cannot found a setting {settingName}", EErrorType.SettingNotFound);
 			}
 
-			var resolutions = new System.Collections.Generic.List<ImageSize>();
+			var resolutions = new List<ImageSize>();
 			foreach (var directory in Directory.GetDirectories(GetPathToResizedFolder(eventName)))
 			{
 				if(File.Exists(Path.Combine(directory, fileName)))

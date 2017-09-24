@@ -13,6 +13,7 @@ namespace BeeFee.ImageApp.Tests
 	{
 		private ImageService _service;
 		private const string TestImageName = "IMG_3946.JPG";
+		private const string SecondImageName = "pochemu-samolety-letaut4.jpg";
 		private string _key;
 
 		[TestInitialize]
@@ -112,7 +113,30 @@ namespace BeeFee.ImageApp.Tests
 			var result = _service.RenameImage("testEvent", "test.jpg", "test1.jpg", _key, false);
 			Assert.AreEqual(EErrorType.FileAlreadyExists, result.ErrorType);
 			Assert.AreEqual(EImageOperationResult.Error, result.Result);
+		}
 
+		[TestMethod]
+		public void UpdateFile()
+		{
+			var img = _service.AddImage(GetTestImage(TestImageName), "testEvent", "test.jpg", "test", _key).Result;
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+			Assert.AreEqual("test.jpg", img.Path);
+			var created = File.GetLastWriteTimeUtc("images/private/testEvent/test.jpg");
+
+			var updated = _service.UpdateImage(GetTestImage(SecondImageName), "testEvent", "test.jpg", "test", _key).Result;
+			Assert.AreNotEqual(created, File.GetLastWriteTimeUtc("images/private/testEvent/test.jpg"));
+			Assert.AreEqual(EImageOperationResult.Ok, updated.Result);
+		}
+
+		[TestMethod]
+		public void RemoveImage()
+		{
+			var img = _service.AddImage(GetTestImage(TestImageName), "testEvent", "test.jpg", "test", _key).Result;
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+			Assert.AreEqual("test.jpg", img.Path);
+
+			_service.RemoveImage("testEvent", "test.jpg", _key);
+			Assert.IsFalse(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
 		}
 	}
 }

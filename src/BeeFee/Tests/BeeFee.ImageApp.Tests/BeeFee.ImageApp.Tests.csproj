@@ -26,4 +26,10 @@
     <ProjectReference Include="..\..\Applications\BeeFee.ImageApp\BeeFee.ImageApp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="pochemu-samolety-letaut4.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
