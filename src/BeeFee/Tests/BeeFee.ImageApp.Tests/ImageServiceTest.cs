@@ -1,230 +1,141 @@
-﻿//using System.IO;
-//using BeeFee.ImageApp.Services;
-//using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.IO;
+using BeeFee.ImageApp.Embed;
+using BeeFee.ImageApp.Exceptions;
+using BeeFee.ImageApp.Services;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-//namespace BeeFee.ImageApp.Tests
-//{
-//    [TestClass]
-//    public class ImageServiceTest
-//    {
-//		private ImageService _service;
+namespace BeeFee.ImageApp.Tests
+{
+	[TestClass]
+	public class ImageServiceNewTest
+	{
+		private ImageService _service;
+		private const string TestImageName = "IMG_3946.JPG";
+		private const string SecondImageName = "pochemu-samolety-letaut4.jpg";
+		private string _key;
 
-//	    private const string TestImageName = "IMG_3946.jpg";
+		[TestInitialize]
+		public void Setup()
+		{
+			if (!Directory.Exists("images"))
+				Directory.CreateDirectory("images");
+			foreach (var directory in new DirectoryInfo("images").GetDirectories())
+			{
+				directory.Delete(true);
+			}
+			_service = new ImageService("images", "original", "private", "resized", new ImageSize(2000, 2000), "settings.json", TimeSpan.FromSeconds(20));
+			_service.SetSetting("test", new[] { new ImageSize(200, 200), new ImageSize(400, 200) }, false);
+			_key = _service.RegisterEvent("testEvent");
+		}
 
-//	    [TestInitialize]
-//	    public void Setup()
-//	    {
-//		    if (!Directory.Exists("images"))
-//			    Directory.CreateDirectory("images");
-//		    foreach (var directory in new DirectoryInfo("images").GetDirectories())
-//			    directory.Delete(true);
-//		    _service = new ImageService(@"images", @"public", @"originals", new ImageSize(2000, 2000), @"settings.json");
+		private static Stream GetTestImage(string filename) => File.OpenRead(filename);
 
-//		    _service.SetSetting("test", new[] { new ImageSize(200, 200), new ImageSize(400, 200) }, false);
-//		}
+		[TestMethod]
+		public void CreateDirectories()
+		{
+			Assert.IsTrue(Directory.Exists("images"));
+			Assert.IsTrue(Directory.Exists(Path.Combine("images", "original")));
+			Assert.IsTrue(Directory.Exists(Path.Combine("images", "original", "testEvent")));
+			Assert.IsTrue(Directory.Exists(Path.Combine("images", "private")));
+			Assert.IsTrue(Directory.Exists(Path.Combine("images", "private", "testEvent")));
+			Assert.IsTrue(Directory.Exists(Path.Combine("images", "resized")));
+			Assert.IsTrue(Directory.Exists(Path.Combine("images", "resized", "testEvent")));
+		}
 
-//		private Stream GetTestImage(string filename) => File.OpenRead(filename);
+		[TestMethod]
+		public void CreateExistingDirectories()
+		{
+			Assert.ThrowsException<DirectoryAlreadyExistsException>(() => _service.RegisterEvent("testEvent"));
+		}
 
-//	    [TestMethod]
-//	    public void AddImageTest()
-//	    {
-//		    ImageOperationResult operationResult;
-//			using (var stream = GetTestImage(TestImageName))
-//			{
-//				operationResult = _service.AddImage(stream, "priroda.jpg", "test").Result;
-//			}
+		[TestMethod]
+		public void SimpleAddImageAndTestPath()
+		{
+			var img = _service.AddImage(GetTestImage(TestImageName), "testEvent", "test.jpg", "test", _key).Result;
 
-//			Assert.AreEqual(EImageOperationResult.Ok, operationResult.Result);
-//			Assert.AreEqual(null, operationResult.Error);
-//			Assert.AreEqual("priroda.jpg", operationResult.Path);
-//	    }
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+			Assert.AreEqual("test.jpg", img.Path);
+			Assert.AreEqual(EImageOperationResult.Ok, img.Result);
+		}
 
+		[TestMethod]
+		public void AddExistingImage()
+		{
+			var image1 = _service.AddImage(GetTestImage(TestImageName), "testEvent", "test.jpg", "test", _key).Result;
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+			Assert.AreEqual("test.jpg", image1.Path);
 
-//		//Тест не актуален, изменяем имя файла до победного
-//		//
-//		//[TestMethod]
-//		//public void AddExistingImageTest()
-//		//{
-//		//	ImageOperationResult result;
-//		//	using (var stream = GetTestImage(TestImageName))
-//		//	{
-//		//		result = _service.AddImage(stream, "priroda.jpg", null).Result;
-//		//	}
+			var image2 = _service.AddImage(GetTestImage(TestImageName), "testEvent", "test.jpg", "test", _key).Result;
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", image2.Path)));
+		}
 
-//		//	Assert.AreEqual(EImageOperationResult.Ok, result.Result);
-//		//	Assert.AreEqual(null, result.Error);
-//		//	Assert.AreEqual("priroda.jpg", result.Path);
+		[TestMethod]
+		public void RenameImage()
+		{
+			var img = _service.AddImage(GetTestImage(TestImageName), "testEvent", "test.jpg", "test", _key).Result;
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+			Assert.AreEqual("test.jpg", img.Path);
 
-//		//	using (var stream = GetTestImage(TestImageName))
-//		//	{
-//		//		result = _service.AddImage(stream, "priroda.jpg", null).Result;
-//		//	}
+			var renamed = _service.RenameImage("testEvent", "test.jpg", "newname.jpg", _key);
+			Assert.IsFalse(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "newname.jpg")));
+			Assert.AreEqual("newname.jpg", renamed.Path);
+		}
 
-//		//	Assert.AreEqual(EImageOperationResult.Exists, result.Result);
-//		//	Assert.AreEqual(null, result.Error);
-//		//	Assert.AreEqual("priroda.jpg", result.Path);
-//		//}
+		[TestMethod]
+		public void RenameToExistingImageWithChangingName()
+		{
+			var img = _service.AddImage(GetTestImage(TestImageName), "testEvent", "test.jpg", "test", _key).Result;
+			var img1 = _service.AddImage(GetTestImage(TestImageName), "testEvent", "test1.jpg", "test", _key).Result;
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "test1.jpg")));
+			Assert.AreEqual("test.jpg", img.Path);
+			Assert.AreEqual("test1.jpg", img1.Path);
 
-//	    [TestMethod]
-//	    public void AddImageWithSize()
-//	    {
-//			ImageOperationResult operationResult;
-//		    using (var stream = GetTestImage(TestImageName))
-//		    {
-//			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
-//				    .Result;
-//		    }
+			var renamed = _service.RenameImage("testEvent", "test.jpg", "test1.jpg", _key);
+			Assert.IsFalse(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "test10.jpg")));
+			Assert.AreEqual("test10.jpg", renamed.Path);
+		}
 
-//		    Assert.AreEqual(EImageOperationResult.Ok, operationResult.Result);
-//		    Assert.AreEqual(null, operationResult.Error);
-//		    Assert.AreEqual("priroda.jpg", operationResult.Path);
+		[TestMethod]
+		public void RenameToExistingImageWithoutChangingName()
+		{
+			var img = _service.AddImage(GetTestImage(TestImageName), "testEvent", "test.jpg", "test", _key).Result;
+			var img1 = _service.AddImage(GetTestImage(TestImageName), "testEvent", "test1.jpg", "test", _key).Result;
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "test1.jpg")));
+			Assert.AreEqual("test.jpg", img.Path);
+			Assert.AreEqual("test1.jpg", img1.Path);
 
-//			Assert.IsTrue(File.Exists("images/200x200/priroda.jpg"));
-//			Assert.IsTrue(File.Exists("images/400x200/priroda.jpg"));
-//		}
+			var result = _service.RenameImage("testEvent", "test.jpg", "test1.jpg", _key, false);
+			Assert.AreEqual(EErrorType.FileAlreadyExists, result.ErrorType);
+			Assert.AreEqual(EImageOperationResult.Error, result.Result);
+		}
 
-//	    [TestMethod]
-//		public void GetOriginalImage()
-//	    {
-//			ImageOperationResult operationResult;
-//		    using (var stream = GetTestImage(TestImageName))
-//		    {
-//			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
-//				    .Result;
-//		    }
+		[TestMethod]
+		public void UpdateFile()
+		{
+			var img = _service.AddImage(GetTestImage(TestImageName), "testEvent", "test.jpg", "test", _key).Result;
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+			Assert.AreEqual("test.jpg", img.Path);
+			var created = File.GetLastWriteTimeUtc("images/private/testEvent/test.jpg");
 
-//		    Assert.AreEqual(EImageOperationResult.Ok, operationResult.Result);
-//		    Assert.AreEqual(null, operationResult.Error);
-//		    Assert.AreEqual("priroda.jpg", operationResult.Path);
+			var updated = _service.UpdateImage(GetTestImage(SecondImageName), "testEvent", "test.jpg", "test", _key).Result;
+			Assert.AreNotEqual(created, File.GetLastWriteTimeUtc("images/private/testEvent/test.jpg"));
+			Assert.AreEqual(EImageOperationResult.Ok, updated.Result);
+		}
 
-//			//Assert.AreEqual("/priroda.jpg" ,_service.GetImageUrl("priroda.jpg"));
-//		}
+		[TestMethod]
+		public void RemoveImage()
+		{
+			var img = _service.AddImage(GetTestImage(TestImageName), "testEvent", "test.jpg", "test", _key).Result;
+			Assert.IsTrue(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+			Assert.AreEqual("test.jpg", img.Path);
 
-//	    [TestMethod]
-//	    public void GetResizedImage()
-//	    {
-//		    ImageOperationResult operationResult;
-//		    using (var stream = GetTestImage(TestImageName))
-//		    {
-//			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
-//				    .Result;
-//		    }
-
-//		    Assert.AreEqual(EImageOperationResult.Ok, operationResult.Result);
-//		    Assert.AreEqual(null, operationResult.Error);
-//		    Assert.AreEqual("priroda.jpg", operationResult.Path);
-
-//		    //Assert.AreEqual("/200_200/priroda.jpg", _service.GetImageUrl(new ImageSize(200, 200), "priroda.jpg"));
-//		    //Assert.AreEqual("/400_200/priroda.jpg", _service.GetImageUrl(new ImageSize(400, 200), "priroda.jpg"));
-//	    }
-
-//	    [TestMethod]
-//	    public void GetNonexistentImage()
-//	    {
-//			ImageOperationResult operationResult;
-//		    using (var stream = GetTestImage(TestImageName))
-//		    {
-//			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
-//				    .Result;
-//		    }
-
-//		    Assert.AreEqual(EImageOperationResult.Ok, operationResult.Result);
-//		    Assert.AreEqual(null, operationResult.Error);
-//		    Assert.AreEqual("priroda.jpg", operationResult.Path);
-
-//		    //Assert.AreEqual("", _service.GetImageUrl(new ImageSize(300, 200), "priroda.jpg"));
-
-//		}
-
-//	    [TestMethod]
-//	    public void AddExistingImage()
-//	    {
-//		    ImageOperationResult operationResult;
-//		    using (var stream = GetTestImage(TestImageName))
-//		    {
-//			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
-//				    .Result;
-//		    }
-
-//		    Assert.AreEqual(EImageOperationResult.Ok, operationResult.Result);
-//		    Assert.AreEqual(null, operationResult.Error);
-//		    Assert.AreEqual("priroda.jpg", operationResult.Path);
-//		}
-
-//	    [TestMethod]
-//	    public void RenameImageTest()
-//	    {
-//		    ImageOperationResult operationResult;
-//			using(var stream = GetTestImage(TestImageName))
-//			{
-//				operationResult = _service.AddImage(stream, "priroda.jpg", "test")
-//					.Result;
-//			}
-
-//		    Assert.AreEqual(EImageOperationResult.Ok, operationResult.Result);
-//		    Assert.AreEqual(null, operationResult.Error);
-//		    Assert.AreEqual("priroda.jpg", operationResult.Path);
-
-//		    var renameResult = _service.RenameImage("priroda.jpg", "test.jpg");
-
-//			Assert.AreEqual(EImageOperationResult.Ok, renameResult.Result);
-//			Assert.AreEqual(null, renameResult.Error);
-//			Assert.AreEqual("test.jpg", renameResult.Path);
-//	    }
-
-//	    [TestMethod]
-//	    public void RenameImageWithoutUnique()
-//	    {
-//			ImageOperationResult operationResult;
-//		    using (var stream = GetTestImage(TestImageName))
-//		    {
-//			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
-//				    .Result;
-//			}
-
-//		    using (var stream = GetTestImage(TestImageName))
-//		    {
-//				var result = 
-//					_service.AddImage(stream, "test.jpg", "test").Result;
-//			}
-
-//			Assert.AreEqual(EImageOperationResult.Ok, operationResult.Result);
-//		    Assert.AreEqual(null, operationResult.Error);
-//		    Assert.AreEqual("priroda.jpg", operationResult.Path);
-
-//		    var renameResult = _service.RenameImage("priroda.jpg", "test.jpg", false);
-
-//		    Assert.AreEqual(EImageOperationResult.Error, renameResult.Result);
-//		    Assert.AreEqual(EErrorType.FileAlreadyExists, renameResult.ErrorType);
-//		    Assert.AreEqual("test.jpg", renameResult.Path);
-//		}
-
-//	    [TestMethod]
-//	    public void UpdateImageTest()
-//	    {
-//		    ImageOperationResult operationResult;
-//		    using (var stream = GetTestImage(TestImageName))
-//		    {
-//			    operationResult = _service.AddImage(stream, "priroda.jpg", "test")
-//				    .Result;
-//		    }
-
-//		    Assert.AreEqual(EImageOperationResult.Ok, operationResult.Result);
-//		    Assert.AreEqual(null, operationResult.Error);
-//		    Assert.AreEqual("priroda.jpg", operationResult.Path);
-
-//		    using (var stream = GetTestImage(TestImageName))
-//		    {
-//				_service.SetSetting("test2", new ImageSize[] {new ImageSize(600, 600)}, true);
-//			    var updateResult = _service.UpdateImage(stream, "priroda.jpg", "test2").Result;
-
-//				Assert.AreEqual(EImageOperationResult.Ok, updateResult.Result);
-//				Assert.AreEqual(null, updateResult.Error);
-//				Assert.AreEqual("priroda.jpg", updateResult.Path);
-//		    }
-
-//			Assert.IsTrue(Directory.Exists(Path.Combine("images", "600x600")));
-//			Assert.IsTrue(File.Exists(Path.Combine("images", "public", "priroda.jpg")));
-//	    }
-//    }
-//}
+			_service.RemoveImage("testEvent", "test.jpg", _key);
+			Assert.IsFalse(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+		}
+	}
+}
