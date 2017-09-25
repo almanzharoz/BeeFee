@@ -40,7 +40,7 @@ namespace Core.ElasticSearch.Serialization
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 		{
 			writer.WriteStartObject();
-			foreach (var property in _projectionItem.Properties)
+			foreach (var property in _projectionItem.Properties.Where(x => x.GetCustomAttribute<JsonIgnoreAttribute>() == null))
 			{
 				var v = property.GetValue(value);
 				if (v.IsNull(property.PropertyType))

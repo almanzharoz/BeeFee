@@ -49,13 +49,13 @@ namespace Core.ElasticSearch.Tests
 
 		public new T Get<T, TParent>(string id, string parent, bool load = true)
 		    where T : BaseEntityWithParent<TParent>, IProjection, IGetProjection
-		    where TParent : class, IProjection
+		    where TParent : class, IProjection, IJoinProjection
 		    => base.Get<T, TParent>(id, parent, load);
 
 	    public new T GetWithVersion<T, TParent>(string id, string parent, bool load = true)
 		    where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection
-		    where TParent : class, IProjection
-		    => base.GetWithVersion<T, TParent>(id, parent, load);
+		    where TParent : class, IProjection, IJoinProjection
+			=> base.GetWithVersion<T, TParent>(id, parent, load);
 
 		public new T Get<T>(string id, int version, bool load = true)
 		    where T : BaseEntityWithVersion, IProjection, IGetProjection
@@ -63,8 +63,8 @@ namespace Core.ElasticSearch.Tests
 
 	    public new T Get<T, TParent>(string id, string parent, int version, bool load = true)
 		    where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection
-		    where TParent : class, IProjection
-		    => base.Get<T, TParent>(id, parent, version, load);
+		    where TParent : class, IProjection, IJoinProjection
+			=> base.Get<T, TParent>(id, parent, version, load);
 
 		public new int FilterCount<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query) where T : class, IProjection
             => base.FilterCount<T>(query);
@@ -90,8 +90,8 @@ namespace Core.ElasticSearch.Tests
 
 		public bool InsertWithParent<T, TParent>(T entity)
             where T : BaseNewEntityWithParent<TParent>
-			where TParent : class, IProjection
-            => base.Insert<T, TParent>(entity, true);
+			where TParent : class, IProjection, IJoinProjection
+			=> base.Insert<T, TParent>(entity, true);
 
         public bool UpdateWithVersion<T>(T entity) where T : BaseEntityWithVersion, IProjection, IUpdateProjection
 			=> base.UpdateWithVersion<T>(entity, true);

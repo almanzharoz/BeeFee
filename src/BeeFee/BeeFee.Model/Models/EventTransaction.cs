@@ -27,7 +27,7 @@ namespace BeeFee.Model.Models
 		/// Транзакции покупки билетов
 		/// </summary>
 		[Nested]
-		public Transaction[] Transactions { get; set; }
+		public TicketTransaction[] Transactions { get; set; }
 
 	}
 }

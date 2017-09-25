@@ -3,6 +3,7 @@ using Core.ElasticSearch;
 using Core.ElasticSearch.Mapping;
 using BeeFee.Model;
 using BeeFee.Model.Embed;
+using BeeFee.Model.Jobs.Data;
 using BeeFee.Model.Projections;
 using BeeFee.TestsApp.Projections;
 using BeeFee.TestsApp.Services;
@@ -20,6 +21,7 @@ namespace BeeFee.TestsApp
 		protected TestsEventService _eventService;
 		protected TestsCaterogyService _categoryService;
 		protected TestsCompanyService _companyService;
+		protected TestsJobsService _jobsService;
 
 		protected BaseTestClass(
 			Func<ServiceRegistration<BeefeeElasticConnection>, ServiceRegistration<BeefeeElasticConnection>> servicesRegistration,
@@ -31,13 +33,16 @@ namespace BeeFee.TestsApp
 			_roles = roles;
 		}
 
+		protected virtual IServiceCollection AddServices(IServiceCollection serviceCollection)
+			=> serviceCollection;
+
 		public virtual void Setup()
 		{
-			var serviceProvider = new ServiceCollection()
+			var serviceProvider = AddServices(new ServiceCollection()
 				.AddBeefeeModel(new Uri("http://localhost:9200/"), s => _servicesRegistration(s
 					.AddBeefeeTestsApp()))
 				.AddSingleton(x => new UserName(x.GetService<TestsUserService>().AddUser("user@mail.ru", "123", "user", _roles)))
-				.AddLogging()
+				.AddLogging())
 				.BuildServiceProvider();
 
 			serviceProvider
@@ -48,6 +53,7 @@ namespace BeeFee.TestsApp
 			_eventService = serviceProvider.GetService<TestsEventService>();
 			_categoryService = serviceProvider.GetService<TestsCaterogyService>();
 			_companyService = serviceProvider.GetService<TestsCompanyService>();
+			_jobsService = serviceProvider.GetService<TestsJobsService>();
 
 		}
 
@@ -65,5 +71,8 @@ namespace BeeFee.TestsApp
 
 		protected FullEventTransaction GetEventTransactionById(string eventId, string companyId)
 			=> _eventService.GetEventTransactionById(eventId, companyId);
+
+		protected bool AddSendMailJob(SendMail data, DateTime start)
+			=> _jobsService.AddSendMailJob(data, start);
 	}
 }

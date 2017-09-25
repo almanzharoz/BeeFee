@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Applications\BeeFee.ClientApp\BeeFee.ClientApp.csproj" />
+    <ProjectReference Include="..\..\Applications\BeeFee.JobsApp\BeeFee.JobsApp.csproj" />
     <ProjectReference Include="..\BeeFee.TestsApp\BeeFee.TestsApp.csproj" />
   </ItemGroup>
 

@@ -1,8 +1,6 @@
 ﻿using Core.ElasticSearch;
 using BeeFee.Model;
 using BeeFee.Model.Embed;
-using BeeFee.Model.Exceptions;
-using BeeFee.Model.Models;
 using BeeFee.TestsApp.Projections;
 using Microsoft.Extensions.Logging;
 using SharpFuncExt;

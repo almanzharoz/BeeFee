@@ -2,6 +2,8 @@
 using Core.ElasticSearch;
 using Core.ElasticSearch.Mapping;
 using BeeFee.Model.Embed;
+using BeeFee.Model.Jobs;
+using BeeFee.Model.Jobs.Data;
 using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
 using BeeFee.Model.Services;
@@ -28,8 +30,11 @@ namespace BeeFee.Model
 			    .AddMapping<EventTransaction>(x => x.EventIndexName)
 			    .AddMapping<Category>(x => x.EventIndexName)
 			    .AddMapping<Company>(x => x.EventIndexName)
-			    // внутренние документы
-			    .AddStruct<TicketPrice>()
+
+				.AddMapping<Job<SendMail>>(x => x.JobsIndexName)
+
+				// внутренние документы
+				.AddStruct<TicketPrice>()
 			    .AddStruct<Address>()
 			    .AddStruct<EventDateTime>()
 			    .AddStruct<EventPage>()

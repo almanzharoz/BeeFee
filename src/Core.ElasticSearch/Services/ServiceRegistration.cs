@@ -15,5 +15,6 @@ namespace Core.ElasticSearch
 			_services.AddScoped<TService>();
 			return this;
 		}
+
 	}
 }

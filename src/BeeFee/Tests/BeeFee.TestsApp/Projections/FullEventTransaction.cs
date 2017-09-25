@@ -14,7 +14,7 @@ namespace BeeFee.TestsApp.Projections
 
 		public int TicketsLeft { get; private set; }
 
-		public Transaction[] Transactions { get; private set; }
+		public TicketTransaction[] Transactions { get; private set; }
 
 		public FullEventTransaction(string id) : base(id)
 		{

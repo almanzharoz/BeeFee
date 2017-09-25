@@ -5,7 +5,7 @@ using Nest;
 namespace BeeFee.Model.Models
 {
 	//TODO: Переопределить проекции для изменения статуса и для создания
-	public class Transaction
+	public abstract class TicketTransaction
 	{
 		[Keyword]
 		public Guid Id { get; }
@@ -19,16 +19,8 @@ namespace BeeFee.Model.Models
 		public ETransactionType Type { get; }
 		[Keyword]
 		public ETransactionState State { get; }
+		[Keyword]
+		public Ticket Ticket { get; }
 
-		public Transaction(Guid id, Guid priceId, DateTime date, Contact contact, float sum, ETransactionType type, ETransactionState state)
-		{
-			Id = id;
-			PriceId = priceId;
-			Date = date;
-			Contact = contact;
-			Sum = sum;
-			Type = type;
-			State = state;
-		}
 	}
 }
