@@ -27,6 +27,7 @@ namespace BeeFee.TestsApp
 		{
 			return services
 				.AddProjection<NewJob<SendMail>, Job<SendMail>>()
+				.AddProjection<NewJob<CreateTicket>, Job<CreateTicket>>()
 
 				.AddProjection<NewUser, User>()
 				.AddProjection<NewEvent, Event>()

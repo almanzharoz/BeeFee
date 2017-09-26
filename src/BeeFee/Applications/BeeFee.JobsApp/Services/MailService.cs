@@ -1,8 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
+using System.Threading.Tasks;
 using BeeFee.JobsApp.Projections;
 using BeeFee.Model;
 using BeeFee.Model.Jobs.Data;
@@ -21,16 +20,16 @@ namespace BeeFee.JobsApp.Services
 			_serviceSettings = serviceSettings;
 		}
 
-		public bool SendNextMail()
+		public Task<bool> SendNextMail()
 			=> JobExecute(GetNextJob(), SendMail);
 
-		private void SendMail(SendMail data)
+		private Task SendMail(SendMail data)
 			=> data.Using(d => CreateSmtpClient(),
-				(mail, client) => mail.Using(CreateMessage, (d, m) =>
+				(mail, client) => mail.Using(CreateMessage, async (d, m) =>
 				{
 					try
 					{
-						client.Send(m);
+						await client.SendMailAsync(m);
 					}
 					finally
 					{

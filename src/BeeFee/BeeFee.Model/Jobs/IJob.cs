@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Core.ElasticSearch.Domain;
 
 namespace BeeFee.Model.Jobs
@@ -16,6 +17,6 @@ namespace BeeFee.Model.Jobs
 		EJobState State { get; }
 
 		void Starting();
-		void Execute(Action<T> action);
+		Task Execute(Func<T, Task> action);
 	}
 }

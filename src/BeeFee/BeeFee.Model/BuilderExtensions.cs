@@ -32,6 +32,7 @@ namespace BeeFee.Model
 			    .AddMapping<Company>(x => x.EventIndexName)
 
 				.AddMapping<Job<SendMail>>(x => x.JobsIndexName)
+				.AddMapping<Job<CreateTicket>>(x => x.JobsIndexName)
 
 				// внутренние документы
 				.AddStruct<TicketPrice>()

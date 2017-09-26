@@ -17,5 +17,8 @@ namespace BeeFee.TestsApp.Services
 
 		public bool AddSendMailJob(SendMail data, DateTime start)
 			=> Insert(new NewJob<SendMail>(data, start), true);
+		public bool AddCreateTicketJob(CreateTicket data, DateTime start)
+			=> Insert(new NewJob<CreateTicket>(data, start), true);
+
 	}
 }

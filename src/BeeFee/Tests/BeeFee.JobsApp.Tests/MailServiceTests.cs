@@ -28,7 +28,9 @@ namespace BeeFee.JobsApp.Tests
 		public void SendEmailTest()
 		{
 			Assert.IsTrue(AddSendMailJob(new SendMail(null, "mail@mail.ru", "Привет!", "Hi", null), DateTime.UtcNow));
-			//Assert.IsTrue(Service.SendNextMail());
+			var r = Service.SendNextMail();
+			r.Wait();
+			Assert.IsTrue(r.Result);
 		}
 	}
 }

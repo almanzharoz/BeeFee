@@ -3,9 +3,13 @@
 	public struct CreateTicket
 	{
 		public string Filename { get; }
+		public string Name { get; }
+		public string Date { get; }
 
-		public CreateTicket(string filename)
+		public CreateTicket(string name, string date, string filename)
 		{
+			Name = name;
+			Date = date;
 			Filename = filename;
 		}
 	}

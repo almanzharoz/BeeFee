@@ -74,5 +74,9 @@ namespace BeeFee.TestsApp
 
 		protected bool AddSendMailJob(SendMail data, DateTime start)
 			=> _jobsService.AddSendMailJob(data, start);
+
+		protected bool AddCreateTicketJob(CreateTicket data, DateTime start)
+			=> _jobsService.AddCreateTicketJob(data, start);
+
 	}
 }

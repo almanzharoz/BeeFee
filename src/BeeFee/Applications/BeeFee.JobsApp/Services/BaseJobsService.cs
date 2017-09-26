@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using BeeFee.Model;
 using BeeFee.Model.Jobs;
 using BeeFee.Model.Projections;
@@ -24,7 +25,10 @@ namespace BeeFee.JobsApp.Services
 				q => q.Term(p => p.State, EJobState.New) && q.DateRange(d => d.Field(p => p.Start).LessThanOrEquals(DateMath.Now)),
 				s => s.Ascending(p => p.Start), j => j.Fluent(j.Starting), true);
 
-		protected bool JobExecute(TJob job, Action<TData> action)
-			=>  job.IfNotNull(x => UpdateWithVersion(x, j => j.Fluent(f => f.Execute(action.HasNotNullArg(nameof(action)))), false), () => false);
+		protected Task<bool> JobExecute(TJob job, Func<TData, Task> action)
+			=> Task.FromResult(job.IfNotNull(
+				x => UpdateWithVersion(x, j => j.Fluent(f => f.Execute(d => action.HasNotNullArg(nameof(action))(d))),
+					false), () => false));
+
 	}
 }

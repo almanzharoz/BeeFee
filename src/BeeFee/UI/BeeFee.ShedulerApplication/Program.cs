@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using BeeFee.JobsApp;
 using BeeFee.JobsApp.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using BeeFee.Model;
+using BeeFee.Model.Jobs.Data;
 using Microsoft.Extensions.Options;
 using BuilderExtensions = BeeFee.JobsApp.BuilderExtensions;
 
@@ -27,15 +27,18 @@ namespace BeeFee.ShedulerApplication
 						.AddBeefeeJobsApp())
 					//.AddSingleton(x => new UserName(x.GetService<TestsUserService>().AddUser("user@mail.ru", "123", "user", _roles)))
 					.Configure<MailServiceSettings>(Configuration.GetSection("MailSettings"))
+					.Configure<TicketServiceSettings>(Configuration.GetSection("TicketSettings"))
 					.AddSingleton(cfg => cfg.GetService<IOptions<MailServiceSettings>>().Value)
+					.AddSingleton(cfg => cfg.GetService<IOptions<TicketServiceSettings>>().Value)
 					.AddLogging()
 				.BuildServiceProvider();
 
 			serviceProvider
 				.UseBeefeeModel(BuilderExtensions.UseBeefeeJobsApp);
 
-			var service = serviceProvider.GetService<MailService>();
-			Console.WriteLine(service.SendNextMail());
+			var service = serviceProvider.GetService<TicketService>();
+			service.CreateTicket(new CreateTicket("My Name", "Tomorow")).Wait();
+			//Console.WriteLine(service.CreateNextTicket());
 		}
 	}
 }

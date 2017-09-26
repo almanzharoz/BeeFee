@@ -13,13 +13,15 @@ namespace BeeFee.JobsApp
 		public static ServiceRegistration<BeefeeElasticConnection> AddBeefeeJobsApp(this ServiceRegistration<BeefeeElasticConnection> serviceRegistration)
 		{
 			return serviceRegistration
-				.AddService<MailService>();
+				.AddService<MailService>()
+				.AddService<TicketService>();
 		}
 
 		public static IElasticProjections<BeefeeElasticConnection> UseBeefeeJobsApp(this IElasticProjections<BeefeeElasticConnection> services)
 		{
 			return services 
-				.AddProjection<SendMailJob, Job<SendMail>>();
+				.AddProjection<SendMailJob, Job<SendMail>>()
+				.AddProjection<CreateTicketJob, Job<CreateTicket>>();
 
 		}
 	}
