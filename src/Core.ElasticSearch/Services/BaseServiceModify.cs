@@ -154,9 +154,9 @@ namespace Core.ElasticSearch
 		protected T UpdateWithFilter<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query,
 			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort, Func<T, T> update, bool refresh)
 			where T : BaseEntityWithVersion, ISearchProjection, IProjection, IUpdateProjection
-			=> Filter<T>(query, sort, 0, 2)
-				.Single()
-				.Fluent(entity =>
+			=> Filter<T>(query, sort, 0, 1)
+				.FirstOrDefault()
+				.IfNotNull(entity =>
 					Try(c => c.Update(
 							DocumentPath<T>.Id(entity.Id), d => d
 								.Index(_mapping.GetIndexName<T>())

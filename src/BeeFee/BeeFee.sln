@@ -45,9 +45,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.ImageApp.Tests", "Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.ImagesWebApplication", "UI\BeeFee.ImagesWebApplication\BeeFee.ImagesWebApplication.csproj", "{07D08282-45B3-42F0-841A-6166A9E4E34B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeFee.JobsApp", "Applications\BeeFee.JobsApp\BeeFee.JobsApp.csproj", "{AD9D8D70-7020-48A7-B628-CB22293FF206}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.JobsApp", "Applications\BeeFee.JobsApp\BeeFee.JobsApp.csproj", "{AD9D8D70-7020-48A7-B628-CB22293FF206}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeFee.JobsApp.Tests", "Tests\BeeFee.JobsApp.Tests\BeeFee.JobsApp.Tests.csproj", "{606C1847-7CEF-48C9-AAF2-37E9A85C9F95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.JobsApp.Tests", "Tests\BeeFee.JobsApp.Tests\BeeFee.JobsApp.Tests.csproj", "{606C1847-7CEF-48C9-AAF2-37E9A85C9F95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeFee.ShedulerApplication", "UI\BeeFee.ShedulerApplication\BeeFee.ShedulerApplication.csproj", "{178CDC38-10F9-44F2-8A19-FDAEFCA32F90}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,6 +133,10 @@ Global
 		{606C1847-7CEF-48C9-AAF2-37E9A85C9F95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{606C1847-7CEF-48C9-AAF2-37E9A85C9F95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{606C1847-7CEF-48C9-AAF2-37E9A85C9F95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{178CDC38-10F9-44F2-8A19-FDAEFCA32F90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{178CDC38-10F9-44F2-8A19-FDAEFCA32F90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{178CDC38-10F9-44F2-8A19-FDAEFCA32F90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{178CDC38-10F9-44F2-8A19-FDAEFCA32F90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,6 +160,7 @@ Global
 		{07D08282-45B3-42F0-841A-6166A9E4E34B} = {B8E11930-34BA-4585-BC87-0FC519EAEC23}
 		{AD9D8D70-7020-48A7-B628-CB22293FF206} = {264231BC-2B1E-4DFC-9E5F-C6BB9442FA26}
 		{606C1847-7CEF-48C9-AAF2-37E9A85C9F95} = {24455C41-3567-41CF-8E06-938E56280229}
+		{178CDC38-10F9-44F2-8A19-FDAEFCA32F90} = {B8E11930-34BA-4585-BC87-0FC519EAEC23}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E8287FBF-0FC4-4441-BE8B-CA1E25292B1B}
