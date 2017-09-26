@@ -21,7 +21,7 @@ namespace BeeFee.JobsApp.Services
 
 		protected TJob GetNextJob()
 			=> UpdateWithFilter<TJob>(
-				q => q.Term(p => p.State, EJobState.New) && q.DateRange(d => d.Field(p=>p.Start).LessThanOrEquals(DateMath.Now)),
+				q => q.Term(p => p.State, EJobState.New) && q.DateRange(d => d.Field(p => p.Start).LessThanOrEquals(DateMath.Now)),
 				s => s.Ascending(p => p.Start), j => j.Fluent(j.Starting), true);
 
 		protected bool JobExecute(TJob job, Action<TData> action)

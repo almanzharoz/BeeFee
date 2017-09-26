@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace SharpFuncExt
 {
@@ -227,34 +224,127 @@ namespace SharpFuncExt
 
 		public static TResult Using<T, TUsing, TResult>(this T arg, Func<T, TUsing> init, Func<T, TUsing, TResult> func) where TUsing : IDisposable
 		{
-			using (var u = init(arg))
+			Exception ex = null;
+			TUsing u = init(arg);
+			try
+			{
 				return func(arg, u);
+			}
+			catch (Exception e)
+			{
+				throw ex = e;
+			}
+			finally
+			{
+				try
+				{
+					u?.Dispose();
+				}
+				catch (Exception e)
+				{
+					throw ex != null ? new AggregateException(ex, e) : e;
+				}
+			}
 		}
 
 		public static T Using<T, TUsing>(this T arg, Func<T, TUsing> init, Action<T, TUsing> func) where TUsing : IDisposable
 		{
-			using (var u = init(arg))
+			Exception ex = null;
+			TUsing u = init(arg);
+			try
+			{
 				func(arg, u);
+			}
+			catch (Exception e)
+			{
+				throw ex = e;
+			}
+			finally
+			{
+				try
+				{
+					u?.Dispose();
+				}
+				catch (Exception e)
+				{
+					throw ex != null ? new AggregateException(ex, e) : e;
+				}
+			}
 			return arg;
 		}
 		public static T Using<T, TUsing>(this T arg, Func<TUsing> init, Action<T, TUsing> func) where TUsing : IDisposable
 		{
-			using (var u = init())
+			Exception ex = null;
+			TUsing u = init();
+			try
+			{
 				func(arg, u);
+			}
+			catch (Exception e)
+			{
+				throw ex = e;
+			}
+			finally
+			{
+				try
+				{
+					u?.Dispose();
+				}
+				catch (Exception e)
+				{
+					throw ex != null ? new AggregateException(ex, e) : e;
+				}
+			}
 			return arg;
 		}
 
 
 		public static TResult Using<T, TResult>(this T arg, Func<T, TResult> func) where T : IDisposable
 		{
-			using (arg)
+			Exception ex = null;
+			try
+			{
 				return func(arg);
+			}
+			catch (Exception e)
+			{
+				throw ex = e;
+			}
+			finally
+			{
+				try
+				{
+					arg?.Dispose();
+				}
+				catch (Exception e)
+				{
+					throw ex != null ? new AggregateException(ex, e) : e;
+				}
+			}
 		}
 
 		public static void Using<T>(this T arg, Action<T> func) where T : IDisposable
 		{
-			using (arg)
+			Exception ex = null;
+			try
+			{
 				func(arg);
+			}
+			catch (Exception e)
+			{
+				throw ex = e;
+			}
+			finally
+			{
+				try
+				{
+					arg?.Dispose();
+				}
+				catch (Exception e)
+				{
+					throw ex != null ? new AggregateException(ex, e) : e;
+				}
+			}
 		}
 
 		public static T ThrowIf<T, TException>(this T arg, Func<T, bool> check, Func<T, TException> func) where TException : Exception

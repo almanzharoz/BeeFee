@@ -22,6 +22,7 @@ namespace BeeFee.JobsApp.Tests
 
 		protected override IServiceCollection AddServices(IServiceCollection serviceCollection)
 			=> serviceCollection.AddSingleton(new MailServiceSettings(){PickupDirectory = "d:\\mails", From="test@mail.ru"});
+			//=> serviceCollection.AddSingleton(new MailServiceSettings() { Host="mail.ru", Port = 465, Ssl = true, From = "test@mail.ru" });
 
 		[TestMethod]
 		public void SendEmailTest()
