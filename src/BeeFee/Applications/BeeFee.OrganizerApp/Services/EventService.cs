@@ -32,14 +32,14 @@ namespace BeeFee.OrganizerApp.Services
 
 		/// <exception cref="AddEntityException"></exception>
 		// TODO: добавить проверку 
-		public bool AddEvent(string companyId, string categoryId, string name, string label, string url, string cover,
-			EEventType type, EventDateTime dateTime, Address address, TicketPrice[] prices, string html)
+		public bool AddEvent(string companyId, string categoryId, string name, string label, string url,
+			EEventType type, EventDateTime dateTime, Address address, TicketPrice[] prices, string html, string imagesKey)
 		{
 			var newEvent = new NewEvent(
 				companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)),
 				Get<BaseUserProjection>(User.Id).HasNotNullEntity("user"),
-				Get<BaseCategoryProjection>(categoryId), name, label, url, cover, type,
-				dateTime, address, prices, html);
+				Get<BaseCategoryProjection>(categoryId), name, label, url, type,
+				dateTime, address, prices, html, imagesKey);
 			return !ExistsByUrl<EventProjection>(url.IfNull(name, CommonHelper.UriTransliterate)) &&
 				Insert<NewEvent, CompanyJoinProjection>(
 					newEvent, true) && Insert(new NewEventTransaction(newEvent), false);
@@ -63,8 +63,7 @@ namespace BeeFee.OrganizerApp.Services
 			=> Update<EventProjection, CompanyJoinProjection>(id,
 					company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version,
 					x => x.Change(name, label, url, cover, dateTime, address, type,
-						Get<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), prices, html), true)
-				.ThrowIfNot<UpdateEntityException>();
+						Get<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), prices, html), true);
 
 		public IReadOnlyCollection<EventProjection> GetMyEvents(string companyId) 
 			=> Filter<Event, EventProjection>(x => UserQuery<EventProjection>(x.ParentId(p=>p.Id(companyId.HasNotNullArg("company")))));

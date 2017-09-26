@@ -14,6 +14,8 @@ namespace BeeFee.OrganizerApp.Projections.Event
 		public string Name { get; }
 		public string Url { get; }
 
+		public string ImagesKey { get; }
+
 		public EventDateTime DateTime { get; }
 
 		public EEventType Type { get; }
@@ -29,8 +31,8 @@ namespace BeeFee.OrganizerApp.Projections.Event
 
 		private readonly ThrowCollection _throws = new ThrowCollection();
 
-		public NewEvent(CompanyJoinProjection company, BaseUserProjection owner, BaseCategoryProjection category, string name, string label, string url, string cover, EEventType type,
-			EventDateTime dateTime, Address address, TicketPrice[] prices, string html) : base(company)
+		public NewEvent(CompanyJoinProjection company, BaseUserProjection owner, BaseCategoryProjection category, string name, string label, string url, EEventType type,
+			EventDateTime dateTime, Address address, TicketPrice[] prices, string html, string imagesKey) : base(company)
 		{
 			Owner = owner.HasNotNullEntity(_throws, nameof(owner));
 			Category = category.HasNotNullEntity(_throws, nameof(category));
@@ -40,7 +42,8 @@ namespace BeeFee.OrganizerApp.Projections.Event
 			Type = type;
 			Address = address;
 			Prices = prices;
-			Page = new EventPage(name, label, category.Name, cover, dateTime.ToString(), address, html);
+			Page = new EventPage(name, label, category.Name, null, dateTime.ToString(), address, html);
+			ImagesKey = imagesKey.HasNotNullArg(_throws, nameof(imagesKey));
 			_throws.Throw();
 		}
 	}

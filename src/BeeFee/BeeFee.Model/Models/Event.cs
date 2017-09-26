@@ -34,5 +34,8 @@ namespace BeeFee.Model.Models
 		public TicketPrice[] Prices { get; set; }
 
 		public bool Hidden { get; set; }
+
+		[Keyword(Index = false)]
+		public string ImagesKey { get; set; }
 	}
 }

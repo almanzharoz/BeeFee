@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Net;
+using System.Threading.Tasks;
+using BeeFee.ImageApp;
 using BeeFee.Model.Embed;
+using BeeFee.Model.Helpers;
 using BeeFee.Model.Projections;
 using BeeFee.Model.Services;
 using BeeFee.OrganizerApp.Services;
 using BeeFee.WebApplication.Areas.Org.Models;
 using BeeFee.WebApplication.Controllers;
+using BeeFee.WebApplication.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SharpFuncExt;
 
 namespace BeeFee.WebApplication.Areas.Org.Controllers
 {
@@ -14,8 +20,12 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 	[Authorize(Roles = "organizer")]
 	public class EventController : BaseController<EventService>
 	{
-		public EventController(EventService service, CategoryService categoryService) : base(service, categoryService)
+		private readonly BeeFeeWebAppSettings _settings;
+		private readonly ImagesService _imagesService;
+		public EventController(EventService service, CategoryService categoryService, BeeFeeWebAppSettings settings) : base(service, categoryService)
 		{
+			_settings = settings;
+			_imagesService = new ImagesService(_settings.ImagesUrl);
 		}
 
 		public IActionResult Index(string id)
@@ -33,23 +43,27 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 			});
 
 	    [HttpPost]
-	    public IActionResult Add(AddEventEditModel model)
+	    public async Task<IActionResult> Add(AddEventEditModel model)
 	    {
 		    if (ModelState.IsValid)
-		    {
-			    Service.AddEvent(model.CompanyId,
+			{
+				model.Url = model.Url.IfNull(model.Name, CommonHelper.UriTransliterate)
+					.ThrowIf(x => x.Contains("/"), x => new InvalidOperationException("url contains \"/\""));
+
+				if (Service.AddEvent(model.CompanyId,
 				    model.CategoryId,
 				    model.Name,
 					model.Label,
 					model.Url,
-					model.Cover,
 				    model.Type,
 				    new EventDateTime(model.StartDateTime, model.FinishDateTime),
 				    new Address(model.City, model.Address),
-				    //new[] {new TicketPrice {Price = new Price(model.Price)}},
-					null,
-				    model.Html);
-			    return RedirectToAction("Index", new { model.CompanyId });
+				    new[] {new TicketPrice("ticket", null, 0, 10)},
+				    model.Html,
+					await _imagesService.RegisterEvent(model.Url)
+					))
+					return RedirectToAction("Index", new { id=model.CompanyId });
+				ModelState.AddModelError("error", "Event dont save");
 		    }
 		    return View(model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
 	    }
@@ -83,7 +97,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				 //new[] { new TicketPrice() { Price = new Price(model.Price) } },
 				 null,
 				 model.Html);
-				return RedirectToAction("Index", new { model.CompanyId });
+				return RedirectToAction("Index", new { id=model.CompanyId });
 			}
 			model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>());
 			return View(model);

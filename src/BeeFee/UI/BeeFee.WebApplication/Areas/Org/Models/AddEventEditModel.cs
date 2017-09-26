@@ -39,9 +39,6 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		[Required(ErrorMessage = "Address is required")]
 		public string Address { get; set; }
 
-		[Required(ErrorMessage = "Cover is required")]
-		public string Cover { get; set; }
-
 		public EEventType Type { get; set; }
 
 		//[DataType(DataType.Currency)]

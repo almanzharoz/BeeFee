@@ -18,6 +18,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 		public EEventType Type { get; private set; }
 		public string Url { get; private set; }
 		public string Name { get; private set; }
+		public string ImagesKey { get; private set; }
 		public TicketPrice[] Prices { get; private set; }
 		public EventPage Page { get; private set; }
 

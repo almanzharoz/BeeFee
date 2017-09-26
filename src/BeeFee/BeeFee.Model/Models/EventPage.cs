@@ -77,5 +77,11 @@ namespace BeeFee.Model
 			Date = date.ToString();
 			return this;
 		}
+
+		public EventPage ChangeCover(string cover)
+		{
+			Cover = cover;
+			return this;
+		}
 	}
 }

@@ -27,6 +27,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		public string Url { get; set; }
 		[Required(ErrorMessage = "Cover is required")]
 		public string Cover { get; set; }
+		public string ImagesKey { get; set; }
 
 		public string CategoryId { get; set; }
 
@@ -74,6 +75,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 			Address = @event.Address.AddressString;
 			Html= @event.Page.Html;
 			Cover = @event.Page.Cover;
+			ImagesKey = @event.ImagesKey;
 		}
 
 		public EventEditModel Init(IReadOnlyCollection<BaseCategoryProjection> categories)
