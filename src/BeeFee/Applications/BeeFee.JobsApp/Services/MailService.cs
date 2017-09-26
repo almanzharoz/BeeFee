@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Net;
 using System.Net.Mail;
 using System.Text;
 using BeeFee.JobsApp.Projections;
@@ -22,17 +24,36 @@ namespace BeeFee.JobsApp.Services
 		public bool SendNextMail()
 			=> JobExecute(GetNextJob(), SendMail);
 
-		//TODO: Перенести настройки SMTP
 		private void SendMail(SendMail data)
-			=> data.Using(d => new SmtpClient(){PickupDirectoryLocation = _serviceSettings.PickupDirectory, DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory},
+			=> data.Using(d => CreateSmtpClient(),
 				(mail, client) => mail.Using(CreateMessage, (d, m) =>
 				{
-					client.Send(m);
-					m.Attachments.Each(x => x.Dispose());
+					try
+					{
+						client.Send(m);
+					}
+					finally
+					{
+						m.Attachments.Each(x => x.Dispose());
+					}
 				}));
 
+		private SmtpClient CreateSmtpClient()
+			=> _serviceSettings.If(x => x.PickupDirectory.NotNull(),
+				x => new SmtpClient
+				{
+					PickupDirectoryLocation = x.PickupDirectory,
+					DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
+				},
+				x => new SmtpClient(x.Host, x.Port)
+				{
+					DeliveryMethod = SmtpDeliveryMethod.Network,
+					EnableSsl = x.Ssl,
+					Credentials = x.User.NotNull() ? new NetworkCredential(x.User, x.Password) : null
+				});
+
 		private MailMessage CreateMessage(SendMail data)
-			=> new MailMessage(data.From, data.To, data.Subject, data.Message) {IsBodyHtml = true/*, BodyEncoding = Encoding.UTF8*/}
+			=> new MailMessage(data.From ?? _serviceSettings.From, data.To, data.Subject, data.Message) {IsBodyHtml = true/*, BodyEncoding = Encoding.UTF8*/}
 				.If(m => !data.Files.IsNull(), m => data.Files.Each(f => m.Attachments.Add(new Attachment(GetFile(f)))));
 
 		private string GetFile(string path)

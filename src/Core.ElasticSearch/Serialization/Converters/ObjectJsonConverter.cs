@@ -22,7 +22,8 @@ namespace Core.ElasticSearch.Serialization
 		public ObjectJsonConverter()
 		{
 			_properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-			_creator = typeof(T).GetConstructors().FirstOrDefault().NotNullOrDefault(ObjectActivator.GetActivator<T>);
+			_creator = (typeof(T).GetConstructors().FirstOrDefault(x => x.GetCustomAttribute<DeserializeConstructorAttribute>() != null) ?? typeof(T).GetConstructors().FirstOrDefault())
+				.NotNullOrDefault(ObjectActivator.GetActivator<T>);
 		}
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

@@ -25,6 +25,6 @@ namespace BeeFee.JobsApp.Services
 				s => s.Ascending(p => p.Start), j => j.Fluent(j.Starting), true);
 
 		protected bool JobExecute(TJob job, Action<TData> action)
-			=>  UpdateWithVersion(job, j => j.Fluent(f => f.Execute(action.HasNotNullArg(nameof(action)))), true);
+			=>  UpdateWithVersion(job, j => j.Fluent(f => f.Execute(action.HasNotNullArg(nameof(action)))), false);
 	}
 }

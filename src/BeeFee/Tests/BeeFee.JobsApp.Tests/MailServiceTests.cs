@@ -21,12 +21,12 @@ namespace BeeFee.JobsApp.Tests
 		}
 
 		protected override IServiceCollection AddServices(IServiceCollection serviceCollection)
-			=> serviceCollection.AddSingleton(new MailServiceSettings(){PickupDirectory = "d:\\mails"});
+			=> serviceCollection.AddSingleton(new MailServiceSettings(){PickupDirectory = "d:\\mails", From="test@mail.ru"});
 
 		[TestMethod]
 		public void SendEmailTest()
 		{
-			Assert.IsTrue(AddSendMailJob(new SendMail("my@mail.ru", "mail@mail.ru", "Hello!", "Hi", null), DateTime.UtcNow));
+			Assert.IsTrue(AddSendMailJob(new SendMail(null, "mail@mail.ru", "Привет!", "Hi", null), DateTime.UtcNow));
 			Assert.IsTrue(Service.SendNextMail());
 		}
 	}

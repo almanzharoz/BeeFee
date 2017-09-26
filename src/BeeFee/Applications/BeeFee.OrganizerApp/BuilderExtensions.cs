@@ -24,7 +24,8 @@ namespace BeeFee.OrganizerApp
 				.AddProjection<CompanyProjection, Company>()
 				.AddProjection<NewCompany, Company>()
 				.AddProjection<EventProjection, Event>()
-				.AddProjection<NewEvent, Event>();
+				.AddProjection<NewEvent, Event>()
+				.AddProjection<NewEventTransaction, EventTransaction>();
 		}
 	}
 }

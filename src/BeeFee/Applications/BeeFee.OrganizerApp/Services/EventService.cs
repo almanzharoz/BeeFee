@@ -67,6 +67,6 @@ namespace BeeFee.OrganizerApp.Services
 				.ThrowIfNot<UpdateEntityException>();
 
 		public IReadOnlyCollection<EventProjection> GetMyEvents(string companyId) 
-			=> Filter<Event, EventProjection>(x => UserQuery<EventProjection>(x.Term(p => p.Parent, companyId.HasNotNullArg("company"))));
+			=> Filter<Event, EventProjection>(x => UserQuery<EventProjection>(x.ParentId(p=>p.Id(companyId.HasNotNullArg("company")))));
 	}
 }
