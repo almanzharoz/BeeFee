@@ -27,7 +27,7 @@ namespace BeeFee.ImageApp.Caching
             return result;
         }
 
-        public static async Task<T> GetAsync<T>(this MemoryCacheManager cacheManager, string key, Func<Task<T>> acquire)
+        public static async Task<T> Get<T>(this MemoryCacheManager cacheManager, string key, Func<Task<T>> acquire)
             => await Get(cacheManager, key, DefaultCacheTimeMinutes, acquire);
 
         public static async Task<T> Get<T>(this MemoryCacheManager cacheManager, string key, int cacheTime, Func<Task<T>> acquire)
