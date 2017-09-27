@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace BeeFee.ImageApp.Caching
 {
@@ -19,6 +20,22 @@ namespace BeeFee.ImageApp.Caching
                 return cacheManager.Get<T>(key);
 
             var result = acquire();
+
+            if (cacheTime > 0)
+                cacheManager.Set(key, result, cacheTime);
+
+            return result;
+        }
+
+        public static async Task<T> GetAsync<T>(this MemoryCacheManager cacheManager, string key, Func<Task<T>> acquire)
+            => await Get(cacheManager, key, DefaultCacheTimeMinutes, acquire);
+
+        public static async Task<T> Get<T>(this MemoryCacheManager cacheManager, string key, int cacheTime, Func<Task<T>> acquire)
+        {
+            if (cacheManager.IsSet(key))
+                return cacheManager.Get<T>(key);
+
+            var result = await acquire();
 
             if (cacheTime > 0)
                 cacheManager.Set(key, result, cacheTime);
