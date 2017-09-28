@@ -12,7 +12,7 @@ namespace Core.ElasticSearch
 				c => c.Index(entity.HasNotNullArg(nameof(entity)), s => s
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
-						.If(refresh, x => x.Refresh(Refresh.True)))
+						.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True)))
 					.Fluent(x => entity.Id = x.Id),
 				r => r.Created,
 				RepositoryLoggingEvents.ES_INSERT);
@@ -23,7 +23,7 @@ namespace Core.ElasticSearch
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
 						.OpType(OpType.Create)
-						.If(refresh, x => x.Refresh(Refresh.True))),
+						.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
 				r => r.Created,
 				RepositoryLoggingEvents.ES_INSERT);
 
@@ -33,7 +33,7 @@ namespace Core.ElasticSearch
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
 						.IfNotNull(entity.Id, x => x.OpType(OpType.Create))
-						.If(refresh, x => x.Refresh(Refresh.True)))
+						.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True)))
 					.Fluent(x => entity.Id = x.Id),
 				r => r.Created,
 				RepositoryLoggingEvents.ES_INSERT);
@@ -44,7 +44,7 @@ namespace Core.ElasticSearch
 					.Index(_mapping.GetIndexName<T>())
 					.Type(_mapping.GetTypeName<T>())
 					.OpType(OpType.Create)
-					.If(refresh, x => x.Refresh(Refresh.True))),
+					.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
 				r => r.Created,
 				RepositoryLoggingEvents.ES_INSERT);
 
@@ -56,7 +56,7 @@ namespace Core.ElasticSearch
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
 						.Parent(entity.Parent.Id)
-						.If(refresh, a => a.Refresh(Refresh.True)))
+						.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True)))
 					.Fluent(x => entity.Id = x.Id),
 				r => r.Created,
 				RepositoryLoggingEvents.ES_INSERT);
@@ -70,7 +70,7 @@ namespace Core.ElasticSearch
 						.Type(_mapping.GetTypeName<T>())
 						.OpType(OpType.Create)
 						.Parent(entity.Parent.Id)
-						.If(refresh, a => a.Refresh(Refresh.True))),
+						.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True))),
 				r => r.Created,
 				RepositoryLoggingEvents.ES_INSERT);
 

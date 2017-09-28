@@ -22,7 +22,7 @@ namespace BeeFee.JobsApp.Tests
 		}
 
 		protected override IServiceCollection AddServices(IServiceCollection serviceCollection)
-			=> serviceCollection.AddSingleton(new TicketServiceSettings() { Folder = "d:\\pdf" });
+			=> serviceCollection.AddSingleton(new TicketServiceSettings() { Folder = "d:\\pdf", Url = "http://localhost:58219" });
 
 		[TestMethod]
 		public void CreateTicketTest()

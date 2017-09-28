@@ -27,7 +27,7 @@ namespace BeeFee.JobsApp.Services
 		{
 			try
 			{
-				var client = new jsreport.Client.ReportingService("http://localhost:58219");
+				var client = new jsreport.Client.ReportingService(_ticketSettings.Url);
 				var report = await client.RenderAsync(new RenderRequest()
 				{
 					Template = new Template()

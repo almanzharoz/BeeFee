@@ -39,9 +39,7 @@ namespace Core.ElasticSearch
 			mappingFactory(mapping);
 			if (projectionsRegistration != null)
 				projectionsRegistration(mapping);
-			if (forTest)
-				mapping.Drop();
-			mapping.Build(null);
+			mapping.Build(null, forTest);
 			return services;
 		}
 
@@ -51,9 +49,7 @@ namespace Core.ElasticSearch
 		{
 			var mapping = services.GetService<ElasticMapping<TConnection>>();
 			mappingFactory(mapping);
-			if (forTest)
-				mapping.Drop();
-			mapping.Build(initFunc, services.GetService<TService>());
+			mapping.Build(initFunc, services.GetService<TService>(), forTest);
 			return services;
 		}
 	}

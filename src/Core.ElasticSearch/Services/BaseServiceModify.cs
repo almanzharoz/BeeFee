@@ -18,7 +18,7 @@ namespace Core.ElasticSearch
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
 						.Doc(entity) //TODO: Было бы круто апдейтить только set - поля
-						.If(refresh, x => x.Refresh(Refresh.True))),
+						.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
 				r => r.Result == Result.Updated,
 				RepositoryLoggingEvents.ES_UPDATE,
 				$"Update (Id: {entity.Id})");
@@ -31,7 +31,7 @@ namespace Core.ElasticSearch
 							.Type(_mapping.GetTypeName<T>())
 							.Version(entity.Version)
 							.Doc(entity)
-							.If(refresh, x => x.Refresh(Refresh.True)))
+							.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True)))
 					.Fluent(r => entity.Version = (int)r.Version),
 				r => r.Result == Result.Updated,
 				RepositoryLoggingEvents.ES_UPDATE,
@@ -45,7 +45,7 @@ namespace Core.ElasticSearch
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
 						.Doc(setter(entity))
-						.If(refresh, x => x.Refresh(Refresh.True))),
+						.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
 				r => r.Result == Result.Updated,
 				RepositoryLoggingEvents.ES_UPDATE,
 				$"Update (Id: {entity?.Id})");
@@ -59,7 +59,7 @@ namespace Core.ElasticSearch
 						.Type(_mapping.GetTypeName<T>())
 						.Version(entity.Version.HasNotNullArg("version"))
 						.Doc(setter(entity))
-						.If(refresh, x => x.Refresh(Refresh.True))),
+						.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
 				r => r.Result == Result.Updated,
 				RepositoryLoggingEvents.ES_UPDATE,
 				$"Update (Id: {entity?.Id}), Version: {entity?.Version}");
@@ -74,7 +74,7 @@ namespace Core.ElasticSearch
 								.Index(_mapping.GetIndexName<T>())
 								.Type(_mapping.GetTypeName<T>())
 								.Doc(setter(entity))
-								.If(refresh, x => x.Refresh(Refresh.True))),
+								.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
 						r => r.Result == Result.Updated,
 						RepositoryLoggingEvents.ES_UPDATE,
 						$"Update (Id: {id})"));
@@ -90,7 +90,7 @@ namespace Core.ElasticSearch
 									.Type(_mapping.GetTypeName<T>())
 									.Version(entity.Version)
 									.Doc(setter(entity))
-									.If(refresh, x => x.Refresh(Refresh.True)))
+									.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True)))
 							.Fluent(r => entity.Version = (int)r.Version),
 						r => r.Result == Result.Updated,
 						RepositoryLoggingEvents.ES_UPDATE,
@@ -109,7 +109,7 @@ namespace Core.ElasticSearch
 									.Version(entity.Version)
 									.Parent(parent.HasNotNullArg(nameof(parent)))
 									.Doc(setter(entity))
-									.If(refresh, x => x.Refresh(Refresh.True)))
+									.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True)))
 							.Fluent(r => entity.Version = (int)r.Version),
 						r => r.Result == Result.Updated,
 						RepositoryLoggingEvents.ES_UPDATE,
@@ -128,7 +128,7 @@ namespace Core.ElasticSearch
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
 						.Doc(setter())
-						.If(refresh, x => x.Refresh(Refresh.True))),
+						.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
 				r => r.Result == Result.Updated,
 				RepositoryLoggingEvents.ES_UPDATE,
 				$"Update (Id: {id})");
@@ -162,7 +162,7 @@ namespace Core.ElasticSearch
 								.Index(_mapping.GetIndexName<T>())
 								.Type(_mapping.GetTypeName<T>())
 								.Doc(update(entity))
-								.If(refresh, x => x.Refresh(Refresh.True))),
+								.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
 						r => r.Result == Result.Updated ? entity.Set(x => x.Version, entity.Version + 1) : null,
 						RepositoryLoggingEvents.ES_UPDATE,
 						$"Update (Id: {entity.Id})"));
@@ -176,7 +176,7 @@ namespace Core.ElasticSearch
 					.Type(_mapping.GetTypeName<T>())
 					.Query(q => q.Bool(b => b.Filter(query)))
 					//.Version()
-					.If(refresh, y => y.Refresh())
+					.If(_mapping.ForTests || refresh, y => y.Refresh())
 					.Script(s => s.Inject(new UpdateByQueryBuilder<T>(), update, (s1, u) => s1.Inline(u).Params(u.GetParams)))),
 				r => (int)r.Updated,
 				RepositoryLoggingEvents.ES_UPDATEBYQUERY);
@@ -190,7 +190,7 @@ namespace Core.ElasticSearch
 					.Type(_mapping.GetTypeName<T>())
 					.Query(q => q.Bool(b => b.Filter(query)))
 					.Version()
-					.If(refresh, y => y.Refresh())
+					.If(_mapping.ForTests || refresh, y => y.Refresh())
 					.Script(s => s.Inject(new UpdateByQueryBuilder<T>(), update, (s1, u) => s1.Inline(u).Params(u.GetParams)))),
 				r => ((int)r.Updated, (int)r.Total),
 				RepositoryLoggingEvents.ES_UPDATEBYQUERY);

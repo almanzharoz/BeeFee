@@ -17,7 +17,7 @@ namespace Core.ElasticSearch
     {
         protected readonly ILogger _logger;
         protected readonly ElasticClient _client;
-        private readonly ElasticClient<TConnection> _topclient;
+        //private readonly ElasticClient<TConnection> _topclient;
 		private readonly RequestContainer<TConnection> _container;
         private readonly TConnection _settings;
         private readonly ElasticMapping<TConnection> _mapping;
@@ -27,7 +27,7 @@ namespace Core.ElasticSearch
             _container = factory.Container;
             _settings = settings;
             _mapping = factory.Mapping;
-	        _topclient = factory.Client;
+	        //_topclient = factory.Client;
             _client = factory.Client.Client;
             _logger = loggerFactory.CreateLogger<BaseService<TConnection>>();
         }

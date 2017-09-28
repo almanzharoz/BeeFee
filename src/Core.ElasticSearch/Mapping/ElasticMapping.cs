@@ -20,6 +20,8 @@ namespace Core.ElasticSearch.Mapping
 
 		string GetIndexName<T>() where T : IEntity;
 		string GetTypeName<T>() where T : IEntity;
+
+		bool ForTests { get; }
 	}
 
 	public interface IElasticProjections<TSettings> where TSettings : BaseElasticConnection
@@ -47,12 +49,14 @@ namespace Core.ElasticSearch.Mapping
 			_converters.TryAdd(typeof(SearchResponse<IProjection>), new SearchJsonConverter<IProjection>());
 		}
 
-	/// <summary>
-	/// Регистрирует маппинг
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	/// <returns></returns>
-	public IElasticMapping<TSettings> AddMapping<T>(Func<TSettings, string> indexName) where T : class, IModel
+		public bool ForTests { get; private set; }
+	
+		/// <summary>
+		/// Регистрирует маппинг
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
+		public IElasticMapping<TSettings> AddMapping<T>(Func<TSettings, string> indexName) where T : class, IModel
 		{
 			_mapping.AddOrUpdate(typeof(T), x => new MappingItem<T, TSettings>(_settings, indexName),
 				(t, m) => throw new Exception($"Mapping for type \"{typeof(T).Name}\" already exists."));
@@ -107,7 +111,7 @@ namespace Core.ElasticSearch.Mapping
 		/// <summary>
 		/// Проверяем индекс и маппинг
 		/// </summary>
-		internal void Build(Action initAction)
+		internal void Build(Action initAction, bool forTest = false)
 		{
 			var connectionPool = new StaticConnectionPool(new[] {_settings.Url});
 			var connectionSettings = new ConnectionSettings(connectionPool, new HttpConnection());
@@ -119,6 +123,9 @@ namespace Core.ElasticSearch.Mapping
 #endif
 
 			var client = new ElasticClient(connectionSettings);
+
+			if (ForTests = forTest)
+				Drop(client);
 
 			foreach (var mapping in _mapping.GroupBy(s => s.Value.IndexName))
 			{
@@ -151,26 +158,14 @@ namespace Core.ElasticSearch.Mapping
 			};
 
 			DefaultSerializer = JsonSerializer.Create(jsettings);
-
 		}
 
-		internal void Build<TService>(Action<TService> initFunc, TService repository)
+		internal void Build<TService>(Action<TService> initFunc, TService repository, bool forTest = false)
 			where TService : BaseService<TSettings>
-			=> Build(() => initFunc.IfNotNull(f => f(repository)));
+			=> Build(() => initFunc.IfNotNull(f => f(repository)), forTest);
 
-		internal void Drop()
+		private void Drop(ElasticClient client)
 		{
-			var connectionPool = new StaticConnectionPool(new[] { _settings.Url });
-			var connectionSettings = new ConnectionSettings(connectionPool, new HttpConnection());
-
-			connectionSettings.DefaultFieldNameInferrer(x => x.ToLower());
-#if DEBUG
-			connectionSettings.PrettyJson();
-			connectionSettings.DisableDirectStreaming();
-#endif
-
-			var client = new ElasticClient(connectionSettings);
-
 			foreach (var indexName in _mapping.Select(s => s.Value.IndexName).Distinct())
 				if (client.IndexExists(indexName).Exists)
 					client.DeleteIndex(indexName);
