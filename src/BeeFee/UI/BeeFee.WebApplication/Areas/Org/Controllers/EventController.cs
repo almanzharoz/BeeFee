@@ -6,6 +6,7 @@ using BeeFee.Model.Embed;
 using BeeFee.Model.Helpers;
 using BeeFee.Model.Projections;
 using BeeFee.Model.Services;
+using BeeFee.OrganizerApp.Projections.Company;
 using BeeFee.OrganizerApp.Services;
 using BeeFee.WebApplication.Areas.Org.Models;
 using BeeFee.WebApplication.Controllers;
@@ -22,6 +23,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 	{
 		private readonly BeeFeeWebAppSettings _settings;
 		private readonly ImagesService _imagesService;
+
 		public EventController(EventService service, CategoryService categoryService, BeeFeeWebAppSettings settings) : base(service, categoryService)
 		{
 			_settings = settings;
@@ -36,7 +38,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 
 		[HttpGet]
 	    public IActionResult Add(string companyId)
-			=> View(new AddEventEditModel(companyId, CategoryService.GetAllCategories<BaseCategoryProjection>())
+			=> View(new AddEventEditModel(Service.GetCompany<CompanyProjection>(companyId), CategoryService.GetAllCategories<BaseCategoryProjection>())
 			{
 				StartDateTime = DateTime.Now,
 				FinishDateTime = DateTime.Now.AddDays(1)
@@ -55,12 +57,13 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				    model.Name,
 					model.Label,
 					model.Url,
+					model.Email,
 				    model.Type,
 				    new EventDateTime(model.StartDateTime, model.FinishDateTime),
 				    new Address(model.City, model.Address),
 				    new[] {new TicketPrice("ticket", null, 0, 10)},
 				    model.Html,
-					await _imagesService.RegisterEvent(model.Url)
+					await _imagesService.RegisterEvent(Service.GetCompany<CompanyJoinProjection>(model.CompanyId).Url, model.Url, Request.Host.Host)
 					))
 					return RedirectToAction("Index", new { id=model.CompanyId });
 				ModelState.AddModelError("error", "Event dont save");
@@ -69,12 +72,13 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 	    }
 
 		[HttpGet]
-		public IActionResult Edit(string id, string companyId)
+		public async Task<IActionResult> Edit(string id, string companyId)
 		{
 			var @event = Service.GetEvent(id, companyId);
 			if (@event == null)
 				return NotFound();
-			return View(new EventEditModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>()));
+			return View(new EventEditModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>(),
+				await _imagesService.RegisterEvent(@event.Parent.Url, @event.Url, Request.Host.Host)));
 		}
 
 		[HttpPost]
@@ -90,6 +94,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				 model.Label,
 				 model.Url,
 				 model.Cover,
+				 model.Email,
 				 new EventDateTime(model.StartDateTime, model.FinishDateTime),
 				 new Address(model.City, model.Address),
 				 model.Type,

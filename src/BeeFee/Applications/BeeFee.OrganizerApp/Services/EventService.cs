@@ -32,14 +32,14 @@ namespace BeeFee.OrganizerApp.Services
 
 		/// <exception cref="AddEntityException"></exception>
 		// TODO: добавить проверку 
-		public bool AddEvent(string companyId, string categoryId, string name, string label, string url,
+		public bool AddEvent(string companyId, string categoryId, string name, string label, string url, string email,
 			EEventType type, EventDateTime dateTime, Address address, TicketPrice[] prices, string html, string imagesKey)
 		{
 			var newEvent = new NewEvent(
 				companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)),
 				Get<BaseUserProjection>(User.Id).HasNotNullEntity("user"),
 				Get<BaseCategoryProjection>(categoryId), name, label, url, type,
-				dateTime, address, prices, html, imagesKey);
+				dateTime, address, prices, html, email);
 			return !ExistsByUrl<EventProjection>(url.IfNull(name, CommonHelper.UriTransliterate)) &&
 				Insert<NewEvent, CompanyJoinProjection>(
 					newEvent, true) && Insert(new NewEventTransaction(newEvent), false);
@@ -57,12 +57,12 @@ namespace BeeFee.OrganizerApp.Services
 			&& Remove(GetEventTransactionById(id, company), false);
 
 		///<exception cref="UpdateEntityException"></exception>
-		public bool UpdateEvent(string id, string company, int version, string name, string label, string url, string cover,
+		public bool UpdateEvent(string id, string company, int version, string name, string label, string url, string cover, string email,
 			EventDateTime dateTime, Address address, EEventType type,
 			string categoryId, TicketPrice[] prices, string html)
 			=> Update<EventProjection, CompanyJoinProjection>(id,
 					company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version,
-					x => x.Change(name, label, url, cover, dateTime, address, type,
+					x => x.Change(name, label, url, cover, email, dateTime, address, type,
 						Get<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), prices, html), true);
 
 		public IReadOnlyCollection<EventProjection> GetMyEvents(string companyId) 

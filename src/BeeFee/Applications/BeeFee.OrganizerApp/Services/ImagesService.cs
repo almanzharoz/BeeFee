@@ -12,7 +12,7 @@ namespace BeeFee.OrganizerApp.Services
 			_imagesHost = imagesHost.HasNotNullArg(nameof(imagesHost));
 		}
 
-		public Task<string> RegisterEvent(string url)
+		public Task<string> RegisterEvent(string companyUrl, string url, string host)
 			=> url.HasNotNullArg(nameof(url)).Using(x => new WebClient {BaseAddress = _imagesHost},
 				async (u, c) => await c.UploadStringTaskAsync("/api/home/"+url, "PUT", ""));
 	}

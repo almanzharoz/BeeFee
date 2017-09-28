@@ -15,6 +15,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		public string Id { get; set; }
 		[Required(ErrorMessage = "Company is required")]
 		public string CompanyId { get; set; }
+		public string CompanyUrl { get; set; }
 		[Required(ErrorMessage = "Version is required")]
 		public int Version { get; set; }
 
@@ -24,10 +25,13 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		[Required(ErrorMessage = "Label is required")]
 		public string Label { get; set; }
 
+		[RegularExpression(@"[a-zA-Z-_]{3,}")]
 		public string Url { get; set; }
 		[Required(ErrorMessage = "Cover is required")]
 		public string Cover { get; set; }
-		public string ImagesKey { get; set; }
+
+		[EmailAddress]
+		public string Email { get; set; }
 
 		public string CategoryId { get; set; }
 
@@ -54,15 +58,18 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 
 		public string Html { get; set; }
 
+		public string ImagesKey { get; set; }
+
 		public IList<SelectListItem> Categories { get; private set; }
 
 		public EventEditModel() { } // For binder
 
-		public EventEditModel(EventProjection @event, IReadOnlyCollection<BaseCategoryProjection> categories)
+		public EventEditModel(EventProjection @event, IReadOnlyCollection<BaseCategoryProjection> categories, string imagesKey)
 		{
 			Init(categories);
 			Id = @event.Id;
 			CompanyId = @event.Parent.Id;
+			CompanyUrl = @event.Parent.Url;
 			Version = @event.Version;
 			Name = @event.Name;
 			Label = @event.Page.Label;
@@ -75,7 +82,8 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 			Address = @event.Address.AddressString;
 			Html= @event.Page.Html;
 			Cover = @event.Page.Cover;
-			ImagesKey = @event.ImagesKey;
+			Email = @event.Email;
+			ImagesKey = imagesKey;
 		}
 
 		public EventEditModel Init(IReadOnlyCollection<BaseCategoryProjection> categories)

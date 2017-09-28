@@ -36,6 +36,6 @@ namespace BeeFee.Model.Models
 		public bool Hidden { get; set; }
 
 		[Keyword(Index = false)]
-		public string ImagesKey { get; set; }
+		public string Email { get; set; }
 	}
 }

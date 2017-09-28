@@ -15,6 +15,11 @@ namespace BeeFee.Model.Models
 		[Keyword]
 		public string Url { get; set; }
 		public CompanyUser[] Users { get; set; }
+
+		[Keyword(Index = false)]
+		public string Email { get; set; }
+		[Keyword(Index = false)]
+		public string Logo { get; set; }
 	}
 
 	public struct CompanyUser

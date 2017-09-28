@@ -96,6 +96,40 @@ namespace Core.ElasticSearch
 						RepositoryLoggingEvents.ES_UPDATE,
 						$"Update (Id: {id}, Version: {version})"));
 
+		/// <summary>
+		/// Хитрожопа функция обновления. Пытается взять документ по id и query, есть такой не найден кидает эксепшн.
+		/// Иначе обновляет достанный документ указанной функцией обновления.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="TAccessException"></typeparam>
+		/// <param name="id">Id документа</param>
+		/// <param name="version">Версия документа</param>
+		/// <param name="query">Запрос для проверки на доступность</param>
+		/// <param name="getException">Генерация ошибки, если документ не найден</param>
+		/// <param name="setter">Функция обновления</param>
+		/// <param name="refresh">Флаг обновления индекса сразу</param>
+		/// <returns>Документ изменен. Если документ не изменился, хоть и был найден, вернется false.</returns>
+		protected bool UpdateWithQuery<T, TAccessException>(string id, int version,
+			Func<QueryContainerDescriptor<T>, QueryContainer> query, Func<TAccessException> getException, Func<T, T> setter,
+			bool refresh)
+			where T : BaseEntityWithVersion, IProjection, IGetProjection, IUpdateProjection
+			where TAccessException : Exception
+			=> Get(id, version, query)
+				.ThrowIfNull(getException)
+				.Convert(entity =>
+					Try(
+						c => c.Update(
+								DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity)).Id), d => d
+									.Index(_mapping.GetIndexName<T>())
+									.Type(_mapping.GetTypeName<T>())
+									.Version(entity.Version)
+									.Doc(setter(entity))
+									.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True)))
+							.Fluent(r => entity.Version = (int) r.Version),
+						r => r.Result == Result.Updated,
+						RepositoryLoggingEvents.ES_UPDATE,
+						$"Update (Id: {id}, Version: {version})"));
+
 		protected bool Update<T, TParent>(string id, string parent, int version, Func<T, T> setter, bool refresh)
 			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection, IUpdateProjection
 			where TParent : class, IProjection, IJoinProjection

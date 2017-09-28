@@ -29,10 +29,12 @@ namespace BeeFee.OrganizerApp.Services
 		public CompanyProjection GetCompany(string id)
 			=> GetWithVersion<Company, CompanyProjection>(id, f => f.Term(p => p.Users.First().User, User.Id));
 
-		public bool EditCompany(string id, int version, string name, string url)
-			=> Update<CompanyProjection>(id.ThrowIfNull(GetCompany, x => new EntityAccessException<Company>(User, x)).Id, version, x => x.Update(name, url), true);
+		public bool EditCompany(string id, int version, string name, string url, string email, string logo)
+			=> UpdateWithQuery<CompanyProjection, EntityAccessException<Company>>(id, version,
+				f => f.Term(p => p.Users.First().User, User.Id), () => new EntityAccessException<Company>(User, id),
+				x => x.Update(name, url, email, logo), true);
 
 		public bool RemoveCompany(string id, int version)
-			=> Remove<CompanyProjection>(id.ThrowIfNull(GetCompany, x => new EntityAccessException<Company>(User, x)).Id, version, true);
+			=> Remove<CompanyProjection>(id.ThrowIfNullFluent(GetCompany, x => new EntityAccessException<Company>(User, x)), version, true);
 	}
 }
