@@ -15,7 +15,7 @@ namespace BeeFee.TestsApp.Projections
 
 		public BaseCategoryProjection Category { get; private set; }
 
-		public EEventType Type { get; private set; }
+		public EEventState State { get; private set; }
 
 		public TicketPrice[] Prices { get; private set; }
 

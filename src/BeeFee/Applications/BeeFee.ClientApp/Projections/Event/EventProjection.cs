@@ -13,18 +13,18 @@ namespace BeeFee.ClientApp.Projections.Event
 
 		public BaseCategoryProjection Category { get; }
 
-		public EEventType Type { get; }
+		public EEventState State { get; }
 
 		public TicketPrice[] Prices { get; }
 
 		public EventPage Page { get; }
 
-		public EventProjection(string id, BaseCompanyProjection company, string url, string name, BaseCategoryProjection category, EEventType type, TicketPrice[] prices, EventPage page) : base(id, company)
+		public EventProjection(string id, BaseCompanyProjection company, string url, string name, BaseCategoryProjection category, EEventState state, TicketPrice[] prices, EventPage page) : base(id, company)
 		{
 			Url = url;
 			Name = name;
 			Category = category;
-			Type = type;
+			State = state;
 			Prices = prices;
 			Page = page;
 		}

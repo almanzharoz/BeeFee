@@ -18,7 +18,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 
 		public EventDateTime DateTime { get; }
 
-		public EEventType Type { get; }
+		public EEventState State { get; }
 
 		public Address Address { get; }
 
@@ -39,7 +39,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 			Name = name.HasNotNullArg(_throws, nameof(name));
 			Url = url.IfNull(name, CommonHelper.UriTransliterate);
 			DateTime = dateTime;
-			Type = EEventType.Created;
+			State = EEventState.Created;
 			Address = address;
 			Prices = prices;
 			Page = new EventPage(name, label, category.Name, null, dateTime.ToString(), address, html);

@@ -16,7 +16,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 		public BaseCategoryProjection Category { get; private set; }
 		public EventDateTime DateTime { get; private set; }
 		public Address Address { get; private set; }
-		public EEventType Type { get; private set; }
+		public EEventState State { get; private set; }
 		public string Url { get; private set; }
 		public string Name { get; private set; }
 		public string Email { get; private set; }
@@ -28,7 +28,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 		internal EventProjection Change(string name, string label, string url, string cover, string email, EventDateTime dateTime, Address address, 
 			BaseCategoryProjection category, TicketPrice[] prices, string html)
 		{
-			if (Type != EEventType.Created && Type != EEventType.NotModerated)
+			if (State != EEventState.Created && State != EEventState.NotModerated)
 				throw new Exception("Dont change this event");
 			Name = name;
 			Url = url.IfNull(name, CommonHelper.UriTransliterate);
@@ -43,9 +43,9 @@ namespace BeeFee.OrganizerApp.Projections.Event
 
 		internal EventProjection ToModerate()
 		{
-			if (Type != EEventType.Created && Type != EEventType.Moderating)
+			if (State != EEventState.Created && State != EEventState.Moderating)
 				throw new System.Exception("Dont send event to moderate");
-			Type = EEventType.Moderating;
+			State = EEventState.Moderating;
 			return this;
 		}
 

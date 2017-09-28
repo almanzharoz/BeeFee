@@ -65,7 +65,13 @@
                                 <div class="col-xs-4 col-md-3">
                                     <label class="vertical-field--l"><span>Выберите даты</span></label>
                                 </div>
-                                <div class="col-xs-4 col-md-4">
+                                <div class="col-xs-3 col-md-3">
+                                    <div class="vertical-field--d">
+                                        @*@Html.TextBoxFor(x => x.EndDate, new { @class = "vertical-field--i js-date", id = "endDate1" })*@
+                                        <input name="@Html.NameFor(x=>x.StartDate)" class="vertical-field--i js-date" type="text" id="startDate1" value="@Model.StartDate.Date.ToString("dd.MM.yyyy")" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-3 col-md-3">
                                     <div class="vertical-field--d">
                                         @*@Html.TextBoxFor(x => x.EndDate, new { @class = "vertical-field--i js-date", id = "endDate1" })*@
                                         <input name="@Html.NameFor(x=>x.EndDate)" class="vertical-field--i js-date" type="text" id="endDate1" value="@Model.EndDate.Date.ToString("dd.MM.yyyy")" />
@@ -81,46 +87,31 @@
                         <div class="vertical-field">
                             <div class="row">
                                 <div class="col-xs-4 col-md-3">
-                                    <label class="vertical-field--l"><span>Выберите тип</span></label>
+                                    <label class="vertical-field--l"><span>Выберите категорию</span></label>
                                 </div>
                                 <div class="col-xs-4 col-md-9">
                                     <div class="vertical-field--c">
                                         <div class="row">
                                             @{
                                                 var allChecked = true;
-                                                foreach (EEventType type in Enum.GetValues(typeof(EEventType)))
+                                                foreach (var category in Model.Categories)
                                                 {
-                                                    if (type == EEventType.None)
-                                                    {
-                                                        continue;
-                                                    }
-                                                    //когда придумаем что сделать с языками - можно перенести в переводы, или сделать в description перечислений
-                                                    var title = "Выставка";
-                                                    if (type == EEventType.Concert)
-                                                    {
-                                                        title = "Концерт";
-                                                    }
-                                                    if (type == EEventType.Excursion)
-                                                    {
-                                                        title = "Экскурсия";
-                                                    }
-                                                    var isChecked = Model.Types == null || Model.Types.Contains(type);
-                                                    if (!isChecked)
+                                                    if (!category.Selected)
                                                     {
                                                         allChecked = false;
                                                     }
-                                                     <div class="col-xs-2 col-md-3">
-                                                         <label class="checkbox">
-                                                             <input value="@((int) type)" name="Types" class="checkbox--input type-checkbox" type="checkbox" @(isChecked ? "checked=\"checked\"" : "") id="chk@(type)"/>
-                                                             <div class="checkbox--label">@title</div>
-                                                         </label>
-                                                     </div>
-                                                 }
+                                                    <div class="col-xs-2 col-md-3">
+                                                        <label class="checkbox">
+                                                            <input value="@category.Value" name="Categories" class="checkbox--input category-checkbox" type="checkbox" @(category.Selected ? "checked=\"checked\"" : "") />
+                                                            <div class="checkbox--label">@category.Text</div>
+                                                        </label>
+                                                    </div>
+                                                }
 
                                                 <div class="col-xs-2 col-md-3">
                                                     <label class="checkbox">
-                                                        <input class="checkbox--input" type="checkbox" @(allChecked ? "checked=\"checked\"" : "")  data-checkboxes="total"/>
-                                                        <div class="checkbox--label">Все типы</div>
+                                                        <input class="checkbox--input" type="checkbox" @(allChecked ? "checked=\"checked\"" : "") data-checkboxes="total" />
+                                                        <div class="checkbox--label">Все категории</div>
                                                     </label>
                                                 </div>
                                             }
@@ -133,7 +124,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="filter--field">
+                    @*<div class="filter--field">
                         <div class="vertical-field">
                             <div class="row">
                                 <div class="col-xs-4 col-md-3">
@@ -141,14 +132,13 @@
                                 </div>
                                 <div class="col-xs-4 col-md-6">
                                     @Html.TextBoxFor(x => x.MaxPrice, new { @class = "vertical-field--i", id = "maxPrice1" })
-                                    @*<input class="vertical-field--i" type="text" id="maxPrice1"/>*@
                                 </div>
                                 <div class="col-xs-4 col-xs-offset-l-0 col-md-9 col-md-offset-l-3">
                                     <div class="vertical-field--t"></div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>*@
                     <div class="row">
                         <div class="col-xs-4 col-md-6 col-md-offset-l-3">
                             <button class="btn is-block" type="submit">Найти мероприятия</button>

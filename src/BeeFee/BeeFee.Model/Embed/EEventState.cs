@@ -1,6 +1,6 @@
 ﻿namespace BeeFee.Model.Embed
 {
-    public enum EEventType : short
+    public enum EEventState : short
     {
 		None = 0,
 		Created = 1,

@@ -17,12 +17,12 @@ namespace BeeFee.ModeratorApp.Services
 		}
 
 		public Pager<EventModeratorGridItem> GetEvents(int page, int take)
-			=> FilterPager<Event, EventModeratorGridItem>(q => q.Term(p => p.Type, EEventType.Moderating), page, take,
+			=> FilterPager<Event, EventModeratorGridItem>(q => q.Term(p => p.State, EEventState.Moderating), page, take,
 				s => s.Ascending(p => p.DateTime.Start));
 
 		public EventModeratorProjection GetEvent(string id, string companyId, int version)
 			=> Get<Event, EventModeratorProjection, BaseCompanyProjection>(id, companyId, version,
-				q => q.Term(t => t.Type, EEventType.Moderating) && (!q.Exists(e => e.Field(p => p.Moderator)) || q.Term(p => p.Moderator, User.Id)));
+				q => q.Term(t => t.State, EEventState.Moderating) && (!q.Exists(e => e.Field(p => p.Moderator)) || q.Term(p => p.Moderator, User.Id)));
 
 		public bool ModerateEvent(string id, string companyId, int version, string title, string caption, string label,
 			Address address, string categoryId, string html, bool moderated)

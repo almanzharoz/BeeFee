@@ -1,5 +1,5 @@
 ﻿var Events = {
-    loadEvents: function (text, startDate, endDate, city, types, categories, pageIndex, pageSize, maxPrice) {
+    loadEvents: function (text, startDate, endDate, city, categories, pageIndex, pageSize, maxPrice) {
         var d = $.Deferred();
         var params = [];
         params.push("Text=" + text);
@@ -9,7 +9,6 @@
         params.push("PageIndex=" + pageIndex);
         params.push("PageSize=" + pageSize);
         params.push("MaxPrice=" + maxPrice);
-        $.each(types, function (i, type) { params.push("Types=" + type); });
         $.each(categories, function (i, category) { params.push("Categories=" + category); });
         $.ajax({
             url: '/event/loadevents?' + params.join("&"),

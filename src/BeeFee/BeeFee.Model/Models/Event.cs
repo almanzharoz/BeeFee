@@ -23,7 +23,7 @@ namespace BeeFee.Model.Models
 		public EventDateTime DateTime { get; set; }
 		public Address Address { get; set; }
 		[Keyword]
-		public EEventType Type { get; set; }
+		public EEventState State { get; set; }
 		
 		/// <summary>
 		/// Данные для отображения мероприятия пользователю

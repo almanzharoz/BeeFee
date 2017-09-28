@@ -57,7 +57,7 @@ namespace BeeFee.OrganizerApp.Tests
 			Assert.AreEqual("test", @event.Url);
 			Assert.AreEqual("email", @event.Email);
 			Assert.AreEqual("test", @event.Parent.Name);
-			Assert.AreEqual(EEventType.Created, @event.Type);
+			Assert.AreEqual(EEventState.Created, @event.State);
 			Assert.AreEqual(start, @event.DateTime.Start);
 			Assert.AreEqual(end, @event.DateTime.Finish);
 			Assert.AreEqual("Ekaterinburg", @event.Address.City);
@@ -79,7 +79,7 @@ namespace BeeFee.OrganizerApp.Tests
 			Assert.AreEqual("test", @event.Name);
 			Assert.AreEqual("label", @event.Page.Label);
 			Assert.AreEqual("test", @event.Url);
-			Assert.AreEqual(EEventType.Created, @event.Type);
+			Assert.AreEqual(EEventState.Created, @event.State);
 			Assert.AreEqual(start, @event.DateTime.Start);
 			Assert.AreEqual(end, @event.DateTime.Finish);
 			Assert.AreEqual("Ekaterinburg", @event.Address.City);
@@ -95,7 +95,7 @@ namespace BeeFee.OrganizerApp.Tests
 			Assert.AreEqual("asd", @event.Name);
 			Assert.AreEqual("label", @event.Page.Label);
 			Assert.AreEqual("asd", @event.Url);
-			Assert.AreEqual(EEventType.Created, @event.Type);
+			Assert.AreEqual(EEventState.Created, @event.State);
 			Assert.AreEqual(start, @event.DateTime.Start);
 			Assert.AreEqual(end, @event.DateTime.Finish);
 			Assert.AreEqual("Ekaterinburg", @event.Address.City);

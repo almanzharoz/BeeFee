@@ -33,9 +33,9 @@
 		    <span asp-validation-for="CategoryId"></span>
 	    </div>
 
-        <div class="form-group">
-            @Html.DropDownListFor(x => x.Type, Html.GetEnumSelectList<EEventType>(), null, new {@class = "form-control"})
-        </div>
+        @*<div class="form-group">
+            @Html.DropDownListFor(x => x.Type, Html.GetEnumSelectList<EEventState>(), null, new {@class = "form-control"})
+        </div>*@
 
 		<div class="form-group">
 			<input class="form-control" asp-for="Email" placeholder="Email для обратной связи"/>

@@ -24,7 +24,7 @@ namespace BeeFee.ModeratorApp.Tests
 		{
 			var id = AddCategory("test");
 			var cid = AddCompany("test");
-			var eventId = AddEvent(cid, id, "test", new EventDateTime(DateTime.Now, DateTime.Now.AddMinutes(20)), EEventType.Moderating);
+			var eventId = AddEvent(cid, id, "test", new EventDateTime(DateTime.Now, DateTime.Now.AddMinutes(20)), EEventState.Moderating);
 
 			Assert.IsTrue(Service.GetEvents(0, 1).Any());
 			Assert.IsTrue(Service.ModerateEvent(eventId, cid, 1, true));

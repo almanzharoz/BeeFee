@@ -57,8 +57,8 @@ namespace BeeFee.TestsApp
 
 		}
 
-		protected string AddEvent(string companyId, string categoryId, string name, EventDateTime date, EEventType type = EEventType.Created, Address address=default(Address), decimal price=0, int count = 10)
-			=> _eventService.AddEvent(companyId, name, date, address, categoryId, type, price, count);
+		protected string AddEvent(string companyId, string categoryId, string name, EventDateTime date, EEventState state = EEventState.Created, Address address=default(Address), decimal price=0, int count = 10)
+			=> _eventService.AddEvent(companyId, name, date, address, categoryId, state, price, count);
 
 		protected string AddCategory(string name)
 			=> _categoryService.Add(name);

@@ -11,7 +11,7 @@ namespace BeeFee.ModeratorApp.Projections
 	public class EventModeratorProjection : BaseEntityWithParentAndVersion<BaseCompanyProjection>, IProjection<Event>, IGetProjection, IUpdateProjection
 	{
 		public string Name { get; private set; }
-		public EEventType Type { get; private set; }
+		public EEventState State { get; private set; }
 		public EventPageModerate Page { get; private set; }
 		public BaseCategoryProjection Category { get; private set; }
 
@@ -29,9 +29,9 @@ namespace BeeFee.ModeratorApp.Projections
 
 		internal EventModeratorProjection ChangeType(bool moderated)
 		{
-			if (Type != EEventType.Moderating)
+			if (State != EEventState.Moderating)
 				throw new Exception("Event is not in moderating state");
-			Type = moderated ? EEventType.Open : EEventType.NotModerated;
+			State = moderated ? EEventState.Open : EEventState.NotModerated;
 			return this;
 		}
 	}
