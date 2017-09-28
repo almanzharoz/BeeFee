@@ -16,6 +16,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		public string Url { get; set; }
 		[EmailAddress]
 		public string Email { get; set; }
+		public string Logo { get; set; }
 
 		public CompanyEditModel() { }
 
@@ -26,6 +27,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 			Name = company.Name;
 			Url = company.Url;
 			Email = company.Email;
+			Logo = company.Logo;
 		}
 	}
 }
