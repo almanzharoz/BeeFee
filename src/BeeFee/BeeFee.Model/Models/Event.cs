@@ -37,5 +37,8 @@ namespace BeeFee.Model.Models
 
 		[Keyword(Index = false)]
 		public string Email { get; set; }
+
+		[Keyword]
+		public User Moderator { get; set; }
 	}
 }

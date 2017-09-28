@@ -58,7 +58,6 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 					model.Label,
 					model.Url,
 					model.Email,
-				    model.Type,
 				    new EventDateTime(model.StartDateTime, model.FinishDateTime),
 				    new Address(model.City, model.Address),
 				    new[] {new TicketPrice("ticket", null, 0, 10)},
@@ -97,7 +96,6 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				 model.Email,
 				 new EventDateTime(model.StartDateTime, model.FinishDateTime),
 				 new Address(model.City, model.Address),
-				 model.Type,
 				 model.CategoryId,
 				 //new[] { new TicketPrice() { Price = new Price(model.Price) } },
 				 null,
@@ -110,6 +108,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 
 		public IActionResult Remove(string id, string companyId, int version)
 	    {
+			// TODO: добавить обработку ошибок
 			Service.RemoveEvent(id, companyId, version);
 		    return RedirectToAction("Index", new { companyId });
 	    }

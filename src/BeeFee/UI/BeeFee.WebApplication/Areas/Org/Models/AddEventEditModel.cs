@@ -43,8 +43,6 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		[EmailAddress]
 		public string Email { get; set; }
 
-		public EEventType Type { get; set; }
-
 		//[DataType(DataType.Currency)]
 		//public string Price { get; set; }
 

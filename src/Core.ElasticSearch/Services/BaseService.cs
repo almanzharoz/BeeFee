@@ -168,11 +168,12 @@ namespace Core.ElasticSearch
     {
         public static EventId ES_SEARCH = new EventId(1000, "Search");
         public static EventId ES_GET = new EventId(1001, "Get");
-        public static EventId ES_INSERT = new EventId(1002, "Insert");
+		public static EventId ES_GETWITHQUERY = new EventId(1011, "GetWithQuery");
+		public static EventId ES_INSERT = new EventId(1002, "Insert");
         public static EventId ES_UPDATE = new EventId(1003, "Update");
-        public static EventId ES_UPDATEBYQUERY = new EventId(1004, "UpdateByQuery");
+        public static EventId ES_UPDATEBYQUERY = new EventId(1013, "UpdateByQuery");
         public static EventId ES_REMOVE = new EventId(1005, "Remove");
-        public static EventId ES_REMOVEBYQUERY = new EventId(1006, "RemoveByQuery");
+        public static EventId ES_REMOVEBYQUERY = new EventId(1015, "RemoveByQuery");
         public static EventId ES_COUNT = new EventId(1007, "Count");
 
     }

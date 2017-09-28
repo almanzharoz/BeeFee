@@ -50,13 +50,15 @@ namespace Core.ElasticSearch
 				RepositoryLoggingEvents.ES_UPDATE,
 				$"Update (Id: {entity?.Id})");
 
-		protected bool UpdateWithVersion<T>(T entity, Func<T, T> setter, bool refresh)
-			where T : BaseEntityWithVersion, IProjection, IUpdateProjection
+		protected bool UpdateWithVersion<T, TParent>(T entity, Func<T, T> setter, bool refresh)
+			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IUpdateProjection
+			where TParent : class, IProjection, IJoinProjection
 			=> Try(
 				c => c.Update(
 					DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity)).Id), d => d
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
+						.Parent(entity.Parent.Id)
 						.Version(entity.Version.HasNotNullArg("version"))
 						.Doc(setter(entity))
 						.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),

@@ -99,7 +99,7 @@ namespace Core.ElasticSearch.Mapping
 					//	_converters.TryAdd(typeof(T), new InsertJsonConverter<T>(result));
 					if (typeof(IGetProjection).IsAssignableFrom(x))
 						_converters.TryAdd(typeof(GetResponse<T>), new GetJsonConverter<T>());
-					if (typeof(ISearchProjection).IsAssignableFrom(x) || typeof(IJoinProjection).IsAssignableFrom(x))
+					if (typeof(ISearchProjection).IsAssignableFrom(x) || typeof(IJoinProjection).IsAssignableFrom(x) || typeof(IGetProjection).IsAssignableFrom(x))
 						_converters.TryAdd(typeof(SearchResponse<T>), new SearchJsonConverter<T>());
 					//_converters.TryAdd(typeof(UpdateResponse<T>), new UpdateResultJsonConverter<T>());
 					return result;

@@ -51,8 +51,6 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		[Required(ErrorMessage = "Address is required")]
 		public string Address { get; set; }
 
-		public EEventType Type { get; set; }
-
 		//[DataType(DataType.Currency)]
 		//public string Price { get; set; }
 
@@ -74,7 +72,6 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 			Name = @event.Name;
 			Label = @event.Page.Label;
 			Url = @event.Url;
-			Type = @event.Type;
 			CategoryId = @event.Category.Id;
 			StartDateTime = @event.DateTime.Start;
 			FinishDateTime = @event.DateTime.Finish;

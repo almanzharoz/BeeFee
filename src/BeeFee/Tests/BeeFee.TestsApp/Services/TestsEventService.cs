@@ -16,7 +16,7 @@ namespace BeeFee.TestsApp.Services
 		{
 		}
 
-		public string AddEvent(string companyId, string name, EventDateTime dateTime, Address address, EEventType type, string categoryId, decimal price, int count=10)
+		public string AddEvent(string companyId, string name, EventDateTime dateTime, Address address, string categoryId, EEventType type, decimal price, int count=10)
 		{
 			var category = Get<BaseCategoryProjection>(categoryId.HasNotNullArg(nameof(categoryId))).HasNotNullArg("category");
 

@@ -186,6 +186,27 @@ namespace Core.ElasticSearch
 						RepositoryLoggingEvents.ES_GET,
 						$"Get with query (Id: {id})"));
 
+		protected TProjection GetWithVersion<TProjection, TParent>(string id, string parent,
+			Func<QueryContainerDescriptor<TProjection>, QueryContainer> query,
+			bool load = true)
+			where TProjection : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection
+			where TParent : class, IProjection, IJoinProjection
+			=> _mapping.GetProjectionItem<TProjection>()
+				.Convert(
+					projection => Try(
+						c => c.Search<TProjection>(x => x
+							.Index(projection.MappingItem.IndexName)
+							.Type(projection.MappingItem.TypeName)
+							.Query(q => q.Bool(b => b.Filter(Query<TProjection>.Ids(i => i.Values(id.HasNotNullArg(nameof(id)))) &&
+								Query<TProjection>.ParentId(p => p.Id(parent.HasNotNullArg(nameof(parent)))) &&
+															query(new QueryContainerDescriptor<TProjection>()))))
+							.Take(1)
+							.Version()
+							.Source(s => s.Includes(f => f.Fields(projection.Fields)))),
+						r => r.Documents.FirstOrDefault().If(load, Load),
+						RepositoryLoggingEvents.ES_GETWITHQUERY,
+						$"Get with query (Id: {id}, Parent: {parent})"));
+
 		protected TProjection Get<T, TProjection, TParent>(string id, string parent, Func<QueryContainerDescriptor<T>, QueryContainer> query, bool load = true)
 			where TProjection : BaseEntityWithParent<TParent>, IProjection<T>, IGetProjection
 			where TParent : class, IProjection, IJoinProjection
@@ -201,9 +222,30 @@ namespace Core.ElasticSearch
 							.Take(1)
 							.Source(s => s.Includes(f => f.Fields(projection.Fields)))),
 						r => r.Documents.FirstOrDefault().If(load, Load),
-						RepositoryLoggingEvents.ES_GET,
+						RepositoryLoggingEvents.ES_GETWITHQUERY,
 						$"Get with query (Id: {id}, Parent: {parent})"));
-		
+
+		protected TProjection Get<T, TProjection, TParent>(string id, string parent, int version, Func<QueryContainerDescriptor<T>, QueryContainer> query, bool load = true)
+			where TProjection : BaseEntityWithParentAndVersion<TParent>, IProjection<T>, IGetProjection
+			where TParent : class, IProjection, IJoinProjection
+			where T : class, IModel
+			=> _mapping.GetProjectionItem<TProjection>()
+			.Convert(
+				projection => Try(
+				c => c.Search<TProjection>(x => x
+					.Index(projection.MappingItem.IndexName)
+					.Type(projection.MappingItem.TypeName)
+					.Query(q => q.Bool(b => b.Filter(Query<T>.Ids(i => i.Values(id.HasNotNullArg("id"))) &&
+													Query<T>.ParentId(p => p.Id(parent.HasNotNullArg("parent"))) && query(new QueryContainerDescriptor<T>()))))
+					.Take(1)
+					.Version()
+					.Source(s => s.Includes(f => f.Fields(projection.Fields)))),
+				r => r.Documents.FirstOrDefault()
+					.ThrowIf<TProjection, VersionException>(x => x.Version != version)
+					.If(x => load && x != null, x => Load()),
+				RepositoryLoggingEvents.ES_GETWITHQUERY,
+				$"Get with query (Id: {id}, Parent: {parent})"));
+
 		protected TProjection GetWithVersion<T, TProjection, TParent>(string id, string parent, Func<QueryContainerDescriptor<T>, QueryContainer> query, bool load = true)
 			where TProjection : BaseEntityWithParentAndVersion<TParent>, IProjection<T>, IGetProjection
 			where TParent : class, IProjection, IJoinProjection

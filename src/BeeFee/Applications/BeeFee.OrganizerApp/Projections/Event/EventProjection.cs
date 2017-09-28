@@ -6,6 +6,7 @@ using BeeFee.Model.Projections;
 using BeeFee.OrganizerApp.Projections.Company;
 using Core.ElasticSearch.Domain;
 using SharpFuncExt;
+using System;
 
 namespace BeeFee.OrganizerApp.Projections.Event
 {
@@ -24,18 +25,27 @@ namespace BeeFee.OrganizerApp.Projections.Event
 
 		public BaseUserProjection Owner { get; private set; }
 
-		internal EventProjection Change(string name, string label, string url, string cover, string email, EventDateTime dateTime, Address address, EEventType type,
+		internal EventProjection Change(string name, string label, string url, string cover, string email, EventDateTime dateTime, Address address, 
 			BaseCategoryProjection category, TicketPrice[] prices, string html)
 		{
+			if (Type != EEventType.Created && Type != EEventType.NotModerated)
+				throw new Exception("Dont change this event");
 			Name = name;
 			Url = url.IfNull(name, CommonHelper.UriTransliterate);
 			DateTime = dateTime;
 			Address = address;
-			Type = type;
 			Email = email;
 			Category = category.HasNotNullArg(nameof(category));
-			Prices = prices;
+			Prices = prices ?? Prices;
 			Page = Page.SetHtml(html).Change(name, label, category.Name, cover, dateTime, address);
+			return this;
+		}
+
+		internal EventProjection ToModerate()
+		{
+			if (Type != EEventType.Created && Type != EEventType.Moderating)
+				throw new System.Exception("Dont send event to moderate");
+			Type = EEventType.Moderating;
 			return this;
 		}
 

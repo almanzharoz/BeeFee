@@ -1,10 +1,14 @@
 ﻿namespace BeeFee.Model.Embed
 {
-    public enum EEventType : byte
+    public enum EEventType : short
     {
-        None = 0,
-        Concert = 1,
-        Exhibition = 2,
-        Excursion = 3
+		None = 0,
+		Created = 1,
+        Open,
+        Close,
+        Cancel,
+		Archive,
+		Moderating,
+		NotModerated
     }
 }
