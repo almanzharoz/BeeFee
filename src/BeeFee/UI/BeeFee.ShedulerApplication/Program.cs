@@ -37,7 +37,7 @@ namespace BeeFee.ShedulerApplication
 				.UseBeefeeModel(BuilderExtensions.UseBeefeeJobsApp);
 
 			var service = serviceProvider.GetService<TicketService>();
-			service.CreateTicket(new CreateTicket("My Name", "Tomorow")).Wait();
+			service.CreateTicket(new CreateTicket("My Name", "Tomorow", "ticket")).Wait();
 			//Console.WriteLine(service.CreateNextTicket());
 		}
 	}

@@ -4,6 +4,7 @@ using BeeFee.Model.Jobs.Data;
 using BeeFee.TestsApp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 
 namespace BeeFee.JobsApp.Tests
 {
@@ -31,6 +32,7 @@ namespace BeeFee.JobsApp.Tests
 			var r = Service.SendNextMail();
 			r.Wait();
 			Assert.IsTrue(r.Result);
+			//Assert.IsTrue(File.Exists("d:\\mails\\"+));
 		}
 	}
 }

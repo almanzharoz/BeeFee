@@ -32,7 +32,7 @@ namespace BeeFee.JobsApp.Tests
 			var r = Service.CreateNextTicket();
 			r.Wait();
 			Assert.IsTrue(r.Result);
-			Assert.IsTrue(File.Exists(Path.Combine("d:\\pdf", filename+".pdf")));
+			Assert.IsTrue(File.Exists(Path.Combine("d:\\pdf\\", filename+".pdf")));
 		}
 	}
 }

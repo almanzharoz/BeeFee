@@ -173,6 +173,7 @@ namespace BeeFee.ImageApp.Services
 				new ImageSettings(resolutions.ToHashSet().ToArray(), _settings[settingName].KeepPublicOriginalSize), key);
 		}
 
+		//TODO: Хранить ключ в MemoryCache и обновлять его при каждом редактировании мероприятия. Каждые 10 минут обновляем ключ. Ключ хранить с IP.
 		public string RegisterEvent(string eventName)
 		{
 			if (Directory.Exists(GetPathToPrivateOriginalFolder(eventName))) throw new DirectoryAlreadyExistsException();
