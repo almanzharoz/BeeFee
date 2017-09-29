@@ -2,197 +2,151 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
+using BeeFee.ImageApp.Caching;
 using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Exceptions;
+using BeeFee.ImageApp.Helpers;
+using Newtonsoft.Json;
 using SixLabors.ImageSharp;
-using SharpFuncExt;
 
 namespace BeeFee.ImageApp.Services
 {
-	public partial class ImageService
+	public class ImageService
 	{
-		private readonly string _folder;
-		private readonly string _publicOriginalFolder;
-		private readonly string _privateOriginalFolder;
-		private readonly string _resizedFolder;
-		private readonly ImageSize _maxOriginalSize;
+		private readonly MemoryCacheManager _cacheManager;
 		private readonly ConcurrentDictionary<string, ImageSettings> _settings;
+		private readonly ImageSize _userAvatarSize;
+		private readonly ImageSize _companyLogoSize;
+		private readonly ImageSize _originalMaxSize;
+		private readonly PathHandler _pathHandler;
+		private readonly int _cacheTime;
+		private object _locker;
 		private readonly string _settingsJsonFile;
-		private readonly object _locker = new object();
-		private readonly TimeSpan _removeImageAvailabilityTime;
 
-		public ImageService(string folder, string publicOriginalFolder, string privateOriginalFolder, string resizedFolder,
-			ImageSize maxOriginalSize, string settingsJsonFile, TimeSpan removeImageAvailabilityTime)
+		public ImageService(MemoryCacheManager cacheManager, string settingsJsonFile,
+			ImageSize userAvatarSize, ImageSize companyLogoSize, ImageSize originalMaxSize, PathHandler pathHandler,
+			int cacheTime)
 		{
-			_folder = folder;
-			if (!Directory.Exists(folder))
-				Directory.CreateDirectory(folder);
-
-			_publicOriginalFolder = publicOriginalFolder;
-			if (!Directory.Exists(publicOriginalFolder))
-				Directory.CreateDirectory(Path.Combine(folder, publicOriginalFolder));
-
-			_privateOriginalFolder = privateOriginalFolder;
-			if (!Directory.Exists(privateOriginalFolder))
-				Directory.CreateDirectory(Path.Combine(folder, privateOriginalFolder));
-
-			_resizedFolder = resizedFolder;
-			if (!Directory.Exists(resizedFolder))
-				Directory.CreateDirectory(Path.Combine(folder, resizedFolder));
-
-			_maxOriginalSize = maxOriginalSize;
+			_cacheManager = cacheManager;
 
 			_settingsJsonFile = settingsJsonFile;
 			if (!File.Exists(settingsJsonFile)) File.Create(settingsJsonFile).Dispose();
 			_settings = DeserializeSettings() ?? new ConcurrentDictionary<string, ImageSettings>();
 
-			_removeImageAvailabilityTime = removeImageAvailabilityTime;
+			_userAvatarSize = userAvatarSize;
+			_companyLogoSize = companyLogoSize;
+			_originalMaxSize = originalMaxSize;
+			_pathHandler = pathHandler;
+			_cacheTime = cacheTime;
+			_locker = new object();
 		}
 
-		public Task<ImageOperationResult> AddImage(Stream stream, string eventName, string fileName, string settingName, string key)
-			=> EnumerableFunc.GetValueOrDefault(_settings, settingName).Fluent(x => Console.WriteLine($"Add file {fileName}, setting: {settingName}"))
-				.IfNotNull(x => AddImage(stream, eventName.HasNotNullArg(nameof(eventName)), fileName.HasNotNullArg(nameof(fileName)), x, key.HasNotNullArg(nameof(key))),
-					Task.FromResult(new ImageOperationResult(EImageOperationResult.Error, fileName, $"Cannot found a setting {settingName}",
-						EErrorType.SettingNotFound)));
-		
+		/// <summary>
+		/// Add Company Logo to Image server
+		/// </summary>
+		/// <exception cref="AccessDeniedException"></exception>
+		public async Task AddCompanyLogo(Stream stream, string companyUrl, string key)
+			=> await AddLogoOrAvatar(stream, companyUrl, key, EImageType.CompanyLogo);
 
-		internal Task<ImageOperationResult> AddImage(Stream stream, string eventName, string fileName, ImageSettings setting, string key)
-			=> GetUniqueName(eventName, fileName)
-				.ThrowIf(x => !CheckKey(eventName, key), x => new AccessDeniedException())
-				.Try(uniqueName => stream
-						//.If(s => FileExists(uniqueName),
-						//	n => new ImageOperationResult(EImageOperationResult.Error, fileName, $"File {fileName} already exists", EErrorType.FileAlreadyExists))
-						.ThrowIf(
-							s => FileExists(uniqueName, eventName),
-							n => new FileAlreadyExistsException($"File \"{uniqueName}\" already exists"))
-						.Using(s => Image.Load(s).Using(image => Task.WhenAll(new Task[0]
-							.Add(ResizeAndSaveImage(image, _maxOriginalSize, eventName,
-								setting.KeepPublicOriginalSize, uniqueName))
-							.AddEach(setting.Sizes.Select(x => ResizeAndSaveImage(image, x, eventName, uniqueName))))
-						)),
-					x => new ImageOperationResult(EImageOperationResult.Ok, x),
-					(x, e) => new ImageOperationResult(EImageOperationResult.Error, x, e.Message, EErrorType.SaveImageError));
+		/// <summary>
+		/// Add User Avatar to Image server
+		/// </summary>
+		/// <exception cref="AccessDeniedException"></exception>
+		public async Task AddUserAvatar(Stream stream, string userName, string key)
+			=> await AddLogoOrAvatar(stream, userName, key, EImageType.UserAvatar);
 
-		public ImageOperationResult RemoveImage(string eventName, string fileName, string key)
+		public async Task<ImageOperationResult> AddEventImage(Stream stream, string companyName, string eventName, string fileName,
+			string settingName, string key)
 		{
-			if(!CheckKey(eventName, key)) throw new AccessDeniedException();
+			if (!IsKeyValid(key, companyName)) throw new AccessDeniedException();
+			if (!_settings.TryGetValue(settingName, out var setting))
+				throw new KeyNotFoundException($"setting with {settingName} not found");
 
-			if (!FileExists(fileName, eventName)) 
-				return new ImageOperationResult(EImageOperationResult.Error, fileName, $"File {fileName} doesn't exists", EErrorType.FileDoesNotExists);
+			if (setting.CanChangeName)
+				fileName = _pathHandler.GetUniqueName(companyName, eventName, fileName);
+			else if (_pathHandler.IsEventImageExists(companyName, eventName, fileName))
+				return new ImageOperationResult(EImageOperationResult.Error, fileName, $"File {fileName} already exists",
+					EErrorType.FileAlreadyExists);
 
-			var privateFile = Path.Combine(GetPathToPrivateOriginalFolder(eventName), fileName);
-			var publicFile = Path.Combine(GetPathToPublicOriginalFolder(eventName), fileName);
-			if (File.Exists(privateFile) && File.GetCreationTimeUtc(privateFile).Add(_removeImageAvailabilityTime) < DateTime.UtcNow ||
-				File.Exists(publicFile) && File.GetCreationTimeUtc(publicFile).Add(_removeImageAvailabilityTime) < DateTime.UtcNow)
-				throw new AccessDeniedException("Time for remove the file is over");
+			var image = Image.Load(stream);
+			await AddOriginalImage(image, companyName, eventName, fileName,
+				setting.KeepPublicOriginalSize ? EImageType.EventPublicOriginalImage : EImageType.EventPrivateOriginalImage);
+			await AddResizedImages(image, companyName, eventName, fileName, setting.Sizes);
 
-			if(File.Exists(privateFile))
-				File.Delete(privateFile);
-			if(File.Exists(publicFile))
-				File.Delete(publicFile);
-
-			foreach (var directory in Directory.GetDirectories(GetPathToResizedFolder(eventName)))
-			{
-				File.Delete(Path.Combine(directory, fileName));
-			}
 			return new ImageOperationResult(EImageOperationResult.Ok, fileName);
 		}
 
-		public ImageOperationResult RenameImage(string eventName, string oldName, string newName, string key, bool canChangeName = true)
+		public void GetAccessToFolder(string key, string directoryName)
 		{
-			if(!CheckKey(eventName, key)) throw new AccessDeniedException();
-
-			if(!FileExists(oldName, eventName))
-				return new ImageOperationResult(EImageOperationResult.Error, oldName, $"File {oldName} doesn't exists", EErrorType.FileDoesNotExists);
-
-			if (!canChangeName && FileExists(oldName, eventName))
-				return new ImageOperationResult(EImageOperationResult.Error, newName, $"File {newName} already exists", EErrorType.FileAlreadyExists);
-
-			var uniqueName = GetUniqueName(eventName, newName);
-
-			var resized = GetPathToResizedFolder(eventName);
-			var directories = Directory.GetDirectories(GetPathToResizedFolder(eventName));
-			foreach (var directory in Directory.GetDirectories(GetPathToResizedFolder(eventName)))
-			{
-				if (!File.Exists(Path.Combine(directory, oldName))) continue;
-				File.Move(Path.Combine(directory, oldName), Path.Combine(directory, uniqueName));
-			}
-
-			if (File.Exists(Path.Combine(GetPathToPrivateOriginalFolder(eventName), oldName)))
-				File.Move(Path.Combine(GetPathToPrivateOriginalFolder(eventName), oldName),
-					Path.Combine(GetPathToPrivateOriginalFolder(eventName), uniqueName));
-
-			if (File.Exists(Path.Combine(GetPathToPublicOriginalFolder(eventName), oldName)))
-				File.Move(Path.Combine(GetPathToPublicOriginalFolder(eventName), oldName),
-					Path.Combine(GetPathToPrivateOriginalFolder(eventName), uniqueName));
-
-			return new ImageOperationResult(EImageOperationResult.Ok, uniqueName);
+			if(_cacheManager.IsSet(key))
+				_cacheManager.Remove(key);
+			_cacheManager.Set(key, new MemoryCacheKeyObject(EKeyType.User, directoryName), _cacheTime);
 		}
 
-		public async Task<ImageOperationResult> UpdateImage(Stream stream, string eventName, string fileName, string settingName, string key)
+		private async Task AddLogoOrAvatar(Stream stream, string name, string key, EImageType imageType)
 		{
-			if(!CheckKey(eventName, key)) throw new AccessDeniedException();
-
-			if (!File.Exists(Path.Combine(GetPathToPrivateOriginalFolder(eventName), fileName)))
-				return new ImageOperationResult(EImageOperationResult.Error, fileName, $"File {fileName} doesn't exists", EErrorType.FileDoesNotExists);
-
-			ImageSettings setting;
-			try
-			{
-				setting = _settings[settingName];
-			}
-			catch (System.Collections.Generic.KeyNotFoundException)
-			{
-				return new ImageOperationResult(EImageOperationResult.Error, fileName, $"Cannot found a setting {settingName}", EErrorType.SettingNotFound);
-			}
-
-			var resolutions = new List<ImageSize>();
-			foreach (var directory in Directory.GetDirectories(GetPathToResizedFolder(eventName)))
-			{
-				if(File.Exists(Path.Combine(directory, fileName)))
-					try
-					{
-						resolutions.Add(new ImageSize(Path.GetDirectoryName(directory)));
-					}
-					catch (Exception)
-					{
-						// ignored
-					}
-			}
-
-			resolutions.AddRange(setting.Sizes);
-			
-			RemoveImage(eventName, fileName, key);
-			return await AddImage(stream, eventName, fileName,
-				new ImageSettings(resolutions.ToHashSet().ToArray(), _settings[settingName].KeepPublicOriginalSize), key);
+			if (!IsKeyValid(key, name)) throw new AccessDeniedException();
+			await ImageHandlingHelper.ResizeAndSave(Image.Load(stream), GetMaxSizeByImageType(imageType), _pathHandler.GetPathToLogoOrAvatar(name, imageType));
 		}
 
-		//TODO: Хранить ключ в MemoryCache и обновлять его при каждом редактировании мероприятия. Каждые 10 минут обновляем ключ. Ключ хранить с IP.
-		public string RegisterEvent(string eventName)
+		private async Task AddOriginalImage(Image<Rgba32> image, string companyName, string eventName, string fileName, EImageType imageType)
 		{
-			if (Directory.Exists(GetPathToPrivateOriginalFolder(eventName))) throw new DirectoryAlreadyExistsException();
+			if(imageType != EImageType.EventPrivateOriginalImage && imageType != EImageType.EventPublicOriginalImage)
+				throw new ArgumentException("Image type must be EventPrivateOriginalImage or EventPublicOriginalImage");
 
-			var key = Guid.NewGuid().ToString();
-			//Directory.CreateDirectory(Path.Combine(_folder, eventName));
-			CreateEventDirectories(eventName);
-			//File.Create($"{key}.key");  // TODO: Добавить хэш
-			MakeKeyFile(eventName, key);
-			return key;
+			await ImageHandlingHelper.ResizeAndSave(image, GetMaxSizeByImageType(imageType),
+				_pathHandler.GetPathToOriginalImage(companyName, eventName, imageType, fileName));
 		}
 
-		public void RenameEvent(string oldName, string newName)
+		private async Task AddResizedImages(Image<Rgba32> image, string companyName, string eventName, string fileName,
+			IEnumerable<ImageSize> sizes)
 		{
-			Directory.Move(GetPathToPrivateOriginalFolder(oldName), GetPathToPrivateOriginalFolder(newName));
-			Directory.Move(GetPathToPublicOriginalFolder(oldName), GetPathToPublicOriginalFolder(newName));
-			Directory.Move(GetPathToResizedFolder(oldName), GetPathToResizedFolder(newName));
+			foreach (var size in sizes)
+				await ImageHandlingHelper.ResizeAndSave(image, size,
+					_pathHandler.GetPathToImageSize(companyName, eventName, size, fileName));
 		}
 
-		public void SetSetting(string name, ImageSize[] sizes, bool keepPublicOriginalSize)
+		private ImageSize GetMaxSizeByImageType(EImageType imageType)
 		{
-			_settings.AddOrUpdate(name, x => new ImageSettings(sizes, keepPublicOriginalSize), (x, y) => y.Set(sizes, keepPublicOriginalSize));
+			switch (imageType)
+			{
+				case EImageType.CompanyLogo:
+					return _companyLogoSize;
+				case EImageType.UserAvatar:
+					return _userAvatarSize;
+				case EImageType.EventPrivateOriginalImage:
+					return _originalMaxSize;
+				case EImageType.EventPublicOriginalImage:
+					return _originalMaxSize;
+				case EImageType.EventResizedImage:
+					return _originalMaxSize;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(imageType), imageType, null);
+			}
+		}
+
+		private bool IsKeyValid(string key, string directoryName)
+			=> _cacheManager.IsSet(key) && _cacheManager.Get<MemoryCacheKeyObject>(key).Directory == directoryName;
+
+		public void SetSetting(string settingName, ImageSettings setting, string key)
+		{
+			if (_cacheManager.IsSet(key) && _cacheManager.Get<MemoryCacheKeyObject>(key).Type == EKeyType.Moderator)
+				_settings.AddOrUpdate(settingName, setting,
+					(s, settings) => settings.Set(setting.Sizes, setting.KeepPublicOriginalSize, setting.CanChangeName));
 			SerializeSettings();
+		}
+
+		private void SerializeSettings()
+		{
+			lock (_locker)
+				File.WriteAllText(_settingsJsonFile, JsonConvert.SerializeObject(_settings));
+		}
+
+		private ConcurrentDictionary<string, ImageSettings> DeserializeSettings()
+		{
+			lock (_locker)
+				return JsonConvert.DeserializeObject<ConcurrentDictionary<string, ImageSettings>>(File.ReadAllText(_settingsJsonFile));
 		}
 	}
 }
