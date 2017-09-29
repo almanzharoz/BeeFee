@@ -26,7 +26,8 @@ namespace BeeFee.ImagesWebApplication
 	        services.AddSingleton(cfg => cfg.GetService<IOptions<ImagesAppStartSettings>>().Value);
 
 			services.AddMvc();
-	        services.AddCors();
+            services.AddMemoryCache();
+            services.AddCors();
 			services.AddImageApp("imageServer.json");
 		}
 

@@ -1,4 +1,4 @@
-﻿@using System.Collections.Generic
+@using System.Collections.Generic
 @using System.Linq
 @model System.Collections.Generic.IReadOnlyCollection<BeeFee.OrganizerApp.Projections.Event.EventProjection>
 
@@ -11,7 +11,7 @@
         <tr>
             <th>Name</th>
             <th>Category</th>
-            <th>Type</th>
+            <th>State</th>
             <th>Dates</th>
             <th>City</th>
             <th>Address</th>
@@ -25,7 +25,7 @@
             <tr>
                 <td>@e.Name</td>
                 <td>@e.Category.Name</td>
-                <td>@e.Type.ToString()</td>
+                <td>@e.State.ToString()</td>
                 <td>@e.DateTime</td>
                 <td>@e.Address.City</td>
                 <td>@e.Address.AddressString</td>

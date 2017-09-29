@@ -3,7 +3,10 @@ using Core.ElasticSearch.Mapping;
 using BeeFee.ClientApp.Projections.Event;
 using BeeFee.ClientApp.Services;
 using BeeFee.Model;
+using BeeFee.Model.Jobs;
+using BeeFee.Model.Jobs.Data;
 using BeeFee.Model.Models;
+using BeeFee.Model.Projections.Jobs;
 
 namespace BeeFee.ClientApp
 {
@@ -18,6 +21,7 @@ namespace BeeFee.ClientApp
         public static IElasticProjections<BeefeeElasticConnection> UseBeefeeClientApp(this IElasticProjections<BeefeeElasticConnection> services)
         {
             return services
+                .AddProjection<NewJob<SendMail>, Job<SendMail>>()
                 .AddProjection<EventProjection, Event>()
                 .AddProjection<EventGridItem, Event>()
                 .AddProjection<EventAddressProjection, Event>()

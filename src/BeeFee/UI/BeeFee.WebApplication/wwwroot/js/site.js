@@ -9,13 +9,12 @@
         if (allLoaded || loading)
             return;
         loading = true;
-        var types = [];
-        $.each($(filter.typesselector + ":checked"), function (index, inp) { types.push($(inp).val()) });
-        Events.loadEvents($(filter.searchtextselector).val(), "",
+        var categories = [];
+        $.each($(filter.categoriesselector + ":checked"), function (index, inp) { categories.push($(inp).val()) });
+        Events.loadEvents($(filter.searchtextselector).val(), $(filter.startdateselector).val(),
             $(filter.enddateselector).val(),
             $(filter.cityselector).val(),
-            types,
-            [],
+            categories,
             page,
             size,
             $(filter.maxpriceselector).val()).done(function (result) {

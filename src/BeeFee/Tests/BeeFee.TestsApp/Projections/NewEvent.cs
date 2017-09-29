@@ -15,7 +15,7 @@ namespace BeeFee.TestsApp.Projections
 		public BaseUserProjection Owner { get; set; }
 		public EventDateTime DateTime { get; set; }
 		public Address Address { get; set; }
-		public EEventType Type { get; set; }
+		public EEventState State { get; set; }
 		public TicketPrice[] Prices { get; set; }
 		public EventPage Page { get; set; }
 

@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
+using BeeFee.ModeratorApp;
 
 namespace BeeFee.WebApplication
 {
@@ -75,7 +76,8 @@ namespace BeeFee.WebApplication
 					.AddBeefeeLoginApp()
 					.AddBeefeeClientApp()
 					.AddBeefeeOrganizerApp()
-					.AddBeefeeAdminApp());
+					.AddBeefeeAdminApp()
+					.AddBeefeeModeratorApp());
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -123,7 +125,8 @@ namespace BeeFee.WebApplication
 					.UseBeefeeLoginApp()
 					.UseBeefeeClientApp()
 					.UseBeefeeOrganizerApp()
-					.UseBeefeeAdminApp());
+					.UseBeefeeAdminApp()
+					.UseBeefeeModeratorApp());
 		}
 	}
 }

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Projections;
+using BeeFee.OrganizerApp.Projections.Company;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BeeFee.WebApplication.Areas.Org.Models
@@ -19,6 +20,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		[Required(ErrorMessage = "Label is required")]
 		public string Label { get; set; }
 
+		[RegularExpression(@"[a-zA-Z-_]{3,}")]
 		public string Url { get; set; }
 
 		public string CategoryId { get; set; }
@@ -38,11 +40,8 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 
 		[Required(ErrorMessage = "Address is required")]
 		public string Address { get; set; }
-
-		[Required(ErrorMessage = "Cover is required")]
-		public string Cover { get; set; }
-
-		public EEventType Type { get; set; }
+		[EmailAddress]
+		public string Email { get; set; }
 
 		//[DataType(DataType.Currency)]
 		//public string Price { get; set; }
@@ -53,9 +52,10 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 
 		public AddEventEditModel() { } // For binder
 
-		public AddEventEditModel(string companyId, IReadOnlyCollection<BaseCategoryProjection> categories)
+		public AddEventEditModel(CompanyProjection company, IReadOnlyCollection<BaseCategoryProjection> categories)
 		{
-			CompanyId = companyId;
+			CompanyId = company.Id;
+			Email = company.Email;
 			Init(categories);
 		}
 

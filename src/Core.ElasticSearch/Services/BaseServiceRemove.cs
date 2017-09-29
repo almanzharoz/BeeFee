@@ -17,7 +17,7 @@ namespace Core.ElasticSearch
 				c => c.Delete(DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity))), x => x
 					.Index(_mapping.GetIndexName<T>())
 					.Type(_mapping.GetTypeName<T>())
-					.If(refresh, a => a.Refresh(Refresh.True))),
+					.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True))),
 				r => r.Result == Result.Deleted,
 				RepositoryLoggingEvents.ES_REMOVE,
 				$"Remove (Id: {entity.Id})");
@@ -29,7 +29,7 @@ namespace Core.ElasticSearch
 					.Index(_mapping.GetIndexName<T>())
 					.Type(_mapping.GetTypeName<T>())
 					.Version(entity.Version.HasNotNullArg("version"))
-					.If(refresh, a => a.Refresh(Refresh.True))),
+					.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True))),
 				r => r.Result == Result.Deleted,
 				RepositoryLoggingEvents.ES_REMOVE,
 				$"Remove (Id: {entity.Id}, Version: {entity.Version})");
@@ -42,7 +42,7 @@ namespace Core.ElasticSearch
 					.Index(_mapping.GetIndexName<T>())
 					.Type(_mapping.GetTypeName<T>())
 					.Parent(entity.Parent.HasNotNullArg(p => p.Id, "parent").Id)
-					.If(refresh, a => a.Refresh(Refresh.True))),
+					.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True))),
 				r => r.Result == Result.Deleted,
 				RepositoryLoggingEvents.ES_REMOVE,
 				$"Remove (Id: {entity.Id}, Parent: {entity.Parent})");
@@ -56,7 +56,7 @@ namespace Core.ElasticSearch
 					.Type(_mapping.GetTypeName<T>())
 					.Parent(entity.Parent.HasNotNullArg(p => p.Id, "parent").Id)
 					.Version(entity.Version.HasNotNullArg("version"))
-					.If(refresh, a => a.Refresh(Refresh.True))),
+					.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True))),
 				r => r.Result == Result.Deleted,
 				RepositoryLoggingEvents.ES_REMOVE,
 				$"Remove (Id: {entity.Id}, Parent: {entity.Parent}, Version: {entity.Version})");
@@ -68,7 +68,7 @@ namespace Core.ElasticSearch
 				c => c.Delete(DocumentPath<T>.Id(id.HasNotNullArg(nameof(id))), x => x
 					.Index(_mapping.GetIndexName<T>())
 					.Type(_mapping.GetTypeName<T>())
-					.If(refresh, a => a.Refresh(Refresh.True))),
+					.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True))),
 				r => r.Result == Result.Deleted,
 				RepositoryLoggingEvents.ES_REMOVE,
 				$"Remove (Id: {id})");
@@ -80,7 +80,7 @@ namespace Core.ElasticSearch
 					.Index(_mapping.GetIndexName<T>())
 					.Type(_mapping.GetTypeName<T>())
 					.Version(version.HasNotNullArg("version"))
-					.If(refresh, a => a.Refresh(Refresh.True))),
+					.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True))),
 				r => r.Result == Result.Deleted,
 				RepositoryLoggingEvents.ES_REMOVE,
 				$"Remove (Id: {id}, Version: {version})");
@@ -93,7 +93,7 @@ namespace Core.ElasticSearch
 					.Index(_mapping.GetIndexName<T>())
 					.Type(_mapping.GetTypeName<T>())
 					.Parent(parent.HasNotNullArg(nameof(parent)))
-					.If(refresh, a => a.Refresh(Refresh.True))),
+					.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True))),
 				r => r.Result == Result.Deleted,
 				RepositoryLoggingEvents.ES_REMOVE,
 				$"Remove (Id: {id})");
@@ -107,7 +107,7 @@ namespace Core.ElasticSearch
 					.Type(_mapping.GetTypeName<T>())
 					.Parent(parent.HasNotNullArg(nameof(parent)))
 					.Version(version.HasNotNullArg(nameof(version)))
-					.If(refresh, a => a.Refresh(Refresh.True))),
+					.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True))),
 				r => r.Result == Result.Deleted,
 				RepositoryLoggingEvents.ES_REMOVE,
 				$"Remove (Id: {id}, Version: {version})");
@@ -117,7 +117,7 @@ namespace Core.ElasticSearch
 				c => c.DeleteByQuery<T>(d => d.Query(q => q.Bool(b => b.Filter(query)))
 					.Index(_mapping.GetIndexName<T>())
 					.Type(_mapping.GetTypeName<T>())
-					.If(refresh, a => a.Refresh())),
+					.If(_mapping.ForTests || refresh, a => a.Refresh())),
 				r => (int)r.Deleted,
 				RepositoryLoggingEvents.ES_REMOVEBYQUERY);
 
@@ -126,7 +126,7 @@ namespace Core.ElasticSearch
 				c => c.DeleteByQueryAsync<T>(d => d.Query(q => q.Bool(b => b.Filter(query)))
 					.Index(_mapping.GetIndexName<T>())
 					.Type(_mapping.GetTypeName<T>())
-					.If(refresh, a => a.Refresh())),
+					.If(_mapping.ForTests || refresh, a => a.Refresh())),
 				r => (int)r.Deleted,
 				RepositoryLoggingEvents.ES_REMOVEBYQUERY);
 	}

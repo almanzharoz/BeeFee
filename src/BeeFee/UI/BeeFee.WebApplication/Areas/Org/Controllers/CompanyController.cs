@@ -37,7 +37,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 		[HttpPost]
 		public IActionResult Edit(CompanyEditModel model)
 			=> ModelState.IsValid.If(
-				() => Service.EditCompany(model.Id, model.Version, model.Name, model.Url)
+				() => Service.EditCompany(model.Id, model.Version, model.Name, model.Url, model.Email, model.Logo)
 					.If<IActionResult>(() => RedirectToActionPermanent("Index"), () => View("SaveError")),
 				() => View(model));
 

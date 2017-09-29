@@ -18,7 +18,7 @@ namespace BeeFee.ImagesWebApplication
                 .Build();
     }
 
-	//TODO: Для работа рагрузки файлов на удаленный сервер в web.config
+	//TODO: Для работа загрузки файлов на удаленный сервер в web.config
 	//<security>
 	//<requestFiltering>
 	//<!-- Measured in Bytes -->

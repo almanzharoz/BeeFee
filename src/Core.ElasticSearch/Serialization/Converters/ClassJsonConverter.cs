@@ -33,14 +33,15 @@ namespace Core.ElasticSearch.Serialization
 		public ClassJsonConverter(IProjectionItem projectionItem)
 		{
 			_projectionItem = projectionItem;
-			_creator = typeof(T).GetConstructors().FirstOrDefault().NotNullOrDefault(ObjectActivator.GetActivator<T>);
+			_creator = (typeof(T).GetConstructors().FirstOrDefault(x => x.GetCustomAttribute<DeserializeConstructorAttribute>() != null) ?? typeof(T).GetConstructors().FirstOrDefault())
+				.NotNullOrDefault(ObjectActivator.GetActivator<T>);
 			_setters = _projectionItem.Properties.Where(x => x.SetMethod != null).ToDictionary(x => x.Name.ToLowerInvariant(), ObjectActivator.GetSetter<T>);
 		}
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 		{
 			writer.WriteStartObject();
-			foreach (var property in _projectionItem.Properties)
+			foreach (var property in _projectionItem.Properties.Where(x => x.GetCustomAttribute<JsonIgnoreAttribute>() == null))
 			{
 				var v = property.GetValue(value);
 				if (v.IsNull(property.PropertyType))

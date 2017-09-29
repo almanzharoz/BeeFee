@@ -46,6 +46,11 @@ namespace SharpFuncExt
 			await func(a);
 			return a;
 		}
+		public static T Fluent<T>(this T arg, Func<T, Task> func)
+		{
+			func(arg).Wait();
+			return arg;
+		}
 		public static async Task<T> Fluent<T, TResult>(this T arg, Func<T, Task<TResult>> func)
 		{
 			await func(arg);

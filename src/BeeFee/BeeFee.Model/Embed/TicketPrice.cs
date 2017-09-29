@@ -1,4 +1,5 @@
 ﻿using System;
+using Core.ElasticSearch;
 using Nest;
 using SharpFuncExt;
 
@@ -21,6 +22,17 @@ namespace BeeFee.Model.Embed
 		/// </summary>
 		public int Left { get; }
 
+		public TicketPrice(string name, string description, decimal price, int count)
+		{
+			Id = Guid.NewGuid();
+			Name = name;
+			Description = description;
+			Price = price;
+			Count = count;
+			Left = count;
+		}
+
+		[DeserializeConstructor]
 		public TicketPrice(Guid id, string name, string description, decimal price, int count, int left)
 		{
 			Id = id.IfNull(Guid.NewGuid);
@@ -30,5 +42,6 @@ namespace BeeFee.Model.Embed
 			Count = count;
 			Left = left;
 		}
-    }
+
+	}
 }

@@ -14,6 +14,8 @@ namespace BeeFee.Model.Embed
 		[EnumMember(Value = "organizer")]
 		Organizer,
 		[EnumMember(Value = "user")]
-		User
+		User,
+		[EnumMember(Value = "eventmoderator")]
+		EventModerator
 	}
 }

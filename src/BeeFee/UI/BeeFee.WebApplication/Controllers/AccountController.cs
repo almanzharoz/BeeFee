@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BeeFee.LoginApp.Projections.User;
 using BeeFee.LoginApp.Services;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using BeeFee.WebApplication.Models.Account;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeeFee.WebApplication.Controllers
 {
@@ -63,6 +65,7 @@ namespace BeeFee.WebApplication.Controllers
 			return IsAjax ? (IActionResult)Json(new {url = vm.ReturnUrl}) : Redirect(vm.ReturnUrl ?? "/");
         }
 
+		[Authorize]
         [HttpGet]
         public async Task<IActionResult> LogOff()
         {
@@ -111,9 +114,21 @@ namespace BeeFee.WebApplication.Controllers
             return View(model);
         }
 
+		[Authorize]
+		[HttpGet]
 		public IActionResult Profile()
 		{
-			return View();
+			return View(new ProfileEditModel(Service.GetUser<UserProjection>()));
 		}
-    }
+		[Authorize]
+		[HttpPost]
+        [ValidateAntiForgeryToken]
+		public IActionResult Profile(ProfileEditModel model)
+		{
+			if (ModelState.IsValid)
+				Service.UpdateUser(model.Name);
+			return View(model);
+		}
+
+	}
 }

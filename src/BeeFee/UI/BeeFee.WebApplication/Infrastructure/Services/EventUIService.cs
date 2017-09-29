@@ -20,7 +20,7 @@ namespace BeeFee.WebApplication.Infrastructure.Services
 
         public async Task<(bool AllLoaded, string Html)> GetEventsListRenderAsync(LoadEventsRequest request)
         {
-            var events = await _eventService.SearchEvents(request.Text, request.City, request.Categories, request.Types,
+            var events = await _eventService.SearchEvents(request.Text, request.City, request.Categories,
                 request.StartDate,
                 request.EndDate, request.MaxPrice, request.PageSize ?? 9, request.PageIndex);
             return (AllLoaded: events.Count < events.Limit, Html: await _viewRenderService.RenderToStringAsync("Home/_EventGrid", events));

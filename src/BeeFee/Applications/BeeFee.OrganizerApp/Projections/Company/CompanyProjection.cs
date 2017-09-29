@@ -8,20 +8,26 @@ namespace BeeFee.OrganizerApp.Projections.Company
 	{
 		public string Url { get; private set; }
 		public string Name { get; private set; }
+		public string Email { get; private set; }
+		public string Logo { get; private set; }
 
 		public CompanyUser[] Users { get; }
 
-		public CompanyProjection(string id, int version, CompanyUser[] users, string name, string url) : base(id, version)
+		public CompanyProjection(string id, int version, CompanyUser[] users, string name, string url, string email, string logo) : base(id, version)
 		{
 			Url = url;
 			Name = name;
 			Users = users;
+			Email = email;
+			Logo = logo;
 		}
 
-		internal CompanyProjection Update(string name, string url)
+		internal CompanyProjection Update(string name, string url, string email, string logo)
 		{
 			Url = url;
 			Name = name;
+			Email = email;
+			Logo = logo;
 			return this;
 		}
 	}

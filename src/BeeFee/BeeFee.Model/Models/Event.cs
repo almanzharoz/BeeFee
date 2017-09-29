@@ -6,7 +6,7 @@ using Nest;
 
 namespace BeeFee.Model.Models
 {
-	public abstract class Event : IModel, IWithVersion, IWithParent<BaseCompanyProjection>, IProjection, IWithName, IWithUrl
+	public abstract class Event : IModel, IWithVersion, IWithParent<BaseCompanyProjection>, IProjection, IWithName, IWithUrl, IWithHidden
 	{
 		public string Id { get; set; }
 		public int Version { get; set; }
@@ -23,7 +23,7 @@ namespace BeeFee.Model.Models
 		public EventDateTime DateTime { get; set; }
 		public Address Address { get; set; }
 		[Keyword]
-		public EEventType Type { get; set; }
+		public EEventState State { get; set; }
 		
 		/// <summary>
 		/// Данные для отображения мероприятия пользователю
@@ -33,5 +33,12 @@ namespace BeeFee.Model.Models
 		[Nested]
 		public TicketPrice[] Prices { get; set; }
 
+		public bool Hidden { get; set; }
+
+		[Keyword(Index = false)]
+		public string Email { get; set; }
+
+		[Keyword]
+		public User Moderator { get; set; }
 	}
 }

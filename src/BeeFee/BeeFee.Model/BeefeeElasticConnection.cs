@@ -11,5 +11,6 @@ namespace BeeFee.Model
 
 		public virtual string EventIndexName => "event_index";
 		public virtual string UserIndexName => "user_index";
+		public virtual string JobsIndexName => "jobs_index";
 	}
 }

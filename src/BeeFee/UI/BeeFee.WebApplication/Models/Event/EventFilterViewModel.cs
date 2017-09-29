@@ -23,7 +23,6 @@ namespace BeeFee.WebApplication.Models.Event
             Text = request.Text;
             City = request.City;
             MaxPrice = request.MaxPrice;
-            Types = request.Types;
             EventHtml = loadEventsResult.html;
             AllLoaded = loadEventsResult.allLoaded;
             //Events = events;
@@ -40,12 +39,8 @@ namespace BeeFee.WebApplication.Models.Event
         public string Text { get; }
         public string City { get; }
         public decimal? MaxPrice { get; }
-        public EEventType[] Types { get; }
 
         public string EventHtml { get; }
         public bool AllLoaded { get; }
-
-        //public Pager<EventGridItem> Events { get; }
-
     }
 }

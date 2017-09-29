@@ -11,7 +11,7 @@
 <form asp-action="Edit" asp-controller="Event" asp-route-id="@Model.Id" method="post" class="form-horizontal">
 	<div class="validation" asp-validation-summary="ModelOnly"></div>
 	<input type="hidden" asp-for="CompanyId" />
-	<input type="hidden" asp-for="Version"/>
+	<input type="hidden" asp-for="Version" />
     <div class="container">
 
         <div class="form-group">
@@ -33,11 +33,16 @@
 		    <span asp-validation-for="CategoryId"></span>
 	    </div>
 
-        <div class="form-group">
-            @Html.DropDownListFor(x => x.Type, Html.GetEnumSelectList<EEventType>(), null, new {@class = "form-control"})
-        </div>
+        @*<div class="form-group">
+            @Html.DropDownListFor(x => x.Type, Html.GetEnumSelectList<EEventState>(), null, new {@class = "form-control"})
+        </div>*@
 
-        <div class="form-group">
+		<div class="form-group">
+			<input class="form-control" asp-for="Email" placeholder="Email для обратной связи"/>
+			<span asp-validation-for="Email" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
             <input type="text" class="form-control" asp-for="City" placeholder="City"/>
             <span asp-validation-for="City"></span>
         </div>
@@ -84,7 +89,7 @@
 		    <input class="form-control" placeholder="Cover" type="file" id="file" />
 			@if (!String.IsNullOrEmpty(Model.Cover))
 			{
-				<img src="@Url.GetImageUrl(Model.Cover, 368, 190)"/>
+				<img src="@Url.GetImageUrl(Model.Url, Model.Cover, 368, 190)"/>
 			}
 		    <input type="hidden" class="form-control" placeholder="Cover" asp-for="Cover"/>
 	    </div>
@@ -124,6 +129,9 @@
 		        var fd = new FormData;
 		        fd.append('file', $this.prop('files')[0]);
 				fd.append('setting', 'event');
+				fd.append('companyName', '@(Model.CompanyUrl)');
+				fd.append('eventName', '@(Model.Url)');
+				fd.append('key', '@(Model.ImagesKey)');
 		        $.ajax({
 					url: '@(BeeFeeWebAppSettings.Instance.ImagesUrl)/api/home',
 			        contentType: false,
@@ -138,7 +146,7 @@
 							return;
 						}
 						$this.next("img").remove();
-				        $this.after("<img src='@(BeeFeeWebAppSettings.Instance.ImagesUrl)/368x190/" + data.path + "' />");
+				        $this.after("<img src='@(BeeFeeWebAppSettings.Instance.ImagesUrl)/min/@(Model.Url)/368x190/" + data.path + "' />");
 				        $("#Cover").val(data.path);
 			        }
 		        });

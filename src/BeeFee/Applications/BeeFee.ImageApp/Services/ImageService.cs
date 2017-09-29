@@ -6,11 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Exceptions;
-using ImageSharp;
-using ImageSharp.Formats;
-using ImageSharp.Processing;
-using Newtonsoft.Json;
-using SixLabors.Primitives;
+using SixLabors.ImageSharp;
 using SharpFuncExt;
 
 namespace BeeFee.ImageApp.Services
@@ -173,6 +169,7 @@ namespace BeeFee.ImageApp.Services
 				new ImageSettings(resolutions.ToHashSet().ToArray(), _settings[settingName].KeepPublicOriginalSize), key);
 		}
 
+		//TODO: Хранить ключ в MemoryCache и обновлять его при каждом редактировании мероприятия. Каждые 10 минут обновляем ключ. Ключ хранить с IP.
 		public string RegisterEvent(string eventName)
 		{
 			if (Directory.Exists(GetPathToPrivateOriginalFolder(eventName))) throw new DirectoryAlreadyExistsException();

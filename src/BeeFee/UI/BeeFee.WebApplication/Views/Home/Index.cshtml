@@ -33,7 +33,7 @@
     <script type="text/javascript">
         $(function () {
             initIndexPage([/*{ enddateselector: "#txtSearchText2", cityselector: "#selectCity2", chkconcertselector: "#chkConcert2", chkexhibitionselector: "#chkExhibition2", chkexcursionselector: "#chkExcursion2", maxpriceselector: "#maxPrice2", btnloadselector: "#btnLoad2" },*/
-                { searchtextselector: "#@Html.IdFor(m=>m.Text)",enddateselector: "#@Html.IdFor(m=>m.EndDate)", cityselector: "#@Html.IdFor(m=>m.City)", typesselector: ".type-checkbox", maxpriceselector: "#@Html.IdFor(m=>m.MaxPrice)" }], ".container .grid .row", @(Model.AllLoaded?"true":"false"));
+                { searchtextselector: "#@Html.IdFor(m=>m.Text)",startdateselector: "#@Html.IdFor(m=>m.StartDate)",enddateselector: "#@Html.IdFor(m=>m.EndDate)", cityselector: "#@Html.IdFor(m=>m.City)", categoriessselector: ".category-checkbox", maxpriceselector: "#@Html.IdFor(m=>m.MaxPrice)" }], ".container .grid .row", @(Model.AllLoaded?"true":"false"));
         });
     </script>
 }

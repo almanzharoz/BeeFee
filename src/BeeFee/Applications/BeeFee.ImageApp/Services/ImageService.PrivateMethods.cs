@@ -4,12 +4,12 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using ImageSharp;
-using ImageSharp.Formats;
-using ImageSharp.Processing;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using Newtonsoft.Json;
 using SharpFuncExt;
 using SixLabors.Primitives;
+using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace BeeFee.ImageApp.Services
 {
@@ -55,7 +55,7 @@ namespace BeeFee.ImageApp.Services
 		}
 
 		private Image<Rgba32> Resize(Image<Rgba32> image, ImageSize size)
-			=> new Image<Rgba32>(image).Resize(new ResizeOptions { Mode = ResizeMode.Max, Size = new Size(size.Width, size.Height) });
+			=> image.Clone().Fluent(z => z.Mutate(x => x.Resize(new ResizeOptions { Mode = ResizeMode.Max, Size = new Size(size.Width, size.Height) })));
 
 		//TODO: переделать сборку папки
 		private void SaveImage(Image<Rgba32> image, string sizePath, string fileName)

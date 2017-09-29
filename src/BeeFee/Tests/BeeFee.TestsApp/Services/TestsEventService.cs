@@ -16,7 +16,7 @@ namespace BeeFee.TestsApp.Services
 		{
 		}
 
-		public string AddEvent(string companyId, string name, EventDateTime dateTime, Address address, EEventType type, string categoryId, decimal price, int count=10)
+		public string AddEvent(string companyId, string name, EventDateTime dateTime, Address address, string categoryId, EEventState state, decimal price, int count=10)
 		{
 			var category = Get<BaseCategoryProjection>(categoryId.HasNotNullArg(nameof(categoryId))).HasNotNullArg("category");
 
@@ -24,7 +24,7 @@ namespace BeeFee.TestsApp.Services
 				{
 					DateTime = dateTime,
 					Address = address,
-					Type = type,
+					State = state,
 					Category = category,
 					Page = new EventPage(name, "label", category.Name, "", dateTime.ToString(), address, "<p>Html text</p>"),
 					Prices = new TicketPrice[1] {new TicketPrice(Guid.Empty, "Ticket", "default", price, count, count)}

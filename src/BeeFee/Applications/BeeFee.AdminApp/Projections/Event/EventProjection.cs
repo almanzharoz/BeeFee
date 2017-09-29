@@ -13,7 +13,7 @@ namespace BeeFee.AdminApp.Projections.Event
 		public string Name { get; }
 		public EventDateTime DateTime { get; }
 		public Address Address { get; }
-		public EEventType Type { get; }
+		public EEventState State { get; }
 
 		[Keyword]
 		public BaseUserProjection Owner { get; }
@@ -24,14 +24,14 @@ namespace BeeFee.AdminApp.Projections.Event
 			return this;
 		}
 
-		public EventProjection(string id, BaseCompanyProjection parent, int version, BaseUserProjection owner, BaseCategoryProjection category, string name, EventDateTime datetime, Address address, EEventType type) : base(id, parent, version)
+		public EventProjection(string id, BaseCompanyProjection parent, int version, BaseUserProjection owner, BaseCategoryProjection category, string name, EventDateTime datetime, Address address, EEventState state) : base(id, parent, version)
 		{
 			Owner = owner;
 			Category = category;
 			Name = name;
 			DateTime = datetime;
 			Address = address;
-			Type = type;
+			State = state;
 		}
 	}
 }

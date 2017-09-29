@@ -24,8 +24,8 @@ namespace BeeFee.OrganizerApp.Tests
 		{
 			var id = AddCategory("test");
 			var cid = AddCompany("test");
-			Assert.IsTrue(Service.AddEvent(cid, id, "test", "label", "test", null, EEventType.Concert,
-				new EventDateTime(DateTime.Now, DateTime.Now.AddMinutes(20)), new Address(), new TicketPrice[0], "html"));
+			Assert.IsTrue(Service.AddEvent(cid, id, "test", "label", "test", "email", 
+				new EventDateTime(DateTime.Now, DateTime.Now.AddMinutes(20)), new Address(), new TicketPrice[0], "html", "123"));
 		}
 
 		[TestMethod]
@@ -33,8 +33,8 @@ namespace BeeFee.OrganizerApp.Tests
 		{
 			var id = AddCategory("test");
 			var cid = AddCompany("test");
-			Assert.IsTrue(Service.AddEvent(cid, id, "test", "label", "test", null, EEventType.Concert,
-				new EventDateTime(DateTime.Now, DateTime.Now.AddMinutes(20)), new Address(), new TicketPrice[0], "html"));
+			Assert.IsTrue(Service.AddEvent(cid, id, "test", "label", "test", "email", 
+				new EventDateTime(DateTime.Now, DateTime.Now.AddMinutes(20)), new Address(), new TicketPrice[0], "html", "123"));
 			var myEvents = Service.GetMyEvents(cid).ToList();
 			Assert.AreEqual(1, myEvents.Count);
 			Assert.IsTrue(Service.RemoveEvent(myEvents[0].Id, myEvents[0].Parent.Id, myEvents[0].Version));
@@ -49,14 +49,15 @@ namespace BeeFee.OrganizerApp.Tests
 			var cid = AddCompany("test");
 			var start = DateTime.Now;
 			var end = start.AddMinutes(20);
-			Assert.IsTrue(Service.AddEvent(cid, id, "test", "label", "test", null, EEventType.Concert, new EventDateTime(start, end),
-				new Address("Ekaterinburg", "asd"), new[] {new TicketPrice {Price = 100m}}, "html"));
+			Assert.IsTrue(Service.AddEvent(cid, id, "test", "label", "test", "email", new EventDateTime(start, end),
+				new Address("Ekaterinburg", "asd"), new[] {new TicketPrice("p", null, 100m, 10) }, "html", "123"));
 			var @event = Service.GetMyEvents(cid).ToList()[0];
 			Assert.AreEqual("test", @event.Name);
 			Assert.AreEqual("label", @event.Page.Label);
 			Assert.AreEqual("test", @event.Url);
+			Assert.AreEqual("email", @event.Email);
 			Assert.AreEqual("test", @event.Parent.Name);
-			Assert.AreEqual(EEventType.Concert, @event.Type);
+			Assert.AreEqual(EEventState.Created, @event.State);
 			Assert.AreEqual(start, @event.DateTime.Start);
 			Assert.AreEqual(end, @event.DateTime.Finish);
 			Assert.AreEqual("Ekaterinburg", @event.Address.City);
@@ -72,13 +73,13 @@ namespace BeeFee.OrganizerApp.Tests
 			var cid = AddCompany("test");
 			var start = DateTime.Now;
 			var end = start.AddMinutes(20);
-			Assert.IsTrue(Service.AddEvent(cid, id, "test", "label", "test", null, EEventType.Concert, new EventDateTime(start, end),
-				new Address("Ekaterinburg", "asd"), new[] { new TicketPrice { Price = 100m } }, "html"));
+			Assert.IsTrue(Service.AddEvent(cid, id, "test", "label", "test", "email", new EventDateTime(start, end),
+				new Address("Ekaterinburg", "asd"), new[] { new TicketPrice("p", null, 100m, 10) }, "html", "123"));
 			var @event = Service.GetMyEvents(cid).ToList()[0];
 			Assert.AreEqual("test", @event.Name);
 			Assert.AreEqual("label", @event.Page.Label);
 			Assert.AreEqual("test", @event.Url);
-			Assert.AreEqual(EEventType.Concert, @event.Type);
+			Assert.AreEqual(EEventState.Created, @event.State);
 			Assert.AreEqual(start, @event.DateTime.Start);
 			Assert.AreEqual(end, @event.DateTime.Finish);
 			Assert.AreEqual("Ekaterinburg", @event.Address.City);
@@ -88,13 +89,13 @@ namespace BeeFee.OrganizerApp.Tests
 
 			start = DateTime.Now;
 			end = start.AddMinutes(20);
-			Assert.IsTrue(Service.UpdateEvent(@event.Id, @event.Parent.Id, @event.Version, "asd", "label", "asd", null, new EventDateTime(start, end),
-				new Address("Ekaterinburg", "dsa"), EEventType.Excursion, id, new TicketPrice[0], "asd"));
+			Assert.IsTrue(Service.UpdateEvent(@event.Id, @event.Parent.Id, @event.Version, "asd", "label", "asd", null, "email", new EventDateTime(start, end),
+				new Address("Ekaterinburg", "dsa"), id, new TicketPrice[0], "asd"));
 			@event = Service.GetMyEvents(cid).ToList()[0];
 			Assert.AreEqual("asd", @event.Name);
 			Assert.AreEqual("label", @event.Page.Label);
 			Assert.AreEqual("asd", @event.Url);
-			Assert.AreEqual(EEventType.Excursion, @event.Type);
+			Assert.AreEqual(EEventState.Created, @event.State);
 			Assert.AreEqual(start, @event.DateTime.Start);
 			Assert.AreEqual(end, @event.DateTime.Finish);
 			Assert.AreEqual("Ekaterinburg", @event.Address.City);

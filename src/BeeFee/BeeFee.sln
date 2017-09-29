@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sharp7Func", "..\Sharp7Func\Sharp7Func.csproj", "{DD9ADD0E-9376-4673-B78E-15B56D589056}"
 EndProject
@@ -43,7 +43,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.ImageApp", "Applicat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.ImageApp.Tests", "Tests\BeeFee.ImageApp.Tests\BeeFee.ImageApp.Tests.csproj", "{01A7B836-EB1F-4566-9350-8AA1CA95C5C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeFee.ImagesWebApplication", "UI\BeeFee.ImagesWebApplication\BeeFee.ImagesWebApplication.csproj", "{07D08282-45B3-42F0-841A-6166A9E4E34B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.ImagesWebApplication", "UI\BeeFee.ImagesWebApplication\BeeFee.ImagesWebApplication.csproj", "{07D08282-45B3-42F0-841A-6166A9E4E34B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.JobsApp", "Applications\BeeFee.JobsApp\BeeFee.JobsApp.csproj", "{AD9D8D70-7020-48A7-B628-CB22293FF206}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.JobsApp.Tests", "Tests\BeeFee.JobsApp.Tests\BeeFee.JobsApp.Tests.csproj", "{606C1847-7CEF-48C9-AAF2-37E9A85C9F95}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.ShedulerApplication", "UI\BeeFee.ShedulerApplication\BeeFee.ShedulerApplication.csproj", "{178CDC38-10F9-44F2-8A19-FDAEFCA32F90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeFee.ModeratorApp", "Applications\BeeFee.ModeratorApp\BeeFee.ModeratorApp.csproj", "{E32E0FC8-A0CA-48DE-BC77-43CE2A9CAD6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeFee.ModeratorApp.Tests", "Tests\BeeFee.ModeratorApp.Tests\BeeFee.ModeratorApp.Tests.csproj", "{94C10C6C-BC5C-47C7-9320-CE20588F4EBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -119,6 +129,26 @@ Global
 		{07D08282-45B3-42F0-841A-6166A9E4E34B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07D08282-45B3-42F0-841A-6166A9E4E34B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07D08282-45B3-42F0-841A-6166A9E4E34B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD9D8D70-7020-48A7-B628-CB22293FF206}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD9D8D70-7020-48A7-B628-CB22293FF206}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD9D8D70-7020-48A7-B628-CB22293FF206}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD9D8D70-7020-48A7-B628-CB22293FF206}.Release|Any CPU.Build.0 = Release|Any CPU
+		{606C1847-7CEF-48C9-AAF2-37E9A85C9F95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{606C1847-7CEF-48C9-AAF2-37E9A85C9F95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{606C1847-7CEF-48C9-AAF2-37E9A85C9F95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{606C1847-7CEF-48C9-AAF2-37E9A85C9F95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{178CDC38-10F9-44F2-8A19-FDAEFCA32F90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{178CDC38-10F9-44F2-8A19-FDAEFCA32F90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{178CDC38-10F9-44F2-8A19-FDAEFCA32F90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{178CDC38-10F9-44F2-8A19-FDAEFCA32F90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E32E0FC8-A0CA-48DE-BC77-43CE2A9CAD6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E32E0FC8-A0CA-48DE-BC77-43CE2A9CAD6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E32E0FC8-A0CA-48DE-BC77-43CE2A9CAD6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E32E0FC8-A0CA-48DE-BC77-43CE2A9CAD6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94C10C6C-BC5C-47C7-9320-CE20588F4EBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94C10C6C-BC5C-47C7-9320-CE20588F4EBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94C10C6C-BC5C-47C7-9320-CE20588F4EBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94C10C6C-BC5C-47C7-9320-CE20588F4EBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +170,11 @@ Global
 		{E0256FD5-CF03-47A8-B4E9-0772912C87E8} = {264231BC-2B1E-4DFC-9E5F-C6BB9442FA26}
 		{01A7B836-EB1F-4566-9350-8AA1CA95C5C9} = {24455C41-3567-41CF-8E06-938E56280229}
 		{07D08282-45B3-42F0-841A-6166A9E4E34B} = {B8E11930-34BA-4585-BC87-0FC519EAEC23}
+		{AD9D8D70-7020-48A7-B628-CB22293FF206} = {264231BC-2B1E-4DFC-9E5F-C6BB9442FA26}
+		{606C1847-7CEF-48C9-AAF2-37E9A85C9F95} = {24455C41-3567-41CF-8E06-938E56280229}
+		{178CDC38-10F9-44F2-8A19-FDAEFCA32F90} = {B8E11930-34BA-4585-BC87-0FC519EAEC23}
+		{E32E0FC8-A0CA-48DE-BC77-43CE2A9CAD6A} = {264231BC-2B1E-4DFC-9E5F-C6BB9442FA26}
+		{94C10C6C-BC5C-47C7-9320-CE20588F4EBC} = {24455C41-3567-41CF-8E06-938E56280229}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E8287FBF-0FC4-4441-BE8B-CA1E25292B1B}
