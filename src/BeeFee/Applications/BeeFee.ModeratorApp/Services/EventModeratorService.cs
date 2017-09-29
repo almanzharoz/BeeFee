@@ -20,6 +20,10 @@ namespace BeeFee.ModeratorApp.Services
 			=> FilterPager<Event, EventModeratorGridItem>(q => q.Term(p => p.State, EEventState.Moderating), page, take,
 				s => s.Ascending(p => p.DateTime.Start));
 
+		public EventModeratorProjection GetEvent(string id, string companyId)
+			=> GetWithVersion<Event, EventModeratorProjection, BaseCompanyProjection>(id, companyId, 
+				q => q.Term(t => t.State, EEventState.Moderating) && (!q.Exists(e => e.Field(p => p.Moderator)) || q.Term(p => p.Moderator, User.Id)));
+
 		public EventModeratorProjection GetEvent(string id, string companyId, int version)
 			=> Get<Event, EventModeratorProjection, BaseCompanyProjection>(id, companyId, version,
 				q => q.Term(t => t.State, EEventState.Moderating) && (!q.Exists(e => e.Field(p => p.Moderator)) || q.Term(p => p.Moderator, User.Id)));

@@ -1,6 +1,5 @@
-@using System.Collections.Generic
 @using System.Linq
-@model System.Collections.Generic.IReadOnlyCollection<BeeFee.OrganizerApp.Projections.Event.EventProjection>
+@model IReadOnlyCollection<BeeFee.OrganizerApp.Projections.Event.EventProjection>
 
 <h2>My events:</h2>
 
@@ -47,4 +46,4 @@ else
     </div>
 }
 <br /><br />
-<a asp-action="Add" asp-route-companyId="@ViewBag.CompanyId" >Add</a>
+<a asp-action="Add" asp-route-companyId="@ViewBag.CompanyId">Add</a>

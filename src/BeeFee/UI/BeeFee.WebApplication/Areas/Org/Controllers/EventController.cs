@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
-using BeeFee.ImageApp;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Helpers;
 using BeeFee.Model.Projections;
@@ -17,8 +15,8 @@ using SharpFuncExt;
 
 namespace BeeFee.WebApplication.Areas.Org.Controllers
 {
-    [Area("Org")]
-    [Authorize(Roles = "organizer")]
+	[Area("Org")]
+    [Authorize(Roles = RoleNames.Organizer)]
     public class EventController : BaseController<EventService>
     {
         private readonly BeeFeeWebAppSettings _settings;
@@ -74,7 +72,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         public async Task<IActionResult> Edit(string id, string companyId)
         {
             var @event = Service.GetEvent(id, companyId);
-            if (@event == null)
+            if (@event == null || @event.State == EEventState.Created || @event.State == EEventState.NotModerated)
                 return NotFound();
             return View(new EventEditModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>(),
                 await _imagesService.RegisterEvent(@event.Parent.Url, @event.Url, Request.Host.Host)));
@@ -112,5 +110,11 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             Service.RemoveEvent(id, companyId, version);
             return RedirectToAction("Index", new { companyId });
         }
+
+		public IActionResult ToModerate(string id, string companyId, int version)
+		{
+			Service.ToModerate(id, companyId, version);
+			return RedirectToActionPermanent("Index");
+		}
     }
 }

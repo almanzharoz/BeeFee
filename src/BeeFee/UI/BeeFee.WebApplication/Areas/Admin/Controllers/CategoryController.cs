@@ -1,4 +1,5 @@
 using BeeFee.AdminApp.Services;
+using BeeFee.Model.Embed;
 using BeeFee.WebApplication.Areas.Admin.Models;
 using BeeFee.WebApplication.Controllers;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BeeFee.WebApplication.Areas.Admin.Controllers
 {
 	[Area("Admin")]
-	[Authorize(Roles = "admin")]
+	[Authorize(Roles = RoleNames.Admin)]
     public class CategoryController : BaseController<CategoryService>
     {
 	    public CategoryController(CategoryService service, Model.Services.CategoryService categoryService) : base(service, categoryService)

@@ -1,11 +1,16 @@
-﻿@model BeeFee.WebApplication.Models.Account.ProfileEditModel
-@if (User.IsInRole("admin"))
+﻿@using BeeFee.Model.Embed
+@model BeeFee.WebApplication.Models.Account.ProfileEditModel
+@if (User.IsInRole(RoleNames.Admin))
 {
 	<li><a asp-area="Admin" asp-controller="Category" asp-action="Index">Categories</a></li>
 }
-@if (User.IsInRole("organizer"))
+@if (User.IsInRole(RoleNames.Organizer))
 {
 	<li><a asp-area="Org" asp-controller="Company" asp-action="Index">My Companies</a></li>
+}
+@if (User.IsInRole(RoleNames.EventModerator))
+{
+	<li><a asp-area="Moderator" asp-controller="Event" asp-action="Index">Moderator</a></li>
 }
 
 <form method="post" class="form-horizontal">
