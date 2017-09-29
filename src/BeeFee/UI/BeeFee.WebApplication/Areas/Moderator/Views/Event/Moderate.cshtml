@@ -1,0 +1,33 @@
+﻿@model BeeFee.WebApplication.Areas.Moderator.Models.ModerateEventEditModel
+
+<form method="post">
+	<input type="hidden" asp-for="Version" />
+	<div class="validation" asp-validation-summary="ModelOnly"></div>
+	<div class="container">
+
+		<div class="form-group">
+			<input class="form-control" asp-for="Name" placeholder="Название компании" />
+			<span asp-validation-for="Name" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<input class="form-control" asp-for="Title" placeholder="Title" />
+			<span asp-validation-for="Title" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<input class="form-control" asp-for="Caption" placeholder="Caption" />
+			<span asp-validation-for="Caption" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<input class="form-control" asp-for="Label" placeholder="Label" />
+			<span asp-validation-for="Label" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<input type="submit" value="Save" class="btn" />
+			<a asp-action="Cancel">Cancel</a>
+		</div>
+	</div>
+</form>

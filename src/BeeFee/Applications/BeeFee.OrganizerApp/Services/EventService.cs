@@ -53,7 +53,8 @@ namespace BeeFee.OrganizerApp.Services
 		///<exception cref="RemoveEntityException"></exception>
 		public bool RemoveEvent(string id, string company, int version)
 			// TODO: Добавить проверку статуса редактирования
-			=> Remove<EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version, true)
+			=> Remove<EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version,
+				q => q.Term(p=>p.State, EEventState.Created), true)
 			&& Remove(GetEventTransactionById(id, company), false);
 
 		///<exception cref="UpdateEntityException"></exception>

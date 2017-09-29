@@ -24,7 +24,7 @@ namespace BeeFee.OrganizerApp.Services
 			=> !ExistsByUrl<CompanyProjection>(url.IfNull(name, CommonHelper.UriTransliterate)) && Insert(new NewCompany(Get<BaseUserProjection>(User.Id), name, url), true);
 
 		public IReadOnlyCollection<KeyValuePair<CompanyProjection, int>> GetMyCompanies()
-			=> SearchWithScore<Company, CompanyProjection>(f => f.Term(p => p.Users.First().User, User.Id) || f.HasChild<Event>(c => c.ScoreMode(ChildScoreMode.Sum).Query(cq => cq.MatchAll())));
+			=> SearchWithScore<Company, CompanyProjection>(f => f.Term(p => p.Users.First().User, User.Id) && f.HasChild<Event>(c => c.ScoreMode(ChildScoreMode.Sum)));
 
 		public CompanyProjection GetCompany(string id)
 			=> GetWithVersion<Company, CompanyProjection>(id, f => f.Term(p => p.Users.First().User, User.Id));

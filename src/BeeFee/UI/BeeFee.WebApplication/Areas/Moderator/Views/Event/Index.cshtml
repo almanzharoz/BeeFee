@@ -1,0 +1,41 @@
+﻿@model Core.ElasticSearch.Pager<BeeFee.ModeratorApp.Projections.EventModeratorGridItem>
+
+<h2>Events for moderate:</h2>
+
+@if (Model.Count > 0)
+{
+	<table class="table table-striped">
+		<thead>
+		<tr>
+			<th>Name</th>
+			<th>Category</th>
+			<th>Dates</th>
+			<th>City</th>
+			<th>Address</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		@foreach (var e in Model)
+		{
+			<tr>
+				<td>@e.Name</td>
+				<td>@e.Category.Name</td>
+				<td>@e.DateTime</td>
+				<td>@e.Address.City</td>
+				<td>@e.Address.AddressString</td>
+				<td>
+					<a asp-action="Moderate" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id">Moderate</a>
+				</td>
+			</tr>
+		}
+		</tbody>
+	</table>
+}
+
+else
+{
+	<div class="text-center">
+		You don't have any events
+	</div>
+}

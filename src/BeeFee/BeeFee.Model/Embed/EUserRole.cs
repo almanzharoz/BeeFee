@@ -4,18 +4,27 @@ using Newtonsoft.Json.Converters;
 
 namespace BeeFee.Model.Embed
 {
+	public static class RoleNames
+	{
+		public const string Anonym = "anonym";
+		public const string Admin = "admin";
+		public const string Organizer = "organizer";
+		public const string User = "user";
+		public const string EventModerator = "eventmoderator";
+	}
+
 	[JsonConverter(typeof(StringEnumConverter))]
 	public enum EUserRole : byte
 	{
-		[EnumMember(Value = "anonym")]
+		[EnumMember(Value = RoleNames.Anonym)]
 		Anonym = 0,
-		[EnumMember(Value = "admin")]
+		[EnumMember(Value = RoleNames.Admin)]
 		Admin = 1,
-		[EnumMember(Value = "organizer")]
+		[EnumMember(Value = RoleNames.Organizer)]
 		Organizer,
-		[EnumMember(Value = "user")]
+		[EnumMember(Value = RoleNames.User)]
 		User,
-		[EnumMember(Value = "eventmoderator")]
+		[EnumMember(Value = RoleNames.EventModerator)]
 		EventModerator
 	}
 }

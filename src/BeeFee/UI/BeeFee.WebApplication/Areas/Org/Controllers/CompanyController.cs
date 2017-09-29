@@ -1,4 +1,5 @@
-﻿using BeeFee.Model.Services;
+﻿using BeeFee.Model.Embed;
+using BeeFee.Model.Services;
 using BeeFee.OrganizerApp.Services;
 using BeeFee.WebApplication.Areas.Org.Models;
 using BeeFee.WebApplication.Controllers;
@@ -9,7 +10,7 @@ using SharpFuncExt;
 namespace BeeFee.WebApplication.Areas.Org.Controllers
 {
 	[Area("Org")]
-	[Authorize(Roles = "organizer")]
+	[Authorize(Roles = RoleNames.Organizer)]
 	public class CompanyController : BaseController<CompanyService>
 	{
 		public CompanyController(CompanyService service, CategoryService categoryService) : base(service, categoryService)

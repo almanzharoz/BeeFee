@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using Core.ElasticSearch.Domain;
 
 namespace Core.ElasticSearch
 {
-    public class Pager<T> : IReadOnlyCollection<T>
+    public class Pager<T> : IPager, IReadOnlyCollection<T>
 		where T : IProjection
     {
 	    private readonly IReadOnlyCollection<T> _items;

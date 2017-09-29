@@ -11,14 +11,16 @@ namespace BeeFee.ModeratorApp.Projections
 		public string Url { get; }
 		public EventDateTime DateTime { get; }
 		public Address Address { get; }
+		public BaseCategoryProjection Category { get; }
 
 		public EventModeratorGridItem(string id, BaseCompanyProjection parent, int version,
-			string name, string url, EventDateTime datetime, Address address) : base(id, parent, version)
+			string name, string url, EventDateTime datetime, Address address, BaseCategoryProjection category) : base(id, parent, version)
 		{
 			Name = name;
 			Url = url;
 			DateTime = datetime;
 			Address = address;
+			Category = category;
 		}
 	}
 }

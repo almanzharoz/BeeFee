@@ -112,6 +112,20 @@ namespace Core.ElasticSearch
 				RepositoryLoggingEvents.ES_REMOVE,
 				$"Remove (Id: {id}, Version: {version})");
 
+		protected bool Remove<T, TParent>(string id, string parent, int version, Func<QueryContainerDescriptor<T>, QueryContainer> checkQuery, bool refresh)
+			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IRemoveProjection
+			where TParent : class, IProjection, IJoinProjection
+			=> FilterCount<T>(q => q.Ids(i=>i.Values(id)) && q.ParentId(p=>p.Id(parent)) && checkQuery(q))>0 && Try(
+				c => c.Delete(DocumentPath<T>.Id(id.HasNotNullArg(nameof(id))), x => x
+					.Index(_mapping.GetIndexName<T>())
+					.Type(_mapping.GetTypeName<T>())
+					.Parent(parent.HasNotNullArg(nameof(parent)))
+					.Version(version.HasNotNullArg(nameof(version)))
+					.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True))),
+				r => r.Result == Result.Deleted,
+				RepositoryLoggingEvents.ES_REMOVE,
+				$"Remove (Id: {id}, Version: {version})");
+
 		protected int Remove<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query, bool refresh) where T : class, IRemoveProjection
 			=> Try(
 				c => c.DeleteByQuery<T>(d => d.Query(q => q.Bool(b => b.Filter(query)))
