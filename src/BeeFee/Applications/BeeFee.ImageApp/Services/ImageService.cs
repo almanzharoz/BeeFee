@@ -6,11 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Exceptions;
-using ImageSharp;
-using ImageSharp.Formats;
-using ImageSharp.Processing;
-using Newtonsoft.Json;
-using SixLabors.Primitives;
+using SixLabors.ImageSharp;
 using SharpFuncExt;
 
 namespace BeeFee.ImageApp.Services
