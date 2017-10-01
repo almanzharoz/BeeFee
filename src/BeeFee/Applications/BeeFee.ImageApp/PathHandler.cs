@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using BeeFee.ImageApp.Embed;
+using SharpFuncExt;
 
 namespace BeeFee.ImageApp
 {
@@ -76,6 +79,23 @@ namespace BeeFee.ImageApp
 		internal string GetPathToOriginalImage(string companyName, string eventName, EImageType imageType, string fileName)
 			=> Path.Combine(GetPathToOriginalDirectoryByImageType(companyName, eventName, imageType), fileName);
 
+		internal string FindPathToOriginalEventImage(string companyName, string eventName, string fileName)
+		{
+			var privateFile =
+				Path.Combine(GetPathToOriginalDirectoryByImageType(companyName, eventName, EImageType.EventPrivateOriginalImage));
+			var publicFile =
+				Path.Combine(GetPathToOriginalDirectoryByImageType(companyName, eventName, EImageType.EventPublicOriginalImage));
+			if (File.Exists(privateFile)) return privateFile;
+			if (File.Exists(publicFile)) return publicFile;
+		}
+
+		internal IEnumerable<string> GetAllSizePathToEventImage(string companyName, string eventName, string fileName)
+		{
+			return GetAllImageSizeDirectories(companyName, eventName)
+				.Where(x => File.Exists(Path.Combine(x, fileName)))
+				.Select(x => Path.Combine(x, fileName));
+		}
+
 		internal bool IsEventImageExists(string companyName, string eventName, string fileName)
 			=> File.Exists(
 				   Path.Combine(
@@ -99,5 +119,9 @@ namespace BeeFee.ImageApp
 			}
 			return newName;
 		}
+
+		private IEnumerable<string> GetAllImageSizeDirectories(string companyName, string eventName)
+			=> Directory.EnumerateDirectories(GetParentDirectory(EImageType.EventResizedImage, companyName, eventName));
+
 	}
 }

@@ -8,6 +8,7 @@ using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Exceptions;
 using BeeFee.ImageApp.Helpers;
 using Newtonsoft.Json;
+using SharpFuncExt;
 using SixLabors.ImageSharp;
 
 namespace BeeFee.ImageApp.Services
@@ -21,7 +22,7 @@ namespace BeeFee.ImageApp.Services
 		private readonly ImageSize _originalMaxSize;
 		private readonly PathHandler _pathHandler;
 		private readonly int _cacheTime;
-		private object _locker;
+		private readonly object _locker;
 		private readonly string _settingsJsonFile;
 
 		public ImageService(MemoryCacheManager cacheManager, string settingsJsonFile,
@@ -56,7 +57,8 @@ namespace BeeFee.ImageApp.Services
 		public async Task AddUserAvatar(Stream stream, string userName, string key)
 			=> await AddLogoOrAvatar(stream, userName, key, EImageType.UserAvatar);
 
-		public async Task<ImageOperationResult> AddEventImage(Stream stream, string companyName, string eventName, string fileName,
+		public async Task<ImageOperationResult> AddEventImage(Stream stream, string companyName, string eventName,
+			string fileName,
 			string settingName, string key)
 		{
 			if (!IsKeyValid(key, companyName)) throw new AccessDeniedException();
@@ -77,9 +79,19 @@ namespace BeeFee.ImageApp.Services
 			return new ImageOperationResult(EImageOperationResult.Ok, fileName);
 		}
 
+		public void RemoveEventImage(string companyName, string eventName, string fileName, string key)
+		{
+			if(!IsKeyValid(key, companyName)) throw new AccessDeniedException();
+			if(!_pathHandler.IsEventImageExists(companyName, eventName, fileName)) throw new FileNotFoundException();
+
+			_pathHandler.GetAllSizePathToEventImage(companyName, eventName, fileName)
+				.Each(ImageHandlingHelper.DeleteImage);
+			DeleteOriginalImage(companyName, eventName, fileName);
+		}
+
 		public void GetAccessToFolder(string key, string directoryName)
 		{
-			if(_cacheManager.IsSet(key))
+			if (_cacheManager.IsSet(key))
 				_cacheManager.Remove(key);
 			_cacheManager.Set(key, new MemoryCacheKeyObject(EKeyType.User, directoryName), _cacheTime);
 		}
@@ -106,6 +118,9 @@ namespace BeeFee.ImageApp.Services
 				await ImageHandlingHelper.ResizeAndSave(image, size,
 					_pathHandler.GetPathToImageSize(companyName, eventName, size, fileName));
 		}
+
+		private void DeleteOriginalImage(string companyName, string eventName, string fileName)
+			=> File.Delete(_pathHandler.FindPathToOriginalEventImage(companyName, eventName, fileName));
 
 		private ImageSize GetMaxSizeByImageType(EImageType imageType)
 		{

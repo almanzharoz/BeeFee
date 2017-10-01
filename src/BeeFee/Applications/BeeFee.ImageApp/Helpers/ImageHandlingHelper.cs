@@ -16,8 +16,10 @@ namespace BeeFee.ImageApp.Helpers
 		internal static Image<Rgba32> ResizeImage(Image<Rgba32> image, ImageSize size)
 			=> image.Clone().Fluent(z => z.Mutate(x => x.Resize(new ResizeOptions { Mode = ResizeMode.Max, Size = new Size(size.Width, size.Height) })));
 
-
 		internal static async Task ResizeAndSave(Image<Rgba32> image, ImageSize size, string path)
 			=> await SaveImage(ResizeImage(image, size), path);
+
+		internal static void DeleteImage(string path)
+			=> File.Delete(path);
 	}
 }
