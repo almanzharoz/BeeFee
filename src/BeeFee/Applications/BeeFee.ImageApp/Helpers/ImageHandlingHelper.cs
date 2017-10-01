@@ -21,5 +21,11 @@ namespace BeeFee.ImageApp.Helpers
 
 		internal static void DeleteImage(string path)
 			=> File.Delete(path);
+
+		internal static void RenameImage(string oldPath, string newPath)
+			=> File.Move(oldPath, newPath);
+
+		internal static void RenameImage((string, string) tuple)
+			=> File.Move(tuple.Item1, tuple.Item2);
 	}
 }

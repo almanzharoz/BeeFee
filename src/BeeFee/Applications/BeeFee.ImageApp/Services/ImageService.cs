@@ -24,6 +24,7 @@ namespace BeeFee.ImageApp.Services
 		private readonly int _cacheTime;
 		private readonly object _locker;
 		private readonly string _settingsJsonFile;
+		private readonly TimeSpan _timeToDelete;
 
 		public ImageService(MemoryCacheManager cacheManager, string settingsJsonFile,
 			ImageSize userAvatarSize, ImageSize companyLogoSize, ImageSize originalMaxSize, PathHandler pathHandler,
@@ -57,6 +58,10 @@ namespace BeeFee.ImageApp.Services
 		public async Task AddUserAvatar(Stream stream, string userName, string key)
 			=> await AddLogoOrAvatar(stream, userName, key, EImageType.UserAvatar);
 
+		/// <summary>
+		/// Add image for event
+		/// </summary>
+		/// <exception cref="AccessDeniedException"></exception>
 		public async Task<ImageOperationResult> AddEventImage(Stream stream, string companyName, string eventName,
 			string fileName,
 			string settingName, string key)
@@ -79,14 +84,36 @@ namespace BeeFee.ImageApp.Services
 			return new ImageOperationResult(EImageOperationResult.Ok, fileName);
 		}
 
+		/// <summary>
+		/// Removes event image
+		/// </summary>
+		/// <exception cref="AccessDeniedException"></exception>
+		/// <exception cref="FileNotFoundException"></exception>
 		public void RemoveEventImage(string companyName, string eventName, string fileName, string key)
 		{
-			if(!IsKeyValid(key, companyName)) throw new AccessDeniedException();
+			if(!IsKeyValid(key, companyName) || 
+				_pathHandler.IsFileLivesLessThan(_timeToDelete, _pathHandler.FindPathToOriginalEventImage(companyName, eventName, fileName)))
+				throw new AccessDeniedException();
 			if(!_pathHandler.IsEventImageExists(companyName, eventName, fileName)) throw new FileNotFoundException();
 
 			_pathHandler.GetAllSizePathToEventImage(companyName, eventName, fileName)
 				.Each(ImageHandlingHelper.DeleteImage);
 			DeleteOriginalImage(companyName, eventName, fileName);
+		}
+
+		/// <summary>
+		/// Renames EventImages
+		/// </summary>
+		/// <exception cref="AccessDeniedException"></exception>
+		/// <exception cref="FileNotFoundException"></exception>
+		public void RenameEventImage(string companyName, string eventName, string oldFileName, string newFileName, string key)
+		{
+			if(!IsKeyValid(key, companyName)) throw new AccessDeniedException();
+			if (!_pathHandler.IsEventImageExists(companyName, eventName, oldFileName)) throw new FileNotFoundException();
+
+			_pathHandler.GetAllSizePathToEventImageForRename(companyName, eventName, oldFileName, newFileName)
+				.Each(x => ImageHandlingHelper.RenameImage(x.OldPath, x.NewPath));
+			RenameOriginalImage(companyName, eventName, oldFileName, newFileName);
 		}
 
 		public void GetAccessToFolder(string key, string directoryName)
@@ -120,7 +147,10 @@ namespace BeeFee.ImageApp.Services
 		}
 
 		private void DeleteOriginalImage(string companyName, string eventName, string fileName)
-			=> File.Delete(_pathHandler.FindPathToOriginalEventImage(companyName, eventName, fileName));
+			=> ImageHandlingHelper.DeleteImage(_pathHandler.FindPathToOriginalEventImage(companyName, eventName, fileName));
+
+		private void RenameOriginalImage(string companyName, string eventName, string oldFileName, string newFileName)
+			=> ImageHandlingHelper.RenameImage(_pathHandler.FindPathToOriginalEventImageForRename(companyName, eventName, oldFileName, newFileName));
 
 		private ImageSize GetMaxSizeByImageType(EImageType imageType)
 		{

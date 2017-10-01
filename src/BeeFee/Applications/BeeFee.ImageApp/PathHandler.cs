@@ -82,11 +82,32 @@ namespace BeeFee.ImageApp
 		internal string FindPathToOriginalEventImage(string companyName, string eventName, string fileName)
 		{
 			var privateFile =
-				Path.Combine(GetPathToOriginalDirectoryByImageType(companyName, eventName, EImageType.EventPrivateOriginalImage));
+				Path.Combine(GetPathToOriginalDirectoryByImageType(companyName, eventName, EImageType.EventPrivateOriginalImage), fileName);
 			var publicFile =
-				Path.Combine(GetPathToOriginalDirectoryByImageType(companyName, eventName, EImageType.EventPublicOriginalImage));
+				Path.Combine(GetPathToOriginalDirectoryByImageType(companyName, eventName, EImageType.EventPublicOriginalImage), fileName);
 			if (File.Exists(privateFile)) return privateFile;
 			if (File.Exists(publicFile)) return publicFile;
+			throw new FileNotFoundException();
+		}
+
+		internal (string OldPath, string NewPath) FindPathToOriginalEventImageForRename(string companyName, string eventName,
+			string oldFileName, string newFileName)
+		{
+			var oldPrivateFile =
+				Path.Combine(GetPathToOriginalDirectoryByImageType(companyName, eventName, EImageType.EventPrivateOriginalImage),
+					oldFileName);
+			var newPrivateFile =
+				Path.Combine(GetPathToOriginalDirectoryByImageType(companyName, eventName, EImageType.EventPrivateOriginalImage),
+					newFileName);
+			var oldPublicFile =
+				Path.Combine(GetPathToOriginalDirectoryByImageType(companyName, eventName, EImageType.EventPublicOriginalImage),
+					oldFileName);
+			var newPublicFile =
+				Path.Combine(GetPathToOriginalDirectoryByImageType(companyName, eventName, EImageType.EventPublicOriginalImage),
+					newFileName);
+			if (File.Exists(oldPrivateFile)) return (oldPrivateFile, newPrivateFile);
+			if (File.Exists(oldPublicFile)) return (oldPublicFile, newPublicFile);
+			throw new FileNotFoundException();
 		}
 
 		internal IEnumerable<string> GetAllSizePathToEventImage(string companyName, string eventName, string fileName)
@@ -94,6 +115,13 @@ namespace BeeFee.ImageApp
 			return GetAllImageSizeDirectories(companyName, eventName)
 				.Where(x => File.Exists(Path.Combine(x, fileName)))
 				.Select(x => Path.Combine(x, fileName));
+		}
+
+		internal IEnumerable<(string OldPath, string NewPath)> GetAllSizePathToEventImageForRename(string companyName, string eventName, string oldFileName, string newFileName)
+		{
+			return GetAllImageSizeDirectories(companyName, eventName)
+				.Where(x => File.Exists(Path.Combine(x, oldFileName)))
+				.Select(x => (Path.Combine(x, oldFileName), Path.Combine(x, newFileName)));
 		}
 
 		internal bool IsEventImageExists(string companyName, string eventName, string fileName)
@@ -119,6 +147,9 @@ namespace BeeFee.ImageApp
 			}
 			return newName;
 		}
+
+		internal bool IsFileLivesLessThan(TimeSpan timeSpan, string path)
+			=> File.GetCreationTimeUtc(path).Add(timeSpan) < DateTime.UtcNow;
 
 		private IEnumerable<string> GetAllImageSizeDirectories(string companyName, string eventName)
 			=> Directory.EnumerateDirectories(GetParentDirectory(EImageType.EventResizedImage, companyName, eventName));
