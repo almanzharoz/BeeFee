@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace BeeFee.ImageApp
+namespace BeeFee.ImageApp.Embed
 {
 	public class ImageSettings
 	{
