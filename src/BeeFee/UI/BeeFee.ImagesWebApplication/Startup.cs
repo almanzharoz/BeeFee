@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using BeeFee.ImageApp;
+using BeeFee.ImageApp.Embed;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

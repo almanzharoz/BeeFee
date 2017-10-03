@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace BeeFee.ImageApp
@@ -51,6 +52,14 @@ namespace BeeFee.ImageApp
 			hashCode = hashCode * -1521134295 + Width.GetHashCode();
 			hashCode = hashCode * -1521134295 + Height.GetHashCode();
 			return hashCode;
+		}
+
+		internal static ImageSize FromString(string input)
+		{
+			var regex = $"(\\d+){Delimiter}(\\d+)";
+			if(!Regex.IsMatch(input, regex)) throw new ArgumentException();
+			var result = Regex.Match(input, regex).Groups.Select(x => int.Parse(x.Value)).ToArray();
+			return new ImageSize(result[0], result[1]);
 		}
 	}
 }

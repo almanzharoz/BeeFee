@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using BeeFee.ImageApp.Caching;
 using BeeFee.ImageApp.Embed;
@@ -19,16 +20,16 @@ namespace BeeFee.ImageApp.Services
 		private readonly ConcurrentDictionary<string, ImageSettings> _settings;
 		private readonly ImageSize _userAvatarSize;
 		private readonly ImageSize _companyLogoSize;
-		private readonly ImageSize _originalMaxSize;
+		private readonly ImageSize _eventImageOriginalMaxSize;
 		private readonly PathHandler _pathHandler;
 		private readonly int _cacheTime;
 		private readonly object _locker;
 		private readonly string _settingsJsonFile;
 		private readonly TimeSpan _timeToDelete;
 
-		public ImageService(MemoryCacheManager cacheManager, string settingsJsonFile,
-			ImageSize userAvatarSize, ImageSize companyLogoSize, ImageSize originalMaxSize, PathHandler pathHandler,
-			int cacheTime)
+		internal ImageService(MemoryCacheManager cacheManager, string settingsJsonFile,
+			ImageSize userAvatarSize, ImageSize companyLogoSize, ImageSize eventImageOriginalMaxSize, PathHandler pathHandler,
+			int cacheTime, int timeToDeleteInMinutes)
 		{
 			_cacheManager = cacheManager;
 
@@ -38,9 +39,10 @@ namespace BeeFee.ImageApp.Services
 
 			_userAvatarSize = userAvatarSize;
 			_companyLogoSize = companyLogoSize;
-			_originalMaxSize = originalMaxSize;
+			_eventImageOriginalMaxSize = eventImageOriginalMaxSize;
 			_pathHandler = pathHandler;
 			_cacheTime = cacheTime;
+			_timeToDelete = TimeSpan.FromMinutes(timeToDeleteInMinutes);
 			_locker = new object();
 		}
 
@@ -116,6 +118,24 @@ namespace BeeFee.ImageApp.Services
 			RenameOriginalImage(companyName, eventName, oldFileName, newFileName);
 		}
 
+		public async Task<ImageOperationResult> UpdateImage(Stream stream, string companyName, string eventName, string fileName, string settingName, string key)
+		{
+			if(!IsKeyValid(key, companyName)) throw new AccessDeniedException();
+			if (!_settings.TryGetValue(settingName, out var setting))
+				throw new KeyNotFoundException($"setting with {settingName} not found");
+
+			var sizes = _pathHandler.GetImageSizes(companyName, eventName, fileName);
+			RemoveEventImage(companyName, eventName, fileName, key);
+
+			var image = Image.Load(stream);
+			await AddOriginalImage(image, companyName, eventName, fileName,
+				setting.KeepPublicOriginalSize ? EImageType.EventPublicOriginalImage : EImageType.EventPrivateOriginalImage);
+			await AddResizedImages(image, companyName, eventName, fileName, setting.Sizes.Concat(sizes));
+
+			return new ImageOperationResult(EImageOperationResult.Ok, fileName);
+
+		}
+
 		public void GetAccessToFolder(string key, string directoryName)
 		{
 			if (_cacheManager.IsSet(key))
@@ -161,11 +181,11 @@ namespace BeeFee.ImageApp.Services
 				case EImageType.UserAvatar:
 					return _userAvatarSize;
 				case EImageType.EventPrivateOriginalImage:
-					return _originalMaxSize;
+					return _eventImageOriginalMaxSize;
 				case EImageType.EventPublicOriginalImage:
-					return _originalMaxSize;
+					return _eventImageOriginalMaxSize;
 				case EImageType.EventResizedImage:
-					return _originalMaxSize;
+					return _eventImageOriginalMaxSize;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(imageType), imageType, null);
 			}

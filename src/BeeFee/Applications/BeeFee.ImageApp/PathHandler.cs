@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BeeFee.ImageApp.Embed;
-using SharpFuncExt;
 
 namespace BeeFee.ImageApp
 {
-	public class PathHandler
+	internal class PathHandler
 	{
 		private readonly string _parentDirectory;
 		private readonly string _privateOriginalDirectory;
@@ -154,5 +153,11 @@ namespace BeeFee.ImageApp
 		private IEnumerable<string> GetAllImageSizeDirectories(string companyName, string eventName)
 			=> Directory.EnumerateDirectories(GetParentDirectory(EImageType.EventResizedImage, companyName, eventName));
 
+		public IEnumerable<ImageSize> GetImageSizes(string companyName, string eventName, string fileName)
+		{
+			return GetAllImageSizeDirectories(companyName, eventName)
+				.Where(x => File.Exists(Path.Combine(x, fileName)))
+				.Select(x => ImageSize.FromString(new DirectoryInfo(x).Name));
+		}
 	}
 }
