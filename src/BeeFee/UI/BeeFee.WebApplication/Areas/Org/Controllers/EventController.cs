@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BeeFee.AdminApp.Projections.Event;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Helpers;
 using BeeFee.Model.Projections;
@@ -42,33 +43,34 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
                 FinishDateTime = DateTime.Now.AddDays(1)
             });
 
-        [HttpPost]
-        public async Task<IActionResult> Add(AddEventEditModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                model.Url = model.Url.IfNull(model.Name, CommonHelper.UriTransliterate)
-                    .ThrowIf(x => x.Contains("/"), x => new InvalidOperationException("url contains \"/\""));
+		[HttpPost]
+		public async Task<IActionResult> Add(AddEventEditModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				model.Url = model.Url.IfNull(model.Name, CommonHelper.UriTransliterate)
+					.ThrowIf(x => x.Contains("/"), x => new InvalidOperationException("url contains \"/\""));
 
-                if (Service.AddEvent(model.CompanyId,
-                    model.CategoryId,
-                    model.Name,
-                    model.Label,
-                    model.Url,
-                    model.Email,
-                    new EventDateTime(model.StartDateTime, model.FinishDateTime),
-                    new Address(model.City, model.Address),
-                    new[] { new TicketPrice("ticket", null, 0, 10) },
-                    model.Html,
-                    await _imagesService.RegisterEvent(Service.GetCompany<CompanyJoinProjection>(model.CompanyId).Url, model.Url, Request.Host.Host)
-                    ))
-                    return RedirectToAction("Index", new { id = model.CompanyId });
-                ModelState.AddModelError("error", "Event dont save");
-            }
-            return View(model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
-        }
+				if (Service.AddEvent(model.CompanyId,
+					model.CategoryId,
+					model.Name,
+					model.Label,
+					model.Url,
+					model.Email,
+					new EventDateTime(model.StartDateTime, model.FinishDateTime),
+					new Address(model.City, model.Address),
+					new[] {new TicketPrice("ticket", null, 0, 10)},
+					model.Html,
+					await _imagesService.RegisterEvent(Service.GetCompany<CompanyJoinProjection>(model.CompanyId).Url, model.Url,
+						Request.Host.Host)
+				))
+					return RedirectToAction("Index", new {id = model.CompanyId});
+				ModelState.AddModelError("error", "Event dont save");
+			}
+			return View(model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
+		}
 
-        [HttpGet]
+		[HttpGet]
         public async Task<IActionResult> Edit(string id, string companyId)
         {
             var @event = Service.GetEvent(id, companyId);
@@ -103,6 +105,9 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>());
             return View(model);
         }
+
+		public IActionResult Preview(string id, string companyId)
+			=> Service.GetEvent(id, companyId).If(IsAjax, PartialView, x => (IActionResult)View(x));
 
         public IActionResult Remove(string id, string companyId, int version)
         {
