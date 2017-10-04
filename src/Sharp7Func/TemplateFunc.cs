@@ -13,6 +13,13 @@ namespace SharpFuncExt
 			return ifFalse(arg);
 		}
 
+		public static TResult If<T, TResult>(this T arg, bool check, Func<T, TResult> ifTrue, Func<T, TResult> ifFalse)
+		{
+			if (check)
+				return ifTrue(arg);
+			return ifFalse(arg);
+		}
+
 		public static T If<T>(this T arg, bool check, Action ifTrue)
 		{
 			if (check)
