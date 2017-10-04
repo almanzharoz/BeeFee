@@ -65,8 +65,7 @@ namespace BeeFee.ImageApp.Services
 		/// </summary>
 		/// <exception cref="AccessDeniedException"></exception>
 		public async Task<ImageOperationResult> AddEventImage(Stream stream, string companyName, string eventName,
-			string fileName,
-			string settingName, string key)
+			string fileName, string settingName, string key)
 		{
 			if (!IsKeyValid(key, companyName)) throw new AccessDeniedException();
 			if (!_settings.TryGetValue(settingName, out var setting))
@@ -138,10 +137,14 @@ namespace BeeFee.ImageApp.Services
 
 		public void GetAccessToFolder(string key, string directoryName)
 		{
-			if (_cacheManager.IsSet(key))
-				_cacheManager.Remove(key);
-			_cacheManager.Set(key, new MemoryCacheKeyObject(EKeyType.User, directoryName), _cacheTime);
+			var fullKey = MakeKey(key, directoryName);
+			if (_cacheManager.IsSet(fullKey))
+				_cacheManager.Remove(fullKey);
+			_cacheManager.Set(fullKey, new MemoryCacheKeyObject(EKeyType.User, directoryName), _cacheTime);
 		}
+
+		private string MakeKey(string key, string directoryName)
+			=> key + directoryName;
 
 		private async Task AddLogoOrAvatar(Stream stream, string name, string key, EImageType imageType)
 		{
@@ -192,7 +195,8 @@ namespace BeeFee.ImageApp.Services
 		}
 
 		private bool IsKeyValid(string key, string directoryName)
-			=> _cacheManager.IsSet(key) && _cacheManager.Get<MemoryCacheKeyObject>(key).Directory == directoryName;
+			=> _cacheManager.IsSet(MakeKey(key, directoryName)) &&
+			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, directoryName)).Directory == directoryName;
 
 		public void SetSetting(string settingName, ImageSettings setting, string key)
 		{
