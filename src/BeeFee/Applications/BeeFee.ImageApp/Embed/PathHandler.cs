@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BeeFee.ImageApp.Exceptions;
+using BeeFee.ImageApp.Helpers;
 
 namespace BeeFee.ImageApp.Embed
 {
@@ -64,7 +65,11 @@ namespace BeeFee.ImageApp.Embed
 		}
 
 		internal string GetPathToLogoOrAvatar(string companyOrUserName, EImageType imageType)
-			=> Path.Combine(GetParentDirectory(imageType, companyOrUserName), GetFileNameByType(imageType));
+		{
+			var dir = GetParentDirectory(imageType, companyOrUserName);
+			if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+			return Path.Combine(dir, GetFileNameByType(imageType));
+		}
 
 		internal string GetPathToSizeDirectory(string companyName, string eventName, ImageSize size)
 			=> Path.Combine(GetParentDirectory(EImageType.EventResizedImage, companyName, eventName), size.ToString());
@@ -160,9 +165,10 @@ namespace BeeFee.ImageApp.Embed
 
 		public IEnumerable<ImageSize> GetImageSizes(string companyName, string eventName, string fileName)
 		{
-			return GetAllImageSizeDirectories(companyName, eventName)
+			foreach (var path in GetAllImageSizeDirectories(companyName, eventName)
 				.Where(x => File.Exists(Path.Combine(x, fileName)))
-				.Select(x => ImageSize.FromString(new DirectoryInfo(x).Name));
+				.Select(x => ImageSize.FromString(x.Split(Path.DirectorySeparatorChar).Last())))
+				yield return path;
 		}
 
 		public void CreateEventFolder(string companyName, string eventName)
@@ -178,5 +184,8 @@ namespace BeeFee.ImageApp.Embed
 			Directory.CreateDirectory(publicDir);
 			Directory.CreateDirectory(resizedDir);
 		}
+
+		internal bool IsAvatarOrLogoExists(string name, EImageType imageType)
+			=> File.Exists(GetPathToLogoOrAvatar(name, imageType));
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using BeeFee.ImageApp.Caching;
 using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Exceptions;
@@ -24,7 +25,7 @@ namespace BeeFee.ImageApp.Tests
 				Directory.CreateDirectory("images");
 			foreach (var directory in new DirectoryInfo("images").GetDirectories())
 			{
-				directory.Delete(true);
+				DeleteDirectory(directory.FullName);
 			}
 
 			var pathHandler = new PathHandler("images", "private", "public", "resized", "users", "companies", "avatar.jpg", "logo.jpg");
@@ -34,6 +35,28 @@ namespace BeeFee.ImageApp.Tests
 			_service.SetSetting("test", new ImageSettings(new[] { new ImageSize(200, 200), new ImageSize(400, 200) }, false, true), Key);
 			_service.RegisterEvent("testCompany", "testEvent");
 			_service.GetAccessToFolder(Key, "testCompany");
+			_service.GetAccessToFolder(Key, "testUser");
+		}
+
+		private static void DeleteDirectory(string path, int i = 0)
+		{
+			if (i == 10) return;
+			foreach (var directory in Directory.GetDirectories(path))
+			{
+				DeleteDirectory(directory);
+			}
+			try
+			{
+				Directory.Delete(path, true);
+			}
+			catch (IOException)
+			{
+				DeleteDirectory(path, ++i);
+			}
+			catch (UnauthorizedAccessException)
+			{
+				DeleteDirectory(path, ++i);
+			}
 		}
 
 		private static Stream GetTestImage(string filename) => File.OpenRead(filename);
@@ -145,6 +168,20 @@ namespace BeeFee.ImageApp.Tests
 
 			_service.RemoveEventImage("testCompany", "testEvent", "test.jpg", Key);
 			Assert.IsFalse(File.Exists(Path.Combine("images", "private", "testEvent", "test.jpg")));
+		}
+
+		[TestMethod]
+		public void AddUserAvatar()
+		{
+			Task.Run(() => _service.AddUserAvatar(GetTestImage(TestImageName), "testUser", Key)).Wait();
+			Assert.IsTrue(File.Exists(Path.Combine("images", "public", "users", "testUser", "avatar.jpg")));
+		}
+
+		[TestMethod]
+		public void AddCompanyLogo()
+		{
+			Task.Run(() => _service.AddCompanyLogo(GetTestImage(TestImageName), "testCompany", Key)).Wait();
+			Assert.IsTrue(File.Exists(Path.Combine("images", "public", "companies", "testCompany", "logo.jpg")));
 		}
 	}
 }

@@ -81,10 +81,12 @@ namespace BeeFee.ImageApp.Services
 				return new ImageOperationResult(EImageOperationResult.Error, fileName, $"File {fileName} already exists",
 					EErrorType.FileAlreadyExists);
 
-			var image = Image.Load(stream);
-			await AddOriginalImage(image, companyName, eventName, fileName,
-				setting.KeepPublicOriginalSize ? EImageType.EventPublicOriginalImage : EImageType.EventPrivateOriginalImage);
-			await AddResizedImages(image, companyName, eventName, fileName, setting.Sizes);
+			using (var image = Image.Load(stream))
+			{
+				await AddOriginalImage(image, companyName, eventName, fileName,
+					setting.KeepPublicOriginalSize ? EImageType.EventPublicOriginalImage : EImageType.EventPrivateOriginalImage);
+				await AddResizedImages(image, companyName, eventName, fileName, setting.Sizes);
+			}
 
 			return new ImageOperationResult(EImageOperationResult.Ok, fileName);
 		}
@@ -141,13 +143,14 @@ namespace BeeFee.ImageApp.Services
 			var sizes = _pathHandler.GetImageSizes(companyName, eventName, fileName);
 			RemoveEventImage(companyName, eventName, fileName, key);
 
-			var image = Image.Load(stream);
-			await AddOriginalImage(image, companyName, eventName, fileName,
-				setting.KeepPublicOriginalSize ? EImageType.EventPublicOriginalImage : EImageType.EventPrivateOriginalImage);
-			await AddResizedImages(image, companyName, eventName, fileName, setting.Sizes.Concat(sizes));
+			using (var image = Image.Load(stream))
+			{
+				await AddOriginalImage(image, companyName, eventName, fileName,
+					setting.KeepPublicOriginalSize ? EImageType.EventPublicOriginalImage : EImageType.EventPrivateOriginalImage);
+				await AddResizedImages(image, companyName, eventName, fileName, setting.Sizes.ToHashSet().Concat(sizes));
+			}
 
 			return new ImageOperationResult(EImageOperationResult.Ok, fileName);
-
 		}
 
 		public void GetAccessToFolder(string key, string directoryName)
@@ -158,13 +161,20 @@ namespace BeeFee.ImageApp.Services
 			_cacheManager.Set(fullKey, new MemoryCacheKeyObject(EKeyType.User, directoryName), _cacheTime);
 		}
 
-		private string MakeKey(string key, string directoryName)
+		private static string MakeKey(string key, string directoryName)
 			=> key + directoryName;
 
 		private async Task AddLogoOrAvatar(Stream stream, string name, string key, EImageType imageType)
 		{
 			if (!IsKeyValid(key, name)) throw new AccessDeniedException();
-			await ImageHandlingHelper.ResizeAndSave(Image.Load(stream), GetMaxSizeByImageType(imageType), _pathHandler.GetPathToLogoOrAvatar(name, imageType));
+
+			using (var image = Image.Load(stream))
+			{
+				var path = _pathHandler.GetPathToLogoOrAvatar(name, imageType);
+				if (_pathHandler.IsAvatarOrLogoExists(name, imageType))
+					ImageHandlingHelper.DeleteImage(path);
+				await ImageHandlingHelper.ResizeAndSave(image, GetMaxSizeByImageType(imageType), path);
+			}
 		}
 
 		private async Task AddOriginalImage(Image<Rgba32> image, string companyName, string eventName, string fileName, EImageType imageType)
