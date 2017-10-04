@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BeeFee.ImageApp.Embed;
+using BeeFee.ImageApp.Exceptions;
 
-namespace BeeFee.ImageApp
+namespace BeeFee.ImageApp.Embed
 {
-	internal class PathHandler
+	public class PathHandler
 	{
 		private readonly string _parentDirectory;
 		private readonly string _privateOriginalDirectory;
@@ -17,7 +17,7 @@ namespace BeeFee.ImageApp
 		private readonly string _userAvatarFileName;
 		private readonly string _companyLogoFileName;
 
-		internal PathHandler(string parentDirectory, string privateOriginalDirectory, string publicOriginalFolder,
+		public PathHandler(string parentDirectory, string privateOriginalDirectory, string publicOriginalFolder,
 			string resizedFolder, string usersDirectory, string companiesDirectory, string userAvatarFileName, string companyLogoFileName)
 		{
 			_parentDirectory = parentDirectory;
@@ -70,7 +70,12 @@ namespace BeeFee.ImageApp
 			=> Path.Combine(GetParentDirectory(EImageType.EventResizedImage, companyName, eventName), size.ToString());
 
 		internal string GetPathToImageSize(string companyName, string eventName, ImageSize size, string fileName)
-			=> Path.Combine(GetPathToSizeDirectory(companyName, eventName, size), fileName);
+		{
+			var pathToDir = GetPathToSizeDirectory(companyName, eventName, size);
+			if (!Directory.Exists(pathToDir)) Directory.CreateDirectory(pathToDir);
+
+			return Path.Combine(pathToDir, fileName);
+		}
 
 		internal string GetPathToOriginalDirectoryByImageType(string companyName, string eventName, EImageType imageType)
 			=> Path.Combine(GetParentDirectory(imageType, companyName, eventName));
@@ -158,6 +163,20 @@ namespace BeeFee.ImageApp
 			return GetAllImageSizeDirectories(companyName, eventName)
 				.Where(x => File.Exists(Path.Combine(x, fileName)))
 				.Select(x => ImageSize.FromString(new DirectoryInfo(x).Name));
+		}
+
+		public void CreateEventFolder(string companyName, string eventName)
+		{
+			var privateDir = GetParentDirectory(EImageType.EventPrivateOriginalImage, companyName, eventName);
+			var publicDir = GetParentDirectory(EImageType.EventPublicOriginalImage, companyName, eventName);
+			var resizedDir = GetParentDirectory(EImageType.EventResizedImage, companyName, eventName);
+
+			if (Directory.Exists(privateDir) || Directory.Exists(publicDir) || Directory.Exists(resizedDir))
+				throw new DirectoryAlreadyExistsException();
+
+			Directory.CreateDirectory(privateDir);
+			Directory.CreateDirectory(publicDir);
+			Directory.CreateDirectory(resizedDir);
 		}
 	}
 }

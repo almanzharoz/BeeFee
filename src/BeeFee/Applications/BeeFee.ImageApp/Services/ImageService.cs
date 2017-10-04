@@ -8,6 +8,10 @@ using BeeFee.ImageApp.Caching;
 using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Exceptions;
 using BeeFee.ImageApp.Helpers;
+using BeeFee.Model;
+using BeeFee.Model.Projections;
+using Core.ElasticSearch;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SharpFuncExt;
 using SixLabors.ImageSharp;
@@ -27,11 +31,12 @@ namespace BeeFee.ImageApp.Services
 		private readonly string _settingsJsonFile;
 		private readonly TimeSpan _timeToDelete;
 
-		internal ImageService(MemoryCacheManager cacheManager, string settingsJsonFile,
+		public ImageService(MemoryCacheManager cacheManager, string settingsJsonFile,
 			ImageSize userAvatarSize, ImageSize companyLogoSize, ImageSize eventImageOriginalMaxSize, PathHandler pathHandler,
 			int cacheTime, int timeToDeleteInMinutes)
 		{
 			_cacheManager = cacheManager;
+			_locker = new object();
 
 			_settingsJsonFile = settingsJsonFile;
 			if (!File.Exists(settingsJsonFile)) File.Create(settingsJsonFile).Dispose();
@@ -43,7 +48,6 @@ namespace BeeFee.ImageApp.Services
 			_pathHandler = pathHandler;
 			_cacheTime = cacheTime;
 			_timeToDelete = TimeSpan.FromMinutes(timeToDeleteInMinutes);
-			_locker = new object();
 		}
 
 		/// <summary>
@@ -107,19 +111,30 @@ namespace BeeFee.ImageApp.Services
 		/// </summary>
 		/// <exception cref="AccessDeniedException"></exception>
 		/// <exception cref="FileNotFoundException"></exception>
-		public void RenameEventImage(string companyName, string eventName, string oldFileName, string newFileName, string key)
+		public ImageOperationResult RenameEventImage(string companyName, string eventName, string oldFileName, string newFileName, bool canChangeName, string key)
 		{
 			if(!IsKeyValid(key, companyName)) throw new AccessDeniedException();
 			if (!_pathHandler.IsEventImageExists(companyName, eventName, oldFileName)) throw new FileNotFoundException();
 
+			try
+			{
+				newFileName = RenameOriginalImage(companyName, eventName, oldFileName, newFileName, canChangeName);
+			}
+			catch (FileAlreadyExistsException)
+			{
+				return new ImageOperationResult(EImageOperationResult.Error, newFileName, $"File {newFileName} already exists", EErrorType.FileAlreadyExists);
+			}
+
 			_pathHandler.GetAllSizePathToEventImageForRename(companyName, eventName, oldFileName, newFileName)
 				.Each(x => ImageHandlingHelper.RenameImage(x.OldPath, x.NewPath));
-			RenameOriginalImage(companyName, eventName, oldFileName, newFileName);
+
+			return new ImageOperationResult(EImageOperationResult.Ok, newFileName);
 		}
 
-		public async Task<ImageOperationResult> UpdateImage(Stream stream, string companyName, string eventName, string fileName, string settingName, string key)
+		public async Task<ImageOperationResult> UpdateEventImage(Stream stream, string companyName, string eventName,
+			string fileName, string settingName, string key)
 		{
-			if(!IsKeyValid(key, companyName)) throw new AccessDeniedException();
+			if (!IsKeyValid(key, companyName)) throw new AccessDeniedException();
 			if (!_settings.TryGetValue(settingName, out var setting))
 				throw new KeyNotFoundException($"setting with {settingName} not found");
 
@@ -172,8 +187,16 @@ namespace BeeFee.ImageApp.Services
 		private void DeleteOriginalImage(string companyName, string eventName, string fileName)
 			=> ImageHandlingHelper.DeleteImage(_pathHandler.FindPathToOriginalEventImage(companyName, eventName, fileName));
 
-		private void RenameOriginalImage(string companyName, string eventName, string oldFileName, string newFileName)
-			=> ImageHandlingHelper.RenameImage(_pathHandler.FindPathToOriginalEventImageForRename(companyName, eventName, oldFileName, newFileName));
+		private string RenameOriginalImage(string companyName, string eventName, string oldFileName, string newFileName,
+			bool canChangeName)
+		{
+			if(!canChangeName && _pathHandler.IsEventImageExists(companyName, eventName, newFileName))
+				throw new FileAlreadyExistsException();
+			newFileName = _pathHandler.GetUniqueName(companyName, eventName, newFileName);
+			ImageHandlingHelper.RenameImage(
+				_pathHandler.FindPathToOriginalEventImageForRename(companyName, eventName, oldFileName, newFileName));
+			return newFileName;
+		}
 
 		private ImageSize GetMaxSizeByImageType(EImageType imageType)
 		{
@@ -214,8 +237,15 @@ namespace BeeFee.ImageApp.Services
 
 		private ConcurrentDictionary<string, ImageSettings> DeserializeSettings()
 		{
+			if(!File.Exists(_settingsJsonFile) || string.IsNullOrEmpty(File.ReadAllText(_settingsJsonFile)))
+				return null;
 			lock (_locker)
 				return JsonConvert.DeserializeObject<ConcurrentDictionary<string, ImageSettings>>(File.ReadAllText(_settingsJsonFile));
+		}
+
+		public void RegisterEvent(string companyName, string eventName)
+		{
+			_pathHandler.CreateEventFolder(companyName, eventName);
 		}
 	}
 }

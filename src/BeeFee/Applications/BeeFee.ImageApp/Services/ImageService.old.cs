@@ -131,7 +131,7 @@
 //			return new ImageOperationResult(EImageOperationResult.Ok, uniqueName);
 //		}
 
-//		public async Task<ImageOperationResult> UpdateImage(Stream stream, string eventName, string fileName, string settingName, string key)
+//		public async Task<ImageOperationResult> UpdateEventImage(Stream stream, string eventName, string fileName, string settingName, string key)
 //		{
 //			if(!CheckKey(eventName, key)) throw new AccessDeniedException();
 

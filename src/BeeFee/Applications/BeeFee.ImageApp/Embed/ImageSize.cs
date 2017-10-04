@@ -58,7 +58,7 @@ namespace BeeFee.ImageApp
 		{
 			var regex = $"(\\d+){Delimiter}(\\d+)";
 			if(!Regex.IsMatch(input, regex)) throw new ArgumentException();
-			var result = Regex.Match(input, regex).Groups.Select(x => int.Parse(x.Value)).ToArray();
+			var result = Regex.Match(input, regex).Groups.Skip(1).Select(x => int.Parse(x.Value)).ToArray();
 			return new ImageSize(result[0], result[1]);
 		}
 	}

@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Applications\BeeFee.ImageApp\BeeFee.ImageApp.csproj" />
+    <ProjectReference Include="..\BeeFee.TestsApp\BeeFee.TestsApp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
