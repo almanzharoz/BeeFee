@@ -41,30 +41,30 @@ namespace Core.ElasticSearch.Tests
 
         public new T Get<T>(string id, bool load = true)
             where T : BaseEntity, IProjection, IGetProjection
-            => base.Get<T>(id, load);
+            => base.GetById<T>(id, load);
 
 	    public new T GetWithVersion<T>(string id, bool load = true)
 		    where T : BaseEntityWithVersion, IProjection, IGetProjection
-		    => base.GetWithVersion<T>(id, load);
+		    => base.GetWithVersionById<T>(id, load);
 
 		public new T Get<T, TParent>(string id, string parent, bool load = true)
 		    where T : BaseEntityWithParent<TParent>, IProjection, IGetProjection
 		    where TParent : class, IProjection, IJoinProjection
-		    => base.Get<T, TParent>(id, parent, load);
+		    => base.GetById<T, TParent>(id, parent, load);
 
 	    public new T GetWithVersion<T, TParent>(string id, string parent, bool load = true)
 		    where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection
 		    where TParent : class, IProjection, IJoinProjection
-			=> base.GetWithVersion<T, TParent>(id, parent, load);
+			=> base.GetWithVersionById<T, TParent>(id, parent, load);
 
 		public new T Get<T>(string id, int version, bool load = true)
 		    where T : BaseEntityWithVersion, IProjection, IGetProjection
-		    => base.Get<T>(id, version, load);
+		    => base.GetById<T>(id, version, load);
 
 	    public new T Get<T, TParent>(string id, string parent, int version, bool load = true)
 		    where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection
 		    where TParent : class, IProjection, IJoinProjection
-			=> base.Get<T, TParent>(id, parent, version, load);
+			=> base.GetById<T, TParent>(id, parent, version, load);
 
 		public new int FilterCount<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query) where T : class, IProjection
             => base.FilterCount<T>(query);

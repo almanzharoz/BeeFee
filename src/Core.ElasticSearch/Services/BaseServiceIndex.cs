@@ -90,7 +90,7 @@ namespace Core.ElasticSearch
 						.IfNotNull(entity.Id, x => x.OpType(OpType.Create))
 						.Refresh(Refresh.True))
 					.Fluent(x => entity.Id = x.Id),
-				r => r.Created ? Get<T>(entity.Id) : null,
+				r => r.Created ? GetById<T>(entity.Id) : null,
 				RepositoryLoggingEvents.ES_INSERT);
 
 		/// <summary>
@@ -108,7 +108,7 @@ namespace Core.ElasticSearch
 						.Type(_mapping.GetTypeName<T>())
 						.OpType(OpType.Create)
 						.Refresh(Refresh.True)),
-				r => r.Created ? Get<T>(entity.Id) : null,
+				r => r.Created ? GetById<T>(entity.Id) : null,
 				RepositoryLoggingEvents.ES_INSERT);
 
 		/// <summary>
@@ -126,7 +126,7 @@ namespace Core.ElasticSearch
 						.Type(_mapping.GetTypeName<T>())
 						.Refresh(Refresh.True))
 					.Fluent(x => entity.Id = x.Id),
-				r => r.Created ? GetWithVersion<T>(entity.Id) : null,
+				r => r.Created ? GetWithVersionById<T>(entity.Id) : null,
 				RepositoryLoggingEvents.ES_INSERT);
 
 		/// <summary>
@@ -144,7 +144,7 @@ namespace Core.ElasticSearch
 						.Type(_mapping.GetTypeName<T>())
 						.OpType(OpType.Create)
 						.Refresh(Refresh.True)),
-				r => r.Created ? GetWithVersion<T>(entity.Id) : null,
+				r => r.Created ? GetWithVersionById<T>(entity.Id) : null,
 				RepositoryLoggingEvents.ES_INSERT);
 
 	}

@@ -25,10 +25,10 @@ namespace BeeFee.OrganizerApp.Services
 		}
 
 		public T GetCompany<T>(string id) where T : BaseEntityWithVersion, IGetProjection, IProjection<Company>
-			=> GetWithVersion<Company, T>(id, f => Query<Company>.Term(p => p.Users.First().User, User.HasNotNullArg(x => x.Id, "user").Id));
+			=> GetWithVersionByIdAndQuery<Company, T>(id, f => Query<Company>.Term(p => p.Users.First().User, User.HasNotNullArg(x => x.Id, "user").Id));
 
 		public EventProjection GetEvent(string id, string company)
-			=> GetWithVersion<Event, EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)).Id, UserQuery<EventProjection>);
+			=> GetWithVersionByIdAndQuery<Event, EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)).Id, UserQuery<EventProjection>);
 
 		/// <exception cref="AddEntityException"></exception>
 		// TODO: добавить проверку 
@@ -37,8 +37,8 @@ namespace BeeFee.OrganizerApp.Services
 		{
 			var newEvent = new NewEvent(
 				companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)),
-				Get<BaseUserProjection>(User.Id).HasNotNullEntity("user"),
-				Get<BaseCategoryProjection>(categoryId), name, label, url,
+				GetById<BaseUserProjection>(User.Id).HasNotNullEntity("user"),
+				GetById<BaseCategoryProjection>(categoryId), name, label, url,
 				dateTime, address, prices, html, email);
 			return !ExistsByUrl<EventProjection>(url.IfNull(name, CommonHelper.UriTransliterate)) &&
 				Insert<NewEvent, CompanyJoinProjection>(
@@ -52,7 +52,6 @@ namespace BeeFee.OrganizerApp.Services
 
 		///<exception cref="RemoveEntityException"></exception>
 		public bool RemoveEvent(string id, string company, int version)
-			// TODO: Добавить проверку статуса редактирования
 			=> Remove<EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version,
 				q => q.Term(p=>p.State, EEventState.Created), true)
 			&& Remove(GetEventTransactionById(id, company), false);
@@ -61,15 +60,16 @@ namespace BeeFee.OrganizerApp.Services
 		public bool UpdateEvent(string id, string company, int version, string name, string label, string url, string cover, string email,
 			EventDateTime dateTime, Address address, 
 			string categoryId, TicketPrice[] prices, string html)
-			=> Update<EventProjection, CompanyJoinProjection>(id,
+			// TODO: Добавить проверку статуса редактирования
+			=> UpdateById<EventProjection, CompanyJoinProjection>(id,
 					company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version,
 					x => x.Change(name, label, url, cover, email, dateTime, address, 
-						Get<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), prices, html), true);
+						GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), prices, html), true);
 
 		public IReadOnlyCollection<EventProjection> GetMyEvents(string companyId) 
 			=> Filter<Event, EventProjection>(x => UserQuery<EventProjection>(x.ParentId(p=>p.Id(companyId.HasNotNullArg("company")))));
 
 		public bool ToModerate(string id, string company, int version)
-			=> Update<EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version, x => x.ToModerate(), true);
+			=> UpdateById<EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version, x => x.ToModerate(), true);
 	}
 }

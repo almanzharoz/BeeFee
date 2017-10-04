@@ -18,9 +18,9 @@ namespace BeeFee.AdminApp.Services
 		{
 		}
 
-		public EventProjection GetEvent(string id, string companyId) => GetWithVersion<EventProjection, BaseCompanyProjection>(id, companyId);
+		public EventProjection GetEvent(string id, string companyId) => GetWithVersionById<EventProjection, BaseCompanyProjection>(id, companyId);
 
-		public BaseCategoryProjection GetCategory(string id) => Get<BaseCategoryProjection>(id);
+		public BaseCategoryProjection GetCategory(string id) => GetById<BaseCategoryProjection>(id);
 
 		///<exception cref="RemoveEntityException"></exception>
 		public bool RemoveEvent(string id, string companyId, int version)
@@ -34,7 +34,7 @@ namespace BeeFee.AdminApp.Services
 					.Query(query)));
 
 		public bool SetCategoryToEvent(string eventId, string companyId, string categoryId, int version)
-			=> Update<EventProjection, BaseCompanyProjection>(eventId, companyId, version,
+			=> UpdateById<EventProjection, BaseCompanyProjection>(eventId, companyId, version,
 				u => u.ChangeCategory(
 					GetCategory(categoryId.HasNotNullArg("new category id")).HasNotNullArg("new category")),
 				true);

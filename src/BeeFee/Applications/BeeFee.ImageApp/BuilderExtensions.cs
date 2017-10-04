@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
-using BeeFee.ImageApp.Caching;
+﻿using BeeFee.ImageApp.Caching;
 using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace BeeFee.ImageApp
 {

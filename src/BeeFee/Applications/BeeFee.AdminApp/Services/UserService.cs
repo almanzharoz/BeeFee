@@ -32,7 +32,7 @@ namespace BeeFee.AdminApp.Services
 			=> Update<UserUpdateProjection>(id, u => u.ChangeUser(email, name, roles), true);
 
 		public UserProjection GetUser(string id)
-			=> Get<UserProjection>(id);
+			=> GetById<UserProjection>(id);
 
 		public IReadOnlyCollection<UserProjection> SearchUsersByEmail(string query)
 			=> Search<User, UserProjection>(q => q

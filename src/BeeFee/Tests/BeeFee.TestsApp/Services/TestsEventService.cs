@@ -18,9 +18,9 @@ namespace BeeFee.TestsApp.Services
 
 		public string AddEvent(string companyId, string name, EventDateTime dateTime, Address address, string categoryId, EEventState state, decimal price, int count=10)
 		{
-			var category = Get<BaseCategoryProjection>(categoryId.HasNotNullArg(nameof(categoryId))).HasNotNullArg("category");
+			var category = GetById<BaseCategoryProjection>(categoryId.HasNotNullArg(nameof(categoryId))).HasNotNullArg("category");
 
-			return new NewEvent(Get<BaseCompanyProjection>(companyId), Get<BaseUserProjection>(User.Id).HasNotNullArg("owner"), name)
+			return new NewEvent(GetById<BaseCompanyProjection>(companyId), GetById<BaseUserProjection>(User.Id).HasNotNullArg("owner"), name)
 				{
 					DateTime = dateTime,
 					Address = address,
@@ -34,7 +34,7 @@ namespace BeeFee.TestsApp.Services
 		}
 
 		public FullEvent GetEventById(string eventId, string companyId)
-			=> GetWithVersion<FullEvent, BaseCompanyProjection>(eventId, companyId);
+			=> GetWithVersionById<FullEvent, BaseCompanyProjection>(eventId, companyId);
 
 		public FullEventTransaction GetEventTransactionById(string eventId, string companyId)
 			=> Filter<FullEventTransaction>(q =>

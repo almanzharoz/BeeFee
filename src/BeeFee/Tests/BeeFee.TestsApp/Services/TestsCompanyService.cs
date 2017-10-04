@@ -18,9 +18,9 @@ namespace BeeFee.TestsApp.Services
 		}
 
 		public string Add(string name, string url = null)
-			=> new NewCompany(url, name.Trim(), Get<BaseUserProjection>(User.Id)).Fluent(x => Insert(x, true)).Id;
+			=> new NewCompany(url, name.Trim(), GetById<BaseUserProjection>(User.Id)).Fluent(x => Insert(x, true)).Id;
 
 		public T GetCompany<T>(string id) where T : BaseEntity, IProjection<Company>, IGetProjection
-			=> Get<T>(id, true);
+			=> GetById<T>(id, true);
 	}
 }

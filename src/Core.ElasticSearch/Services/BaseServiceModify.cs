@@ -26,10 +26,10 @@ namespace Core.ElasticSearch
 		protected bool UpdateWithVersion<T>(T entity, bool refresh) where T : BaseEntityWithVersion, IProjection, IUpdateProjection
 			=> Try(
 				c => c.Update(
-						DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, x => x.Version, nameof(entity)).Id), d => d
+						DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity)).Id), d => d
 							.Index(_mapping.GetIndexName<T>())
 							.Type(_mapping.GetTypeName<T>())
-							.Version(entity.Version)
+							.Version(entity.Version.HasNotNullArg(nameof(entity.Version)))
 							.Doc(entity)
 							.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True)))
 					.Fluent(r => entity.Version = (int)r.Version),
@@ -72,7 +72,7 @@ namespace Core.ElasticSearch
 					DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity)).Id), d => d
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
-						.Parent(entity.Parent.Id)
+						.Parent(entity.Parent.HasNotNullArg(x => x.Id, nameof(entity.Parent)).Id)
 						.Version(entity.Version.HasNotNullArg("version"))
 						.Doc(setter(entity))
 						.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
@@ -82,7 +82,7 @@ namespace Core.ElasticSearch
 
 		protected bool Update<T>(string id, Func<T, T> setter, bool refresh)
 			where T : BaseEntity, IProjection, IGetProjection, IUpdateProjection
-			=> Get<T>(id)
+			=> GetById<T>(id)
 				.Convert(entity =>
 					Try(
 						c => c.Update(
@@ -97,7 +97,7 @@ namespace Core.ElasticSearch
 
 		protected bool Update<T>(string id, int version, Func<T, T> setter, bool refresh)
 			where T : BaseEntityWithVersion, IProjection, IGetProjection, IUpdateProjection
-			=> Get<T>(id, version)
+			=> GetById<T>(id, version)
 				.Convert(entity =>
 					Try(
 						c => c.Update(
@@ -113,7 +113,7 @@ namespace Core.ElasticSearch
 						$"Update (Id: {id}, Version: {version})"));
 
 		/// <summary>
-		/// Хитрожопа функция обновления. Пытается взять документ по id и query, есть такой не найден кидает эксепшн.
+		/// Хитрожопая функция обновления. Пытается взять документ по id и query, если такой не найден кидает эксепшн.
 		/// Иначе обновляет достанный документ указанной функцией обновления.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
@@ -125,12 +125,12 @@ namespace Core.ElasticSearch
 		/// <param name="setter">Функция обновления</param>
 		/// <param name="refresh">Флаг обновления индекса сразу</param>
 		/// <returns>Документ изменен. Если документ не изменился, хоть и был найден, вернется false.</returns>
-		protected bool UpdateWithQuery<T, TAccessException>(string id, int version,
+		protected bool UpdateByIdAndQuery<T, TAccessException>(string id, int version,
 			Func<QueryContainerDescriptor<T>, QueryContainer> query, Func<TAccessException> getException, Func<T, T> setter,
 			bool refresh)
 			where T : BaseEntityWithVersion, IProjection, IGetProjection, IUpdateProjection
 			where TAccessException : Exception
-			=> Get(id, version, query)
+			=> GetByIdAndQuery(id, version, query, false)
 				.ThrowIfNull(getException)
 				.Convert(entity =>
 					Try(
@@ -146,10 +146,32 @@ namespace Core.ElasticSearch
 						RepositoryLoggingEvents.ES_UPDATE,
 						$"Update (Id: {id}, Version: {version})"));
 
-		protected bool Update<T, TParent>(string id, string parent, int version, Func<T, T> setter, bool refresh)
+		protected bool UpdateByIdAndQuery<T, TParent, TAccessException>(string id, string parent, int version,
+			Func<QueryContainerDescriptor<T>, QueryContainer> query, Func<TAccessException> getException, Func<T, T> setter,
+			bool refresh)
 			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection, IUpdateProjection
 			where TParent : class, IProjection, IJoinProjection
-			=> Get<T, TParent>(id, parent, version)
+			where TAccessException : Exception
+			=> GetByIdAndQuery<T, TParent>(id, parent, version, query, false)
+				.ThrowIfNull(getException)
+				.Convert(entity =>
+					Try(
+						c => c.Update(
+								DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity)).Id), d => d
+									.Index(_mapping.GetIndexName<T>())
+									.Type(_mapping.GetTypeName<T>())
+									.Version(entity.Version)
+									.Doc(setter(entity))
+									.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True)))
+							.Fluent(r => entity.Version = (int)r.Version),
+						r => r.Result == Result.Updated,
+						RepositoryLoggingEvents.ES_UPDATE,
+						$"Update (Id: {id}, Version: {version})"));
+
+		protected bool UpdateById<T, TParent>(string id, string parent, int version, Func<T, T> setter, bool refresh)
+			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection, IUpdateProjection
+			where TParent : class, IProjection, IJoinProjection
+			=> GetById<T, TParent>(id, parent, version)
 				.Convert(entity =>
 					Try(
 						c => c.Update(
@@ -171,7 +193,7 @@ namespace Core.ElasticSearch
 		//protected bool Update<T>(string id, Func<T, T> setter) where T : BaseEntity, IProjection, IGetProjection, IUpdateProjection 
 		//	=> Update(id, setter, true);
 
-		protected bool Update<T>(string id, Func<T> setter, bool refresh) where T : BaseEntity, IProjection, IUpdateProjection
+		protected bool UpdateById<T>(string id, Func<T> setter, bool refresh) where T : BaseEntity, IProjection, IUpdateProjection
 			=> Try(
 				c => c.Update(
 					DocumentPath<T>.Id(id.HasNotNullArg("id")), d => d

@@ -21,16 +21,16 @@ namespace BeeFee.OrganizerApp.Services
 		}
 
 		public bool AddCompany(string name, string url)
-			=> !ExistsByUrl<CompanyProjection>(url.IfNull(name, CommonHelper.UriTransliterate)) && Insert(new NewCompany(Get<BaseUserProjection>(User.Id), name, url), true);
+			=> !ExistsByUrl<CompanyProjection>(url.IfNull(name, CommonHelper.UriTransliterate)) && Insert(new NewCompany(GetById<BaseUserProjection>(User.Id), name, url), true);
 
 		public IReadOnlyCollection<KeyValuePair<CompanyProjection, int>> GetMyCompanies()
 			=> SearchWithScore<Company, CompanyProjection>(f => f.Term(p => p.Users.First().User, User.Id) && f.HasChild<Event>(c => c.ScoreMode(ChildScoreMode.Sum)));
 
 		public CompanyProjection GetCompany(string id)
-			=> GetWithVersion<Company, CompanyProjection>(id, f => f.Term(p => p.Users.First().User, User.Id));
+			=> GetWithVersionByIdAndQuery<Company, CompanyProjection>(id, f => f.Term(p => p.Users.First().User, User.Id));
 
 		public bool EditCompany(string id, int version, string name, string url, string email, string logo)
-			=> UpdateWithQuery<CompanyProjection, EntityAccessException<Company>>(id, version,
+			=> UpdateByIdAndQuery<CompanyProjection, EntityAccessException<Company>>(id, version,
 				f => f.Term(p => p.Users.First().User, User.Id), () => new EntityAccessException<Company>(User, id),
 				x => x.Update(name, url, email, logo), true);
 

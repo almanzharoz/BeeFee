@@ -21,16 +21,16 @@ namespace BeeFee.ModeratorApp.Services
 				s => s.Ascending(p => p.DateTime.Start));
 
 		public EventModeratorProjection GetEvent(string id, string companyId)
-			=> GetWithVersion<Event, EventModeratorProjection, BaseCompanyProjection>(id, companyId, 
+			=> GetWithVersionByIdAndQuery<Event, EventModeratorProjection, BaseCompanyProjection>(id, companyId, 
 				q => q.Term(t => t.State, EEventState.Moderating) && (!q.Exists(e => e.Field(p => p.Moderator)) || q.Term(p => p.Moderator, User.Id)));
 
 		public EventModeratorProjection GetEvent(string id, string companyId, int version)
-			=> Get<Event, EventModeratorProjection, BaseCompanyProjection>(id, companyId, version,
+			=> GetByIdAndQuery<Event, EventModeratorProjection, BaseCompanyProjection>(id, companyId, version,
 				q => q.Term(t => t.State, EEventState.Moderating) && (!q.Exists(e => e.Field(p => p.Moderator)) || q.Term(p => p.Moderator, User.Id)));
 
 		public bool ModerateEvent(string id, string companyId, int version, string title, string caption, string label,
 			Address address, string categoryId, string html, bool moderated)
-			=> UpdateWithVersion<EventModeratorProjection, BaseCompanyProjection>(GetEvent(id, companyId, version), x => x.Change(title, label, caption, address, Get<BaseCategoryProjection>(categoryId, false).HasNotNullArg("category"), html).ChangeType(moderated), true);
+			=> UpdateWithVersion<EventModeratorProjection, BaseCompanyProjection>(GetEvent(id, companyId, version), x => x.Change(title, label, caption, address, GetById<BaseCategoryProjection>(categoryId, false).HasNotNullArg("category"), html).ChangeType(moderated), true);
 
 		public bool ModerateEvent(string id, string companyId, int version, bool moderated)
 			=> UpdateWithVersion<EventModeratorProjection, BaseCompanyProjection>(GetEvent(id, companyId, version), x => x.ChangeType(moderated), true);

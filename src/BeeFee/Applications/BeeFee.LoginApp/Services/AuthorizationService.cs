@@ -53,7 +53,7 @@ namespace BeeFee.LoginApp.Services
 				    user => Update<UserUpdateProjection>(user.Id, x => x.ChangePassword(/*oldPassword, */newPassword), true));
 
 		public T GetUser<T>() where T : BaseEntity, IProjection<User>, IGetProjection
-			=> Get<T>(User.Id);
+			=> GetById<T>(User.Id);
 
 		public bool UpdateUser(string name)
 			=> Update<UserUpdateProjection>(User.Id, x => x.Change(name), true);
