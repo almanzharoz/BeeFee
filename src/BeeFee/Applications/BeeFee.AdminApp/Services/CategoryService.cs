@@ -25,7 +25,7 @@ namespace BeeFee.AdminApp.Services
 		public bool Remove(string id) => Remove<CategoryProjection>(id, true);
 
 		public bool Rename(string id, int version, string name, string url)
-			=> Update<CategoryProjection>(id, version, x => x.Rename(name, url), true);
+			=> UpdateById<CategoryProjection>(id, version, x => x.Rename(name, url), true);
 
 		public IReadOnlyCollection<CategoryProjection> GetAllCategories()
 			=> Filter<Category, CategoryProjection>(null, s => s.Ascending(p => p.Name));

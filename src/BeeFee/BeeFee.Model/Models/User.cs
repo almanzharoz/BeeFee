@@ -2,7 +2,6 @@
 using BeeFee.Model.Embed;
 using BeeFee.Model.Interfaces;
 using Nest;
-using Newtonsoft.Json;
 
 namespace BeeFee.Model.Models
 

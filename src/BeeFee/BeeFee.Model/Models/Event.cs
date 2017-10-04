@@ -6,7 +6,7 @@ using Nest;
 
 namespace BeeFee.Model.Models
 {
-	public abstract class Event : IModel, IWithVersion, IWithParent<BaseCompanyProjection>, IProjection, IWithName, IWithUrl, IWithHidden
+	public abstract class Event : IModel, IWithVersion, IWithParent<BaseCompanyProjection>, IWithName, IWithUrl, IWithHidden
 	{
 		public string Id { get; set; }
 		public int Version { get; set; }
