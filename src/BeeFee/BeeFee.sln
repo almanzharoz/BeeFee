@@ -51,9 +51,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.JobsApp.Tests", "Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.ShedulerApplication", "UI\BeeFee.ShedulerApplication\BeeFee.ShedulerApplication.csproj", "{178CDC38-10F9-44F2-8A19-FDAEFCA32F90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeFee.ModeratorApp", "Applications\BeeFee.ModeratorApp\BeeFee.ModeratorApp.csproj", "{E32E0FC8-A0CA-48DE-BC77-43CE2A9CAD6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.ModeratorApp", "Applications\BeeFee.ModeratorApp\BeeFee.ModeratorApp.csproj", "{E32E0FC8-A0CA-48DE-BC77-43CE2A9CAD6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeeFee.ModeratorApp.Tests", "Tests\BeeFee.ModeratorApp.Tests\BeeFee.ModeratorApp.Tests.csproj", "{94C10C6C-BC5C-47C7-9320-CE20588F4EBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.ModeratorApp.Tests", "Tests\BeeFee.ModeratorApp.Tests\BeeFee.ModeratorApp.Tests.csproj", "{94C10C6C-BC5C-47C7-9320-CE20588F4EBC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{58D76A1E-D0C9-45B4-9EC5-69285FFEF0AE}"
+	ProjectSection(SolutionItems) = preProject
+		ToDo.txt = ToDo.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,5 +1,5 @@
 ﻿using System;
-using BeeFee.Model;
+using System.Linq;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
@@ -14,6 +14,7 @@ namespace BeeFee.ModeratorApp.Projections
 		public EEventState State { get; private set; }
 		public EventPageModerate Page { get; private set; }
 		public BaseCategoryProjection Category { get; private set; }
+		public string[] Comments { get; private set; }
 
 
 		public EventModeratorProjection(string id, BaseCompanyProjection parent, int version) : base(id, parent, version)
@@ -27,11 +28,13 @@ namespace BeeFee.ModeratorApp.Projections
 			return this;
 		}
 
-		internal EventModeratorProjection ChangeType(bool moderated)
+		internal EventModeratorProjection Moderate(string comment, bool moderated)
 		{
 			if (State != EEventState.Moderating)
 				throw new Exception("Event is not in moderating state");
 			State = moderated ? EEventState.Open : EEventState.NotModerated;
+			if (!String.IsNullOrWhiteSpace(comment))
+				Comments = (Comments ?? new string[0]).Union(new [] {comment}).ToArray();
 			return this;
 		}
 	}

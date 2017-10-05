@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using BeeFee.Model.Embed;
 using BeeFee.Model.Projections;
 using BeeFee.OrganizerApp.Projections.Company;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -20,7 +19,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		[Required(ErrorMessage = "Label is required")]
 		public string Label { get; set; }
 
-		[RegularExpression(@"[a-zA-Z-_]{3,}")]
+		[RegularExpression(@"[a-zA-Z-_\d]{3,}")]
 		public string Url { get; set; }
 
 		public string CategoryId { get; set; }

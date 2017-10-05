@@ -1,6 +1,7 @@
-﻿{
+{
 	"event": {
 		"KeepPublicOriginalSize": true,
+		"CanChangeName": true,
 		"Sizes": [
 			{
 				"Width": 368,

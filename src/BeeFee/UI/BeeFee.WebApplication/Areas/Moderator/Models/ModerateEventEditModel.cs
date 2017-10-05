@@ -12,23 +12,24 @@ namespace BeeFee.WebApplication.Areas.Moderator.Models
 		public string CompanyId { get; set; }
 		public int Version { get; set; }
 
-		[Required]
-		public string CategoryId { get; set; }
-		[Required]
-		public string Name { get; set; }
-		[Required]
-		public string Title { get; set; }
-		[Required]
-		public string Caption { get; set; }
-		[Required]
-		public string Html { get; set; }
-		[Required]
-		public Address Address { get; set; }
-		[Required]
-		public string Label { get; set; }
+		public string CategoryId { get; private set; }
+		public string Name { get; private set; }
+		public string Title { get; private set; }
+		public string Caption { get; private set; }
+		public string Html { get; private set; }
+		public Address Address { get; private set; }
+		public string Label { get; private set; }
+
+		public string Comment { get; set; }
+		public bool Result { get; set; }
 
 		public ModerateEventEditModel() { }
 		public ModerateEventEditModel(EventModeratorProjection @event)
+		{
+			Init(@event);
+		}
+
+		public ModerateEventEditModel Init(EventModeratorProjection @event)
 		{
 			Id = @event.Id;
 			CompanyId = @event.Parent.Id;
@@ -41,6 +42,7 @@ namespace BeeFee.WebApplication.Areas.Moderator.Models
 			Html = @event.Page.Html;
 			Label = @event.Page.Label;
 			Address = @event.Page.Address;
+			return this;
 		}
 	}
 }

@@ -40,5 +40,7 @@ namespace BeeFee.Model.Models
 
 		[Keyword]
 		public User Moderator { get; set; }
+		[Keyword(Index = false)]
+		public string[] Comments { get; set; }
 	}
 }

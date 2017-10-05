@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 using Core.ElasticSearch.Domain;
-using Elasticsearch.Net;
 using Nest;
 using SharpFuncExt;
 

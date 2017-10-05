@@ -50,12 +50,12 @@ namespace BeeFee.LoginApp.Services
 	    public bool ChangePassword(string email, string oldPassword, string newPassword)
 		    => TryLogin(email, oldPassword)
 			    .NotNullOrDefault(
-				    user => Update<UserUpdateProjection>(user.Id, x => x.ChangePassword(/*oldPassword, */newPassword), true));
+				    user => UpdateById<UserUpdateProjection>(user.Id, x => x.ChangePassword(/*oldPassword, */newPassword), true));
 
 		public T GetUser<T>() where T : BaseEntity, IProjection<User>, IGetProjection
 			=> GetById<T>(User.Id);
 
 		public bool UpdateUser(string name)
-			=> Update<UserUpdateProjection>(User.Id, x => x.Change(name), true);
+			=> UpdateById<UserUpdateProjection>(User.Id, x => x.Change(name), true);
 	}
 }

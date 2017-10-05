@@ -1,13 +1,14 @@
 ﻿using BeeFee.ImageApp.Caching;
 using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Services;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BeeFee.ImageApp
 {
     public static class BuilderExtensions
     {
-	    public static IServiceCollection AddImageApp(this IServiceCollection service, string settingsJsonFile)
+	    public static IServiceCollection AddImageApp(this IServiceCollection service)
 		    => service
 			    .AddSingleton(x =>
 			    {
@@ -16,7 +17,7 @@ namespace BeeFee.ImageApp
 					    settings.PublicOriginalFolder, settings.ResizedFolder, settings.UsersDirectory,
 					    settings.CompaniesDirectory, settings.UserAvatarFileName, settings.CompanyLogoFileName);
 			    })
-			    .AddSingleton(x => x.GetService<MemoryCacheManager>())
+				.AddSingleton(x => new MemoryCacheManager(x.GetService<IMemoryCache>()))
 			    .AddSingleton(x =>
 			    {
 				    var setting = x.GetService<ImagesAppStartSettings>();

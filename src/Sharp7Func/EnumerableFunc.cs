@@ -196,7 +196,7 @@ namespace SharpFuncExt
 
 		public static TResult IfIn<T, TResult, TArray>(this T arg, IEnumerable<TArray> array, TArray element, Func<T, TArray, IEnumerable<TArray>, TResult> func, Func<T, TArray, IEnumerable<TArray>, TResult> ifNot)
 		{
-			return array.NotNull() && array.Contains(element) ? func(arg, element, array) : ifNot(arg, element, array);
+			return array.IsNotNull() && array.Contains(element) ? func(arg, element, array) : ifNot(arg, element, array);
 		}
 		public static TResult IfIn<T, TResult, TArray>(this T arg, IEnumerable<TArray> array, Func<T, TArray, bool> check, Func<T, TArray, IEnumerable<TArray>, TResult> func, Func<T, IEnumerable<TArray>, TResult> ifNot)
 		{
@@ -211,11 +211,11 @@ namespace SharpFuncExt
 		}
 		public static TResult IfIn<TResult, TArray>(this IEnumerable<TArray> array, TArray element, Func<TArray, IEnumerable<TArray>, TResult> func, Func<TArray, IEnumerable<TArray>, TResult> ifNotContains)
 		{
-			return array.NotNull() && array.Contains(element) ? func(element, array) : ifNotContains(element, array);
+			return array.IsNotNull() && array.Contains(element) ? func(element, array) : ifNotContains(element, array);
 		}
 		public static TResult IfIn<TResult, TArray>(this TArray element, IEnumerable<TArray> array, Func<TArray, IEnumerable<TArray>, TResult> func, Func<TArray, IEnumerable<TArray>, TResult> ifNotContains)
 		{
-			return array.NotNull() && array.Contains(element) ? func(element, array) : ifNotContains(element, array);
+			return array.IsNotNull() && array.Contains(element) ? func(element, array) : ifNotContains(element, array);
 		}
 
 		public static T DefaultIfNull<T, TValue>(this T arg) where T : IEnumerable<TValue>
@@ -259,7 +259,7 @@ namespace SharpFuncExt
 
 		public static T IfIn<T, TArray, TResult>(this T arg, IEnumerable<TArray> array, TArray element, Func<T, TArray, IEnumerable<TArray>, TResult> func)
 		{
-			if (array.NotNull() && array.Contains(element))
+			if (array.IsNotNull() && array.Contains(element))
 				func(arg, element, array);
 			return arg;
 		}
@@ -272,7 +272,7 @@ namespace SharpFuncExt
 
 		public static IEnumerable<TArray> IfIn<TArray, TResult>(this IEnumerable<TArray> array, TArray element, Func<TArray, IEnumerable<TArray>, TResult> func)
 		{
-			if (array.NotNull() && array.Contains(element))
+			if (array.IsNotNull() && array.Contains(element))
 				func(element, array);
 			return array;
 		}
@@ -285,7 +285,7 @@ namespace SharpFuncExt
 
 		public static TArray IfIn<TArray, TResult>(this TArray element, IEnumerable<TArray> array, Func<TArray, IEnumerable<TArray>, TResult> func)
 		{
-			if(array.NotNull() && array.Contains(element))
+			if(array.IsNotNull() && array.Contains(element))
 				func(element, array);
 			return element;
 		}

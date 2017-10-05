@@ -33,7 +33,7 @@ namespace BeeFee.ImageApp.Tests
 			_service = new ImageService(new MemoryCacheManager(new MemoryCache(new MemoryCacheOptions())), "settings.json", new ImageSize(200, 200), 
 				new ImageSize(200, 200), new ImageSize(4000, 2000), pathHandler, 20, 20);
 			_service.SetSetting("test", new ImageSettings(new[] { new ImageSize(200, 200), new ImageSize(400, 200) }, false, true), Key);
-			_service.RegisterEvent("testCompany", "testEvent");
+			_service.RegisterEvent("testCompany", "testEvent", Key);
 			_service.GetAccessToFolder(Key, "testCompany");
 			_service.GetAccessToFolder(Key, "testUser");
 		}
@@ -79,7 +79,7 @@ namespace BeeFee.ImageApp.Tests
 		[TestMethod]
 		public void CreateExistingDirectories()
 		{
-			Assert.ThrowsException<DirectoryAlreadyExistsException>(() => _service.RegisterEvent("testCompany", "testEvent"));
+			Assert.ThrowsException<DirectoryAlreadyExistsException>(() => _service.RegisterEvent("testCompany", "testEvent", Key));
 		}
 
 		[TestMethod]

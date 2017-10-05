@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BeeFee.AdminApp.Projections.Event;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Helpers;
 using BeeFee.Model.Projections;
@@ -35,13 +34,16 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             return View(Service.GetMyEvents(id));
         }
 
-        [HttpGet]
-        public IActionResult Add(string companyId)
-            => View(new AddEventEditModel(Service.GetCompany<CompanyProjection>(companyId), CategoryService.GetAllCategories<BaseCategoryProjection>())
-            {
-                StartDateTime = DateTime.Now,
-                FinishDateTime = DateTime.Now.AddDays(1)
-            });
+		[HttpGet]
+		public IActionResult Add(string companyId)
+			=> View(new AddEventEditModel(
+				Service.GetCompany<CompanyProjection>(companyId)
+					.Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host)),
+				CategoryService.GetAllCategories<BaseCategoryProjection>())
+			{
+				StartDateTime = DateTime.Now,
+				FinishDateTime = DateTime.Now.AddDays(1)
+			});
 
 		[HttpPost]
 		public async Task<IActionResult> Add(AddEventEditModel model)
@@ -49,7 +51,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 			if (ModelState.IsValid)
 			{
 				model.Url = model.Url.IfNull(model.Name, CommonHelper.UriTransliterate)
-					.ThrowIf(x => x.Contains("/"), x => new InvalidOperationException("url contains \"/\""));
+					.ThrowIf("/".ContainsExt, x => new InvalidOperationException("url contains \"/\""));
 
 				if (Service.AddEvent(model.CompanyId,
 					model.CategoryId,
@@ -60,24 +62,26 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 					new EventDateTime(model.StartDateTime, model.FinishDateTime),
 					new Address(model.City, model.Address),
 					new[] {new TicketPrice("ticket", null, 0, 10)},
-					model.Html,
-					await _imagesService.RegisterEvent(Service.GetCompany<CompanyJoinProjection>(model.CompanyId).Url, model.Url,
-						Request.Host.Host)
+					model.Html
 				))
+				{
+					await _imagesService.RegisterEvent(Service.GetCompany<CompanyJoinProjection>(model.CompanyId).Url, model.Url, Request.Host.Host);
 					return RedirectToAction("Index", new {id = model.CompanyId});
+				}
 				ModelState.AddModelError("error", "Event dont save");
 			}
 			return View(model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
 		}
 
 		[HttpGet]
-        public async Task<IActionResult> Edit(string id, string companyId)
+        public IActionResult Edit(string id, string companyId)
         {
             var @event = Service.GetEvent(id, companyId);
-            if (@event == null || @event.State == EEventState.Created || @event.State == EEventState.NotModerated)
+            if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
                 return NotFound();
-            return View(new EventEditModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>(),
-                await _imagesService.RegisterEvent(@event.Parent.Url, @event.Url, Request.Host.Host)));
+			_imagesService.GetAccessToFolder(@event.Parent.Url, Request.Host.Host);
+
+			return View(new EventEditModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>()));
         }
 
         [HttpPost]
@@ -113,13 +117,13 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         {
             // TODO: добавить обработку ошибок
             Service.RemoveEvent(id, companyId, version);
-            return RedirectToAction("Index", new { companyId });
+            return RedirectToAction("Index", new { id = companyId });
         }
 
 		public IActionResult ToModerate(string id, string companyId, int version)
 		{
 			Service.ToModerate(id, companyId, version);
-			return RedirectToActionPermanent("Index");
+			return RedirectToActionPermanent("Index", new { id = companyId });
 		}
     }
 }

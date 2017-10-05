@@ -29,7 +29,7 @@ namespace BeeFee.AdminApp.Services
 		}
 
 		public bool EditUser(string id, string email, string name, EUserRole[] roles)
-			=> Update<UserUpdateProjection>(id, u => u.ChangeUser(email, name, roles), true);
+			=> UpdateById<UserUpdateProjection>(id, u => u.ChangeUser(email, name, roles), true);
 
 		public UserProjection GetUser(string id)
 			=> GetById<UserProjection>(id);

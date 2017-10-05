@@ -388,13 +388,13 @@ namespace SharpFuncExt
 
 		public static SwitchResult<TResult, T> Switch<T, TResult>(this T arg, T checkValue, Func<T, TResult> func)
 		{
-			if (arg.IsNull() && checkValue.IsNull() || arg.NotNull() && arg.Equals(checkValue))
+			if (arg.IsNull() && checkValue.IsNull() || arg.IsNotNull() && arg.Equals(checkValue))
 				return new SwitchResult<TResult, T>(arg, func(arg));
 			return new SwitchResult<TResult, T>(arg);
 		}
 		public static SwitchResult<T> Switch<T>(this T arg, T checkValue, Action<T> func)
 		{
-			if (arg.IsNull() && checkValue.IsNull() || arg.NotNull() && arg.Equals(checkValue))
+			if (arg.IsNull() && checkValue.IsNull() || arg.IsNotNull() && arg.Equals(checkValue))
 				return new SwitchResult<T>(arg.Fluent(func), true);
 			return new SwitchResult<T>(arg);
 		}
@@ -418,7 +418,7 @@ namespace SharpFuncExt
 
 		public static SwitchResult<TResult, T> Switch<T, TResult>(this SwitchResult<TResult, T> arg, T checkValue, Func<T, TResult> func)
 		{
-			if (!arg.HasValue && (arg.Arg.IsNull() && checkValue.IsNull() || arg.Arg.NotNull() && arg.Arg.Equals(checkValue)))
+			if (!arg.HasValue && (arg.Arg.IsNull() && checkValue.IsNull() || arg.Arg.IsNotNull() && arg.Arg.Equals(checkValue)))
 				return arg.SetValue(func(arg.Arg));
 			return arg;
 		}
@@ -439,14 +439,14 @@ namespace SharpFuncExt
 
 		public static SwitchResult<TResult, IEnumerable<T>> Switch<T, TResult>(this IEnumerable<T> arg, IEnumerable<T> checkValue, Func<IEnumerable<T>, TResult> func)
 		{
-			if (arg.IsNull() && checkValue.IsNull() || arg.NotNull() && arg.SeqEquals(checkValue))
+			if (arg.IsNull() && checkValue.IsNull() || arg.IsNotNull() && arg.SeqEquals(checkValue))
 				return new SwitchResult<TResult, IEnumerable<T>>(arg, func(arg));
 			return new SwitchResult<TResult, IEnumerable<T>>(arg);
 		}
 
 		public static SwitchResult<TResult, IEnumerable<T>> Switch<T, TResult>(this SwitchResult<TResult, IEnumerable<T>> arg, IEnumerable<T> checkValue, Func<IEnumerable<T>, TResult> func)
 		{
-			if (!arg.HasValue && (arg.Arg.IsNull() && checkValue.IsNull() || arg.Arg.NotNull() && arg.Arg.SeqEquals(checkValue)))
+			if (!arg.HasValue && (arg.Arg.IsNull() && checkValue.IsNull() || arg.Arg.IsNotNull() && arg.Arg.SeqEquals(checkValue)))
 				return arg.SetValue(func(arg.Arg));
 			return arg;
 		}
@@ -454,7 +454,7 @@ namespace SharpFuncExt
 		public static SwitchResult<TResult, T> SwitchNotNull<T, TMiddle, TResult>(this T arg, Func<T, TMiddle> getValue, Func<TMiddle, TResult> func)
 		{
 			TMiddle value = getValue(arg);
-			if (value.NotNull())
+			if (value.IsNotNull())
 				return new SwitchResult<TResult, T>(arg, func(value));
 			return new SwitchResult<TResult, T>(arg);
 		}
@@ -463,7 +463,7 @@ namespace SharpFuncExt
 			if (arg.HasValue)
 				return arg;
 			TMiddle value = getValue(arg.Arg);
-			if (value.NotNull())
+			if (value.IsNotNull())
 				return arg.SetValue(func(value));
 			return arg;
 		}
@@ -500,7 +500,7 @@ namespace SharpFuncExt
 		}
 		public SwitchResult<T, TArg> SetValue(T value)
 		{
-			if (Value.NotNull())
+			if (Value.IsNotNull())
 				throw new Exception("Value is not null");
 			Value = value;
 			HasValue = true;

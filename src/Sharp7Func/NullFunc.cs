@@ -25,13 +25,13 @@ namespace SharpFuncExt
 
 		public static TResult IfNotNull<T, TResult>(this T arg, Func<T, TResult> ifNotNull, Func<TResult> ifNull)
 		{
-			if (arg.NotNull())
+			if (arg.IsNotNull())
 				return ifNotNull(arg);
 			return ifNull();
 		}
 		public static TResult IfNotNull<T, TResult>(this T arg, Func<T, TResult> ifNotNull, TResult ifNull)
 		{
-			if (arg.NotNull())
+			if (arg.IsNotNull())
 				return ifNotNull(arg);
 			return ifNull;
 		}
@@ -45,7 +45,7 @@ namespace SharpFuncExt
 
 		public static TResult IfNotNull<T, TResult>(this IEnumerable<T> arg, Func<IEnumerable<T>, TResult> ifNotNull, Func<TResult> ifNull)
 		{
-			if (arg.NotNull())
+			if (arg.IsNotNull())
 				return ifNotNull(arg);
 			return ifNull();
 		}
@@ -59,14 +59,14 @@ namespace SharpFuncExt
 
 		public static TResult IfNotNull<T, TResult>(this T arg, TResult ifNotNull, TResult ifNull)
 		{
-			if (arg.NotNull())
+			if (arg.IsNotNull())
 				return ifNotNull;
 			return ifNull;
 		}
 
 		public static TResult NotNullOrDefault<T, TResult>(this T arg, Func<T, TResult> ifNotNull)
 		{
-			if (arg.NotNull())
+			if (arg.IsNotNull())
 				return ifNotNull(arg);
 			return default(TResult);
 		}
@@ -80,13 +80,13 @@ namespace SharpFuncExt
 
 		public static T IfNotNull<T, TResult>(this T arg, Func<T, TResult> func)
 		{
-			if (arg.NotNull())
+			if (arg.IsNotNull())
 				func(arg);
 			return arg;
 		}
 		public static T IfNotNull<T>(this T arg, Action<T> func)
 		{
-			if (arg.NotNull())
+			if (arg.IsNotNull())
 				func(arg);
 			return arg;
 		}
@@ -96,7 +96,7 @@ namespace SharpFuncExt
 
 		public static T IfNotNull<T, TValue>(this T arg, TValue value, Func<T, T> func)
 		{
-			if (value.NotNull())
+			if (value.IsNotNull())
 				return func(arg);
 			return arg;
 		}
@@ -162,7 +162,7 @@ namespace SharpFuncExt
 		}
 
 		public static bool IsNull<T>(this T arg) => EqualityComparer<T>.Default.Equals(arg, default(T));
-		public static bool NotNull<T>(this T arg) => !EqualityComparer<T>.Default.Equals(arg, default(T));
+		public static bool IsNotNull<T>(this T arg) => !EqualityComparer<T>.Default.Equals(arg, default(T));
 
 		// TODO: кешировать Expression
 		public static bool IsNull<T, TValue>(this T arg, Expression<Func<T, TValue>> expression)
@@ -191,9 +191,9 @@ namespace SharpFuncExt
 
 
 		public static bool IsNull<T>(this IEnumerable<T> arg) => arg == null || !arg.Any();
-		public static bool NotNull<T>(this IEnumerable<T> arg) => arg != null && arg.Any();
+		public static bool IsNotNull<T>(this IEnumerable<T> arg) => arg != null && arg.Any();
 		public static bool IsNull<T>(this T[] arg) => arg == null || !arg.Any();
-		public static bool NotNull<T>(this T[] arg) => arg != null && arg.Any();
+		public static bool IsNotNull<T>(this T[] arg) => arg != null && arg.Any();
 
 		/// <summary>
 		/// Хитрожопая проверка на null.

@@ -28,12 +28,12 @@ namespace BeeFee.OrganizerApp.Services
 			=> GetWithVersionByIdAndQuery<Company, T>(id, f => Query<Company>.Term(p => p.Users.First().User, User.HasNotNullArg(x => x.Id, "user").Id));
 
 		public EventProjection GetEvent(string id, string company)
-			=> GetWithVersionByIdAndQuery<Event, EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)).Id, UserQuery<EventProjection>);
+			=> GetWithVersionByIdAndQuery<Event, EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)).Id, q => UserQuery<EventProjection>());
 
 		/// <exception cref="AddEntityException"></exception>
 		// TODO: добавить проверку 
 		public bool AddEvent(string companyId, string categoryId, string name, string label, string url, string email, 
-			EventDateTime dateTime, Address address, TicketPrice[] prices, string html, string imagesKey)
+			EventDateTime dateTime, Address address, TicketPrice[] prices, string html)
 		{
 			var newEvent = new NewEvent(
 				companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)),
@@ -67,7 +67,7 @@ namespace BeeFee.OrganizerApp.Services
 						GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), prices, html), true);
 
 		public IReadOnlyCollection<EventProjection> GetMyEvents(string companyId) 
-			=> Filter<Event, EventProjection>(x => UserQuery<EventProjection>(x.ParentId(p=>p.Id(companyId.HasNotNullArg("company")))));
+			=> Filter<Event, EventProjection>(q => UserQuery<EventProjection>(x => x.HasParent<Company>(p=>p.Query(pq => pq.Ids(id => id.Values(companyId.HasNotNullArg("company")))))));
 
 		public bool ToModerate(string id, string company, int version)
 			=> UpdateById<EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version, x => x.ToModerate(), true);

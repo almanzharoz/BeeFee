@@ -78,14 +78,14 @@ namespace SharpFuncExt
 		public static async Task<TResult> IfNotNullAsync<T, TResult>(this Task<T> arg, Func<T, Task<TResult>> ifTrue, Func<Task<TResult>> ifNull)
 		{
 			var a = await arg;
-			return await (a.NotNull() ? ifTrue(a) : ifNull());
+			return await (a.IsNotNull() ? ifTrue(a) : ifNull());
 		}
 
 		public static async Task<TResult> IfNotNull<T, TResult, TResult2>(this Task<T> arg, Func<T, Task<TResult>> ifNotNull, Func<TResult2> ifNull)
 			where TResult2 : TResult
 		{
 			var a = await arg;
-			if (a.NotNull())
+			if (a.IsNotNull())
 				return await ifNotNull(a);
 			return (TResult)ifNull();
 		}

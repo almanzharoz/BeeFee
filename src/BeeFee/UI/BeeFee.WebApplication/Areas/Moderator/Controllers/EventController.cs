@@ -28,16 +28,17 @@ namespace BeeFee.WebApplication.Areas.Moderator.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				Service.ModerateEvent(model.Id, model.CompanyId, model.Version, model.Title, model.Caption, model.Label, model.Address, model.CategoryId, model.Html, true);
+				// TODO: Добавить обработку ошибок
+				Service.ModerateEvent(model.Id, model.CompanyId, model.Version, model.Comment, model.Result);
 				return RedirectToAction("Index");
 			}
-			return View();
+			return View(model.Init(Service.GetEvent(model.Id, model.CompanyId)));
 		}
 
-		public IActionResult Cancel(string id, string companyId, int version)
-		{
-			Service.ModerateEvent(id, companyId, version, false);
-			return RedirectToAction("Index");
-		}
+		//public IActionResult Cancel(string id, string companyId, int version)
+		//{
+		//	Service.ModerateEvent(id, companyId, version, false);
+		//	return RedirectToAction("Index");
+		//}
 	}
 }

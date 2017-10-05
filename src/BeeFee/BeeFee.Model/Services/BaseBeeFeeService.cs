@@ -20,8 +20,8 @@ namespace BeeFee.Model
 			User = user;
 		}
 
-		protected QueryContainer UserQuery<T>(QueryContainer query = null) where T : class, IWithOwner, ISearchProjection
-			=> Query<T>.Term(p => p.Owner, User.HasNotNullArg(x => x.Id, "user").Id) && query;
+		protected QueryContainer UserQuery<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query = null) where T : class, IWithOwner, ISearchProjection
+			=> new QueryContainerDescriptor<T>().Convert(q => q.Term(p => p.Owner, User.HasNotNullArg(x => x.Id, "user").Id) && query?.Invoke(q));
 
 		protected QueryContainer HiddenQuery<T>(bool withHidden = false, QueryContainer query = null) where T : class, IWithHidden, ISearchProjection
 			=> withHidden ? query : !Query<T>.Exists(e => e.Field(p => p.Hidden)) && query;

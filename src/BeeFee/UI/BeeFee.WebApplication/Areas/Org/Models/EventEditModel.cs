@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using BeeFee.Model.Embed;
 using BeeFee.Model.Projections;
 using BeeFee.OrganizerApp.Projections.Event;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -25,7 +24,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		[Required(ErrorMessage = "Label is required")]
 		public string Label { get; set; }
 
-		[RegularExpression(@"[a-zA-Z-_]{3,}")]
+		[RegularExpression(@"[a-zA-Z-_\d]{3,}")]
 		public string Url { get; set; }
 		[Required(ErrorMessage = "Cover is required")]
 		public string Cover { get; set; }
@@ -56,13 +55,14 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 
 		public string Html { get; set; }
 
-		public string ImagesKey { get; set; }
+		public string[] Comments { get; private set; }
+
 
 		public IList<SelectListItem> Categories { get; private set; }
 
 		public EventEditModel() { } // For binder
 
-		public EventEditModel(EventProjection @event, IReadOnlyCollection<BaseCategoryProjection> categories, string imagesKey)
+		public EventEditModel(EventProjection @event, IReadOnlyCollection<BaseCategoryProjection> categories)
 		{
 			Init(categories);
 			Id = @event.Id;
@@ -80,7 +80,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 			Html= @event.Page.Html;
 			Cover = @event.Page.Cover;
 			Email = @event.Email;
-			ImagesKey = imagesKey;
+			Comments = @event.Comments;
 		}
 
 		public EventEditModel Init(IReadOnlyCollection<BaseCategoryProjection> categories)

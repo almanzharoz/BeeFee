@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using BeeFee.Model.Embed
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8" />
@@ -33,13 +34,17 @@
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
 					<li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-					@if (User.IsInRole("admin"))
+					@if (User.IsInRole(RoleNames.Admin))
 					{
 						<li><a asp-area="Admin" asp-controller="Category" asp-action="Index">Categories</a></li>
 					}
-					@if (User.IsInRole("organizer"))
+					@if (User.IsInRole(RoleNames.Organizer))
 					{
 						<li><a asp-area="Org" asp-controller="Company" asp-action="Index">My Companies</a></li>
+					}
+					@if (User.IsInRole(RoleNames.EventModerator))
+					{
+						<li><a asp-area="Moderator" asp-controller="Event" asp-action="Index">Moderator</a></li>
 					}
 				</ul>
 			</div>

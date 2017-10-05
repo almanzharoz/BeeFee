@@ -1,114 +1,98 @@
-﻿//using System;
-//using System.Collections.Concurrent;
-//using System.IO;
-//using System.Security.Cryptography;
-//using System.Text;
-//using System.Threading.Tasks;
-//using SixLabors.ImageSharp;
-//using SixLabors.ImageSharp.Processing;
-//using Newtonsoft.Json;
-//using SharpFuncExt;
-//using SixLabors.Primitives;
-//using SixLabors.ImageSharp.Formats.Jpeg;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using BeeFee.ImageApp.Embed;
+using BeeFee.ImageApp.Exceptions;
+using BeeFee.ImageApp.Helpers;
+using SixLabors.ImageSharp;
+using Newtonsoft.Json;
 
-//namespace BeeFee.ImageApp.Services
-//{
-//	public partial class ImageService
-//	{
-//		private bool CheckKey(string eventName, string key)
-//			=> File.Exists(Path.Combine(GetPathToPrivateOriginalFolder(eventName), $".{GetMd5(key)}"));
+namespace BeeFee.ImageApp.Services
+{
+	public partial class ImageService
+	{
+		private static string MakeKey(string key, string directoryName)
+			=> key + directoryName;
 
-//		private void MakeKeyFile(string eventName, string key)
-//			=> File.Create(Path.Combine(GetPathToPrivateOriginalFolder(eventName), $".{GetMd5(key)}")).Dispose();
+		private async Task AddLogoOrAvatar(Stream stream, string name, string key, EImageType imageType)
+		{
+			if (!IsKeyValid(key, name)) throw new AccessDeniedException();
 
-//		private static string GetMd5(string key)
-//		{
-//			var md5 = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(key));
+			using (var image = Image.Load(stream))
+			{
+				var path = _pathHandler.GetPathToLogoOrAvatar(name, imageType);
+				if (_pathHandler.IsAvatarOrLogoExists(name, imageType))
+					ImageHandlingHelper.DeleteImage(path);
+				await ImageHandlingHelper.ResizeAndSave(image, GetMaxSizeByImageType(imageType), path);
+			}
+		}
 
-//			var result = new StringBuilder(md5.Length * 2);
+		private Task AddOriginalImage(Image<Rgba32> image, string companyName, string eventName, string fileName, EImageType imageType)
+		{
+			if (imageType != EImageType.EventPrivateOriginalImage && imageType != EImageType.EventPublicOriginalImage)
+				throw new ArgumentException("Image type must be EventPrivateOriginalImage or EventPublicOriginalImage");
 
-//			foreach (var t in md5)
-//				result.Append(t.ToString("x2"));
+			return ImageHandlingHelper.ResizeAndSave(image, GetMaxSizeByImageType(imageType),
+				_pathHandler.GetPathToOriginalImage(companyName, eventName, imageType, fileName));
+		}
 
-//			return result.ToString();
-//		}
+		private Task AddResizedImages(Image<Rgba32> image, string companyName, string eventName, string fileName,
+			IEnumerable<ImageSize> sizes)
+			=> Task.WhenAll(sizes.Select(size => ImageHandlingHelper.ResizeAndSave(image, size,
+				_pathHandler.GetPathToImageSize(companyName, eventName, size, fileName))));
 
-//		private bool FileExists(string filename, string eventName)
-//			=> File.Exists(Path.Combine(GetPathToPrivateOriginalFolder(eventName), filename)) ||
-//			   File.Exists(Path.Combine(GetPathToPublicOriginalFolder(eventName), filename));
+		private void DeleteOriginalImage(string companyName, string eventName, string fileName)
+			=> ImageHandlingHelper.DeleteImage(_pathHandler.FindPathToOriginalEventImage(companyName, eventName, fileName));
 
-//		private string GetUniqueName(string eventName, string fileName)
-//		{
-//			var result = fileName;
-//			var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+		private string RenameOriginalImage(string companyName, string eventName, string oldFileName, string newFileName,
+			bool canChangeName)
+		{
+			if (!canChangeName && _pathHandler.IsEventImageExists(companyName, eventName, newFileName))
+				throw new FileAlreadyExistsException();
+			newFileName = _pathHandler.GetUniqueName(companyName, eventName, newFileName);
+			ImageHandlingHelper.RenameImage(
+				_pathHandler.FindPathToOriginalEventImageForRename(companyName, eventName, oldFileName, newFileName));
+			return newFileName;
+		}
 
-//			var index = 0;
-//			var newName = fileName;
+		private ImageSize GetMaxSizeByImageType(EImageType imageType)
+		{
+			switch (imageType)
+			{
+				case EImageType.CompanyLogo:
+					return _companyLogoSize;
+				case EImageType.UserAvatar:
+					return _userAvatarSize;
+				case EImageType.EventPrivateOriginalImage:
+					return _eventImageOriginalMaxSize;
+				case EImageType.EventPublicOriginalImage:
+					return _eventImageOriginalMaxSize;
+				case EImageType.EventResizedImage:
+					return _eventImageOriginalMaxSize;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(imageType), imageType, null);
+			}
+		}
 
-//			while (FileExists(newName, eventName))
-//			{
-//				newName = nameWithoutExtension + index + Path.GetExtension(fileName);
-//				//fullName = Path.Combine(_folder, _privateOriginalFolder, result);
-//				index++;
-//			}
-//			return newName;
-//		}
+		private bool IsKeyValid(string key, string directoryName) //TODO: Нужна проверка companyName/eventName
+			=> _cacheManager.IsSet(MakeKey(key, directoryName)) &&
+			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, directoryName)).Directory == directoryName;
 
-//		private Image<Rgba32> Resize(Image<Rgba32> image, ImageSize size)
-//			=> image.Clone().Fluent(z => z.Mutate(x => x.Resize(new ResizeOptions { Mode = ResizeMode.Max, Size = new Size(size.Width, size.Height) })));
+		private void SerializeSettings()
+		{
+			lock (_locker)
+				File.WriteAllText(_settingsJsonFile, JsonConvert.SerializeObject(_settings));
+		}
 
-//		//TODO: переделать сборку папки
-//		private void SaveImage(Image<Rgba32> image, string sizePath, string fileName)
-//		{
-//			var directory = Path.Combine(sizePath);
-//			if (!Directory.Exists(directory))
-//				Directory.CreateDirectory(directory);
-//			var fullPath = Path.Combine(directory, fileName);
-
-//			image.Save(fullPath, new JpegEncoder { Quality = 85 });
-//		}
-
-//		private Task ResizeAndSaveImage(Image<Rgba32> image, ImageSize size, string eventName, string fileName)
-//			=> Resize(image, size).Using(img => Task.Run(() =>
-//				SaveImage(img, Path.Combine(GetPathToResizedFolder(eventName), size.ToString()), fileName)));
-
-//		private Task ResizeAndSaveImage(Image<Rgba32> image, ImageSize size, string eventName, bool keepPublicOriginal,
-//			string fileName)
-//			=> Resize(image, size)
-//				.Fluent(x => Console.WriteLine($"Resized file {fileName}, size: {size}"))
-//				.Using(img => Task.Run(() => SaveImage(img,
-//					keepPublicOriginal ? GetPathToPublicOriginalFolder(eventName) : GetPathToPrivateOriginalFolder(eventName),
-//					fileName)));
-
-//		private void SerializeSettings()
-//		{
-//			lock (_locker)
-//				File.WriteAllText(_settingsJsonFile, JsonConvert.SerializeObject(_settings));
-//		}
-
-//		private ConcurrentDictionary<string, ImageSettings> DeserializeSettings()
-//		{
-//			lock (_locker)
-//				return JsonConvert.DeserializeObject<ConcurrentDictionary<string, ImageSettings>>(File.ReadAllText(_settingsJsonFile));
-//		}
-
-//		private string GetPathToResizedFolder(string eventName)
-//			=> Path.Combine(_folder, _resizedFolder, eventName);
-
-//		private string GetPathToPrivateOriginalFolder(string eventName)
-//			=> Path.Combine(_folder, _privateOriginalFolder, eventName);
-
-//		private string GetPathToPublicOriginalFolder(string eventName)
-//			=> Path.Combine(_folder, _publicOriginalFolder, eventName);
-
-//		private string GetTargetPath(string systemPath, string eventName, string sizePath = null)
-//			=> sizePath == null ? Path.Combine(systemPath, eventName) : Path.Combine(systemPath, sizePath, eventName);
-
-//		private void CreateEventDirectories(string eventName)
-//		{
-//			Directory.CreateDirectory(GetPathToPrivateOriginalFolder(eventName));
-//			Directory.CreateDirectory(GetPathToPublicOriginalFolder(eventName));
-//			Directory.CreateDirectory(GetPathToResizedFolder(eventName));
-//		}
-//	}
-//}
+		private ConcurrentDictionary<string, ImageSettings> DeserializeSettings()
+		{
+			if (!File.Exists(_settingsJsonFile) || string.IsNullOrEmpty(File.ReadAllText(_settingsJsonFile)))
+				return null;
+			lock (_locker)
+				return JsonConvert.DeserializeObject<ConcurrentDictionary<string, ImageSettings>>(File.ReadAllText(_settingsJsonFile));
+		}
+	}
+}

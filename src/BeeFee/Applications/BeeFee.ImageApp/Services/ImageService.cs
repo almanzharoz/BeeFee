@@ -8,13 +8,12 @@ using BeeFee.ImageApp.Caching;
 using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Exceptions;
 using BeeFee.ImageApp.Helpers;
-using Newtonsoft.Json;
 using SharpFuncExt;
 using SixLabors.ImageSharp;
 
 namespace BeeFee.ImageApp.Services
 {
-	public class ImageService
+	public partial class ImageService
 	{
 		private readonly MemoryCacheManager _cacheManager;
 		private readonly ConcurrentDictionary<string, ImageSettings> _settings;
@@ -50,15 +49,15 @@ namespace BeeFee.ImageApp.Services
 		/// Add Company Logo to Image server
 		/// </summary>
 		/// <exception cref="AccessDeniedException"></exception>
-		public async Task AddCompanyLogo(Stream stream, string companyUrl, string key)
-			=> await AddLogoOrAvatar(stream, companyUrl, key, EImageType.CompanyLogo);
+		public Task AddCompanyLogo(Stream stream, string companyUrl, string key)
+			=> AddLogoOrAvatar(stream, companyUrl, key, EImageType.CompanyLogo);
 
 		/// <summary>
 		/// Add User Avatar to Image server
 		/// </summary>
 		/// <exception cref="AccessDeniedException"></exception>
-		public async Task AddUserAvatar(Stream stream, string userName, string key)
-			=> await AddLogoOrAvatar(stream, userName, key, EImageType.UserAvatar);
+		public Task AddUserAvatar(Stream stream, string userName, string key)
+			=> AddLogoOrAvatar(stream, userName, key, EImageType.UserAvatar);
 
 		/// <summary>
 		/// Add image for event
@@ -79,9 +78,10 @@ namespace BeeFee.ImageApp.Services
 
 			using (var image = Image.Load(stream))
 			{
-				await AddOriginalImage(image, companyName, eventName, fileName,
+				var t = AddOriginalImage(image, companyName, eventName, fileName,
 					setting.KeepPublicOriginalSize ? EImageType.EventPublicOriginalImage : EImageType.EventPrivateOriginalImage);
 				await AddResizedImages(image, companyName, eventName, fileName, setting.Sizes);
+				await t; // Пока сохраняется большая, успеет сохраниться и часть маленьких
 			}
 
 			return new ImageOperationResult(EImageOperationResult.Ok, fileName);
@@ -152,80 +152,28 @@ namespace BeeFee.ImageApp.Services
 		public void GetAccessToFolder(string key, string directoryName)
 		{
 			var fullKey = MakeKey(key, directoryName);
-			if (_cacheManager.IsSet(fullKey))
-				_cacheManager.Remove(fullKey);
-			_cacheManager.Set(fullKey, new MemoryCacheKeyObject(EKeyType.User, directoryName), _cacheTime);
+			//if (_cacheManager.IsSet(fullKey))
+				//_cacheManager.Remove(fullKey); // TODO: А зачем здесь Remove и дальнейший Set?
+			if (!_cacheManager.IsSet(fullKey))
+				_cacheManager.Set(fullKey, new MemoryCacheKeyObject(EKeyType.User, directoryName), _cacheTime);
 		}
 
-		private static string MakeKey(string key, string directoryName)
-			=> key + directoryName;
-
-		private async Task AddLogoOrAvatar(Stream stream, string name, string key, EImageType imageType)
+		public bool RegisterEvent(string companyName, string eventName, string key)
 		{
-			if (!IsKeyValid(key, name)) throw new AccessDeniedException();
-
-			using (var image = Image.Load(stream))
+			try
 			{
-				var path = _pathHandler.GetPathToLogoOrAvatar(name, imageType);
-				if (_pathHandler.IsAvatarOrLogoExists(name, imageType))
-					ImageHandlingHelper.DeleteImage(path);
-				await ImageHandlingHelper.ResizeAndSave(image, GetMaxSizeByImageType(imageType), path);
+				if (IsKeyValid(key, companyName))
+				{
+					_pathHandler.CreateEventFolder(companyName, eventName);
+					return true;
+				}
 			}
-		}
-
-		private async Task AddOriginalImage(Image<Rgba32> image, string companyName, string eventName, string fileName, EImageType imageType)
-		{
-			if(imageType != EImageType.EventPrivateOriginalImage && imageType != EImageType.EventPublicOriginalImage)
-				throw new ArgumentException("Image type must be EventPrivateOriginalImage or EventPublicOriginalImage");
-
-			await ImageHandlingHelper.ResizeAndSave(image, GetMaxSizeByImageType(imageType),
-				_pathHandler.GetPathToOriginalImage(companyName, eventName, imageType, fileName));
-		}
-
-		private async Task AddResizedImages(Image<Rgba32> image, string companyName, string eventName, string fileName,
-			IEnumerable<ImageSize> sizes)
-		{
-			foreach (var size in sizes)
-				await ImageHandlingHelper.ResizeAndSave(image, size,
-					_pathHandler.GetPathToImageSize(companyName, eventName, size, fileName));
-		}
-
-		private void DeleteOriginalImage(string companyName, string eventName, string fileName)
-			=> ImageHandlingHelper.DeleteImage(_pathHandler.FindPathToOriginalEventImage(companyName, eventName, fileName));
-
-		private string RenameOriginalImage(string companyName, string eventName, string oldFileName, string newFileName,
-			bool canChangeName)
-		{
-			if(!canChangeName && _pathHandler.IsEventImageExists(companyName, eventName, newFileName))
-				throw new FileAlreadyExistsException();
-			newFileName = _pathHandler.GetUniqueName(companyName, eventName, newFileName);
-			ImageHandlingHelper.RenameImage(
-				_pathHandler.FindPathToOriginalEventImageForRename(companyName, eventName, oldFileName, newFileName));
-			return newFileName;
-		}
-
-		private ImageSize GetMaxSizeByImageType(EImageType imageType)
-		{
-			switch (imageType)
+			catch
 			{
-				case EImageType.CompanyLogo:
-					return _companyLogoSize;
-				case EImageType.UserAvatar:
-					return _userAvatarSize;
-				case EImageType.EventPrivateOriginalImage:
-					return _eventImageOriginalMaxSize;
-				case EImageType.EventPublicOriginalImage:
-					return _eventImageOriginalMaxSize;
-				case EImageType.EventResizedImage:
-					return _eventImageOriginalMaxSize;
-				default:
-					throw new ArgumentOutOfRangeException(nameof(imageType), imageType, null);
+				//TODO: Логирование
 			}
+			return false;
 		}
-
-		private bool IsKeyValid(string key, string directoryName)
-			=> _cacheManager.IsSet(MakeKey(key, directoryName)) &&
-			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, directoryName)).Directory == directoryName;
 
 		public void SetSetting(string settingName, ImageSettings setting, string key)
 		{
@@ -235,23 +183,5 @@ namespace BeeFee.ImageApp.Services
 			SerializeSettings();
 		}
 
-		private void SerializeSettings()
-		{
-			lock (_locker)
-				File.WriteAllText(_settingsJsonFile, JsonConvert.SerializeObject(_settings));
-		}
-
-		private ConcurrentDictionary<string, ImageSettings> DeserializeSettings()
-		{
-			if(!File.Exists(_settingsJsonFile) || string.IsNullOrEmpty(File.ReadAllText(_settingsJsonFile)))
-				return null;
-			lock (_locker)
-				return JsonConvert.DeserializeObject<ConcurrentDictionary<string, ImageSettings>>(File.ReadAllText(_settingsJsonFile));
-		}
-
-		public void RegisterEvent(string companyName, string eventName)
-		{
-			_pathHandler.CreateEventFolder(companyName, eventName);
-		}
 	}
 }

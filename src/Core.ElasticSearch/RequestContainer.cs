@@ -105,7 +105,7 @@ namespace Core.ElasticSearch
 			if (_cache.TryGetValue(key, out IList<KeyValuePair<IEntity, bool>> result))
 			{
 				var res = result.FirstOrDefault(x => x.Value);
-				if (res.NotNull())
+				if (res.IsNotNull())
 				{
 					result[result.IndexOf(res)] = new KeyValuePair<IEntity, bool>(res.Key, false);
 					return res.Key;

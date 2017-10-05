@@ -22,6 +22,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 		public string Email { get; private set; }
 		public TicketPrice[] Prices { get; private set; }
 		public EventPage Page { get; private set; }
+		public string[] Comments { get; private set; }
 
 		public BaseUserProjection Owner { get; private set; }
 
