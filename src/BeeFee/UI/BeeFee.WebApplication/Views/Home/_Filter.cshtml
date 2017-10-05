@@ -64,11 +64,15 @@
                                 <div class="col-xs-4 col-md-3">
                                     <label class="vertical-field--l"><span>Выберите даты</span></label>
                                 </div>
+                                <div class="col-xs-1 col-md-1" style="width: 16px;"><label class="vertical-field--l"><span>c</span></label>
+                                </div>
                                 <div class="col-xs-3 col-md-3">
                                     <div class="vertical-field--d">
                                         @*@Html.TextBoxFor(x => x.EndDate, new { @class = "vertical-field--i js-date", id = "endDate1" })*@
                                         <input name="@Html.NameFor(x=>x.StartDate)" class="vertical-field--i js-date" type="text" id="startDate1" value="@Model.StartDate.Date.ToString("dd.MM.yyyy")" />
                                     </div>
+                                </div>
+                                <div class="col-xs-1 col-md-1" style="width: 35px;"><label class="vertical-field--l"><span>по</span></label>
                                 </div>
                                 <div class="col-xs-3 col-md-3">
                                     <div class="vertical-field--d">
