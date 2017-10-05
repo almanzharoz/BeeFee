@@ -15,6 +15,7 @@
 	public enum EKeyType
 	{
 		User,
-		Moderator
+		Moderator,
+		Company
 	}
 }
