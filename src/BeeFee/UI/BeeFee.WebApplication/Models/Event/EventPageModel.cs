@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using BeeFee.ClientApp.Projections.Event;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BeeFee.WebApplication.Models.Event
 {

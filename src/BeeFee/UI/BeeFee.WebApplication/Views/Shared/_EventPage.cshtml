@@ -1,0 +1,45 @@
+﻿@using BeeFee.WebApplication.Infrastructure
+@model Tuple<BeeFee.Model.Interfaces.IEventPageProjection, object>
+
+<div class="event">
+	<div data-fixed-wrap="info">
+		<div class="event-intro hidden-xs" style="background-image: url('@(Url.GetImageUrl(Model.Item1.Parent.Url, Model.Item1.Url, Model.Item1.Page.Cover, 1162, 600))');">
+			<div class="container">
+				<div class="event-intro--in">
+					<div class="event-intro--box">
+						<div class="event-intro--sticky">
+							<h1 class="event-intro--title"><span>@Model.Item1.Page.Caption</span></h1>
+						</div>
+					</div>
+					<div class="event-intro--desc">@Model.Item1.Page.Label</div>
+				</div>
+			</div>
+		</div>
+		<div class="event-intro visible-xs" style="background-image: url('@(Url.GetImageUrl(Model.Item1.Parent.Url, Model.Item1.Url, Model.Item1.Page.Cover, 1162, 600))');">
+			<h1 class="event-intro--title">@Model.Item1.Page.Caption</h1>
+		</div>
+		<div class="container">
+			<div class="event-fields">
+				@*<div class="event-field"><i class="icon-ticket"></i>от 2000₽ до 5000₽</div>*@
+				<div class="event-field"><i class="icon-date"></i>@Model.Item1.Page.Date</div><a class="event-field" href="#"><i class="icon-marker"></i>@Model.Item1.Page.Address.City, @Model.Item1.Page.Address.AddressString</a><a class="event-field" href="#"><i class="icon-mail"></i>Написать организаторам</a>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="event-text">
+			@Html.Raw(Model.Item1.Page.Html)
+		</div>
+		<div class="event-form visible-xs">
+			@Html.Partial("_RegisterToEventForm", Model.Item2)
+		</div>
+		<div class="event-share hidden-xs">
+			<div class="event-share--title">Расскажите о концерте друзьям!</div>
+			<div class="event-share--in"><a class="event-share--item is-vk" href="#"><span>235</span></a><a class="event-share--item is-fb" href="#"></a><a class="event-share--item is-tw" href="#"></a></div>
+		</div>
+	</div>
+</div>
+<div class="event-form hidden-xs">
+	<div class="container">
+		@Html.Partial("_RegisterToEventForm", Model.Item2)
+	</div>
+</div>

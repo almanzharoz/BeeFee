@@ -6,6 +6,16 @@
 		// An array of relative input file paths. Globbing patterns supported
 		"inputFiles": [
 			"wwwroot/css/site.css",
+			"wwwroot/css/eventpage.css",
+			"wwwroot/css/validation.css"
+		]
+	},
+	{
+		"outputFileName": "wwwroot/css/siteprofile.min.css",
+		// An array of relative input file paths. Globbing patterns supported
+		"inputFiles": [
+			"wwwroot/lib/bootstrap/dist/css/bootstrap.css",
+			"wwwroot/css/eventpage.css",
 			"wwwroot/css/validation.css"
 		]
 	},
@@ -25,12 +35,12 @@
 	},
 	{
 		"outputFileName": "wwwroot/js/jquery.min.js",
-    "inputFiles": [
-      "wwwroot/lib/jquery/dist/jquery.js",
-      "wwwroot/lib/jquery-validation/dist/jquery.validate.js",
-      "wwwroot/lib/jquery.maskedinput/dist/jquery.maskedinput.js",
-      "wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"
-    ],
+		"inputFiles": [
+			"wwwroot/lib/jquery/dist/jquery.js",
+			"wwwroot/lib/jquery-validation/dist/jquery.validate.js",
+			"wwwroot/lib/jquery.maskedinput/dist/jquery.maskedinput.js",
+			"wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"
+		],
 		// Optionally specify minification options
 		"minify": {
 			"enabled": true,

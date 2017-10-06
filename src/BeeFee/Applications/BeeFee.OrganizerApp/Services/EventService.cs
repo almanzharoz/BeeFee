@@ -30,6 +30,9 @@ namespace BeeFee.OrganizerApp.Services
 		public EventProjection GetEvent(string id, string company)
 			=> GetWithVersionByIdAndQuery<Event, EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)).Id, q => UserQuery<EventProjection>());
 
+		public EventPreviewProjection GetPreviewEvent(string id, string company)
+			=> GetByIdAndQuery<Event, EventPreviewProjection, BaseCompanyProjection>(id, company.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)).Id, q => UserQuery<EventProjection>());
+
 		/// <exception cref="AddEntityException"></exception>
 		// TODO: добавить проверку 
 		public bool AddEvent(string companyId, string categoryId, string name, string label, string url, string email, 
