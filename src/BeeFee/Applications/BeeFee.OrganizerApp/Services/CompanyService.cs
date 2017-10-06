@@ -20,8 +20,10 @@ namespace BeeFee.OrganizerApp.Services
 		{
 		}
 
-		public bool AddCompany(string name, string url)
-			=> !ExistsByUrl<CompanyProjection>(url.IfNull(name, CommonHelper.UriTransliterate)) && Insert(new NewCompany(GetById<BaseUserProjection>(User.Id), name, url), true);
+		public CompanyProjection AddCompany(string name, string url)
+			=> url.IfNull(name, CommonHelper.UriTransliterate).IfNot(ExistsByUrl<CompanyProjection>,
+				x => InsertWithVersion<NewCompany, CompanyProjection>(new NewCompany(GetById<BaseUserProjection>(User.Id), name, x)), 
+				x => null);
 
 		public IReadOnlyCollection<KeyValuePair<CompanyProjection, int>> GetMyCompanies()
 			=> SearchWithScore<Company, CompanyProjection>(f => (f.Term(p => p.Users.First().User, User.Id) && f.HasChild<Event>(c => c.Query(q => q.MatchAll()).ScoreMode(ChildScoreMode.Sum))) || f.Term(p => p.Users.First().User, User.Id));

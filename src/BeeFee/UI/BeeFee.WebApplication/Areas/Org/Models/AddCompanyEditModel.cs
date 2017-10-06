@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace BeeFee.WebApplication.Areas.Org.Models
 {
@@ -12,5 +13,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 
 		[EmailAddress]
 		public string Email { get; set; }
+
+		public IFormFile File { get; set; }
 	}
 }
