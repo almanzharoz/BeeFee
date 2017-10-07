@@ -49,14 +49,14 @@ namespace BeeFee.ImageApp.Services
 		/// Add Company Logo to Image server
 		/// </summary>
 		/// <exception cref="AccessDeniedException"></exception>
-		public Task AddCompanyLogo(Stream stream, string companyUrl, string key)
+		public Task<ImageOperationResult> AddCompanyLogo(Stream stream, string companyUrl, string key)
 			=> AddLogoOrAvatar(stream, companyUrl, key, EImageType.CompanyLogo);
 
 		/// <summary>
 		/// Add User Avatar to Image server
 		/// </summary>
 		/// <exception cref="AccessDeniedException"></exception>
-		public Task AddUserAvatar(Stream stream, string userName, string key)
+		public Task<ImageOperationResult> AddUserAvatar(Stream stream, string userName, string key)
 			=> AddLogoOrAvatar(stream, userName, key, EImageType.UserAvatar);
 
 		/// <summary>

@@ -111,7 +111,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         }
 
 		public IActionResult Preview(string id, string companyId)
-			=> Service.GetEvent(id, companyId).If(IsAjax, PartialView, x => (IActionResult)View(x));
+			=> Service.GetPreviewEvent(id, companyId).If(IsAjax, PartialView, x => (IActionResult)View(x));
 
         public IActionResult Remove(string id, string companyId, int version)
         {

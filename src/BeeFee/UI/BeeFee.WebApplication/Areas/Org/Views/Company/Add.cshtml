@@ -1,26 +1,34 @@
 ﻿@model BeeFee.WebApplication.Areas.Org.Models.AddCompanyEditModel
-
-<form asp-action="Add" asp-controller="Company" method="post" class="form-horizontal">
-	<div class="validation" asp-validation-summary="ModelOnly"></div>
-	<div class="container">
-
-		<div class="form-group">
-			<input class="form-control" asp-for="Name" placeholder="Название компании" />
+@{
+	ViewBag.Title = "Добавить компанию";
+}
+<div class="profile">
+	<form asp-action="Add" asp-controller="Company" method="post" enctype="multipart/form-data">
+		<div class="validation" asp-validation-summary="ModelOnly"></div>
+			
+		<div class="create--field is-big">
+			<input class="create--field-i" asp-for="Name" placeholder="Название компании" />
 			<span asp-validation-for="Name" class="text-danger"></span>
 		</div>
-
-		<div class="form-group">
-			<input class="form-control" asp-for="Url" placeholder="Url" />
-			<span asp-validation-for="Url" class="text-danger"></span>
+			
+		<div class="create--file">
+			<input class="create--file-i" name="file" type="file">
+			<div class="create--file-b">Загрузить логотип</div>
 		</div>
 
-		<div class="form-group">
-			<input class="form-control" asp-for="Email" placeholder="Email" />
+		<div class="create--field with-icon is-small"><i class="icon-mail"></i>
+			<input class="create--field-i" asp-for="Email" placeholder="Почта для обратной связи">
 			<span asp-validation-for="Email" class="text-danger"></span>
 		</div>
-
-		<div class="form-group">
-			<input type="submit" value="Save" class="btn" />
+		<div class="create--field with-icon is-sm"><i class="icon-site"></i>
+			<div class="create--field-b is-s3">
+				<input class="create--field-i" asp-for="Url" placeholder="Поддомен">
+				<span asp-validation-for="Url" class="text-danger"></span>
+			</div>
+			<div class="create--field-l is-s3">.befree.ru</div>
 		</div>
-	</div>
-</form>
+		<div class="create--btn">
+			<button class="btn-blue" type="submit">Сохранить</button>
+		</div>			
+	</form>
+</div>

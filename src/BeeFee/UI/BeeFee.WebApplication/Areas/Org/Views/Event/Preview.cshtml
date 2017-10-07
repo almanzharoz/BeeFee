@@ -1,2 +1,4 @@
-﻿@model BeeFee.OrganizerApp.Projections.Event.EventProjection
+﻿@using BeeFee.Model.Interfaces
+@model BeeFee.OrganizerApp.Projections.Event.EventPreviewProjection
 
+@Html.Partial("_EventPage", Tuple.Create<IEventPageProjection, object>(Model, null))

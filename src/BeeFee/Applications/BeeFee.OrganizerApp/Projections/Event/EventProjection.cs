@@ -11,7 +11,7 @@ using System;
 namespace BeeFee.OrganizerApp.Projections.Event
 {
 	public class EventProjection : BaseEntityWithParentAndVersion<CompanyJoinProjection>, IProjection<Model.Models.Event>, IGetProjection, ISearchProjection,
-		IUpdateProjection, IRemoveProjection, IWithName, IWithUrl, IWithOwner
+		IUpdateProjection, IRemoveProjection, IWithOwner, IWithUrl, IWithName
 	{
 		public BaseCategoryProjection Category { get; private set; }
 		public EventDateTime DateTime { get; private set; }

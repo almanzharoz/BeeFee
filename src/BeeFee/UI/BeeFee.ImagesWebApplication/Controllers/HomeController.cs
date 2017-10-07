@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using BeeFee.ImageApp.Exceptions;
 using BeeFee.ImageApp.Services;
 using Microsoft.AspNetCore.Http;
@@ -32,9 +33,10 @@ namespace BeeFee.ImagesWebApplication.Controllers
 		[RequestSizeLimit(10000000)]
 		public async Task<JsonResult> Post(Model model)
 			=> Json(await model.File.OpenReadStream()
-				.Using(stream =>
-					_service.AddEventImage(stream, model.CompanyName, model.EventName, model.Filename ?? model.File.FileName,
-						model.Setting, Request.Host.Host)));
+				.Using(stream => String.IsNullOrWhiteSpace(model.EventName)
+					? _service.AddCompanyLogo(stream, model.CompanyName, GetHost())
+					: _service.AddEventImage(stream, model.CompanyName, model.EventName, model.Filename ?? model.File.FileName,
+						model.Setting, GetHost())));
 
 		[HttpGet("{companyName}")]
 		public void Get(string companyName, string host)
@@ -54,7 +56,9 @@ namespace BeeFee.ImagesWebApplication.Controllers
 
         [HttpDelete("{companyName}/{eventName}")]
         public void Delete(string companyName, string eventName, string filename)
-			=> _service.RemoveEventImage(companyName, eventName, filename, Request.Host.Host);
-		
+			=> _service.RemoveEventImage(companyName, eventName, filename, GetHost());
+
+		private string GetHost()
+			=> _registratorHost == Request.Host.Host ? "server" : Request.Host.Host;
 	}
 }

@@ -17,7 +17,7 @@ namespace BeeFee.ImageApp.Services
 		private static string MakeKey(string key, string directoryName)
 			=> key + directoryName;
 
-		private async Task AddLogoOrAvatar(Stream stream, string name, string key, EImageType imageType)
+		private async Task<ImageOperationResult> AddLogoOrAvatar(Stream stream, string name, string key, EImageType imageType)
 		{
 			if (!IsKeyValid(key, name)) throw new AccessDeniedException();
 
@@ -27,6 +27,7 @@ namespace BeeFee.ImageApp.Services
 				if (_pathHandler.IsAvatarOrLogoExists(name, imageType))
 					ImageHandlingHelper.DeleteImage(path);
 				await ImageHandlingHelper.ResizeAndSave(image, GetMaxSizeByImageType(imageType), path);
+				return new ImageOperationResult(EImageOperationResult.Ok, path); // TODO: Hack
 			}
 		}
 
@@ -78,7 +79,7 @@ namespace BeeFee.ImageApp.Services
 		}
 
 		private bool IsKeyValid(string key, string directoryName) //TODO: Нужна проверка companyName/eventName
-			=> _cacheManager.IsSet(MakeKey(key, directoryName)) &&
+			=> key == "server" || _cacheManager.IsSet(MakeKey(key, directoryName)) &&
 			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, directoryName)).Directory == directoryName;
 
 		private void SerializeSettings()
