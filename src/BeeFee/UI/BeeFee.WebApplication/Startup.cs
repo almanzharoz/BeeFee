@@ -47,8 +47,8 @@ namespace BeeFee.WebApplication
             services.AddMvc(opts =>
             {
                 opts.ModelBinderProviders.Insert(0, new CustomDateTimeModelBinderProvider());
-                //if (!CurrentEnvironment.IsDevelopment())
-                opts.Filters.Add(new GlobalExceptionFilter());
+                if (!CurrentEnvironment.IsDevelopment())
+                    opts.Filters.Add(new GlobalExceptionFilter());
             });
 
             services.AddLogging();
