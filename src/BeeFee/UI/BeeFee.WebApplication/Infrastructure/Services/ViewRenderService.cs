@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 
-namespace BeeFee.WebApplication.Infrastructure
+namespace BeeFee.WebApplication.Infrastructure.Services
 {
     public class ViewRenderService
     {
@@ -42,7 +40,6 @@ namespace BeeFee.WebApplication.Infrastructure
                 {
                     throw new ArgumentNullException($"{viewName} does not match any available view");
                 }
-
                 var viewDictionary = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
                 {
                     Model = model

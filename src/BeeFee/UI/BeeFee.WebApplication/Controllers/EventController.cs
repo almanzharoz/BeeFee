@@ -66,6 +66,7 @@ namespace BeeFee.WebApplication.Controllers
                 return NotFound();
             if (ModelState.IsValid)
             {
+                var @params = new { id = @event.Url, cid = @event.Parent.Url, r = 0 };
                 if (Service.RegisterToEvent(@event.Id, @event.Parent.Id, model.Email, model.Name, model.Phone,
                     @event.Prices.First().Id))
                 {

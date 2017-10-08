@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace BeeFee.WebApplication
+namespace BeeFee.WebApplication.Infrastructure.Middleware
 {
 	public class NormalizeUrlMiddleware
 	{

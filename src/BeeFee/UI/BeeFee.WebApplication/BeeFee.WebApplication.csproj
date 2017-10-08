@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Shared\Components\**" />
+    <Content Remove="Views\Shared\Components\**" />
+    <EmbeddedResource Remove="Views\Shared\Components\**" />
+    <None Remove="Views\Shared\Components\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="npm-debug.log" />
     <None Remove="Scripts\site_script.ts" />
   </ItemGroup>
@@ -43,10 +50,6 @@
     <Content Update="Views\Home\_EventGridItem.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Shared\Components\" />
   </ItemGroup>
 
 </Project>
