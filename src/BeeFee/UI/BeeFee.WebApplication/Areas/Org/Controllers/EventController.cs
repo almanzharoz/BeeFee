@@ -62,10 +62,14 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 					new EventDateTime(model.StartDateTime, model.FinishDateTime),
 					new Address(model.City, model.Address),
 					new[] {new TicketPrice("ticket", null, 0, 10)},
-					model.Html
+					model.Html,
+					model.File != null && model.File.Length > 0 ? model.File.FileName : null
 				))
 				{
-					await _imagesService.RegisterEvent(Service.GetCompany<CompanyJoinProjection>(model.CompanyId).Url, model.Url, Request.Host.Host);
+					var company = Service.GetCompany<CompanyJoinProjection>(model.CompanyId);
+					await _imagesService.RegisterEvent(company.Url, model.Url, Request.Host.Host);
+					if (model.File != null && model.File.Length > 0)
+						await _imagesService.AddEventCover(company.Url, model.Url, model.File.FileName, model.File.OpenReadStream());
 					return RedirectToAction("Index", new {id = model.CompanyId});
 				}
 				ModelState.AddModelError("error", "Event dont save");

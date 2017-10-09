@@ -34,9 +34,12 @@ namespace BeeFee.OrganizerApp.Services
 		/// <param name="stream"></param>
 		/// <returns></returns>
 		public Task<string> AddCompanyLogo(string companyUrl, Stream stream)
-			=> SendPostFile(String.Concat(_imagesHost, "/api/home?companyName=", companyUrl.HasNotNullArg(nameof(companyUrl))), stream);
+			=> SendPostFile(String.Concat(_imagesHost, "/api/home?companyName=", companyUrl.HasNotNullArg(nameof(companyUrl))), "logo.jpg", stream);
 
-		public async Task<string> SendPostFile(string url, Stream stream)
+		public Task<string> AddEventCover(string companyUrl, string eventUrl, string filename, Stream stream)
+			=> SendPostFile(String.Concat(_imagesHost, "/api/home?setting=event&companyName=", companyUrl.HasNotNullArg(nameof(companyUrl)), "&eventName=", eventUrl.HasNotNullArg(nameof(eventUrl))), filename, stream);
+
+		public async Task<string> SendPostFile(string url, string filename, Stream stream)
 		{
 			using (var client = new HttpClient())
 			using (var content = new MultipartFormDataContent())
@@ -56,12 +59,13 @@ namespace BeeFee.OrganizerApp.Services
 				var fileContent = new ByteArrayContent(a);
 				fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
 				{
-					FileName = Path.GetFileName("file.png"), Name = "file"
+					FileName = filename, Name = "file"
 				};
 				content.Add(fileContent);
 
 				var r = await client.PostAsync(url, content);
-				return JsonConvert.DeserializeObject<Dictionary<string, string>>(await r.Content.ReadAsStringAsync())["Path"];
+				var s = await r.Content.ReadAsStringAsync();
+				return JsonConvert.DeserializeObject<Dictionary<string, string>>(s)["path"];
 			}
 		}
 

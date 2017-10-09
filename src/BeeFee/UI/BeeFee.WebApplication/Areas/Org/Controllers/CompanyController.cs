@@ -32,7 +32,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 		[HttpPost]
 		public IActionResult Add(AddCompanyEditModel model)
 			=> ModelState.IsValid.If(
-				() => Service.AddCompany(model.Name, model.Url)
+				() => Service.AddCompany(model.Name, model.Url, model.File != null && model.File.Length > 0 ? "company.jpg" : null) //TODO: Переделать заливку логотипа
 					.IfNotNull<CompanyProjection, IActionResult>(x =>
 					{
 						if (model.File != null && model.File.Length > 0)

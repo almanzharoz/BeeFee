@@ -32,7 +32,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 		private readonly ThrowCollection _throws = new ThrowCollection();
 
 		public NewEvent(CompanyJoinProjection company, BaseUserProjection owner, BaseCategoryProjection category, string name, string label, string url,
-			EventDateTime dateTime, Address address, TicketPrice[] prices, string html, string email) : base(company)
+			EventDateTime dateTime, Address address, TicketPrice[] prices, string html, string email, string cover) : base(company)
 		{
 			Owner = owner.HasNotNullEntity(_throws, nameof(owner));
 			Category = category.HasNotNullEntity(_throws, nameof(category));
@@ -42,7 +42,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 			State = EEventState.Created;
 			Address = address;
 			Prices = prices;
-			Page = new EventPage(name, label, category.Name, null, dateTime.ToString(), address, html);
+			Page = new EventPage(name, label, category.Name, cover, dateTime.ToString(), address, html);
 			Email = email.HasNotNullArg(_throws, nameof(email));
 			_throws.Throw();
 		}

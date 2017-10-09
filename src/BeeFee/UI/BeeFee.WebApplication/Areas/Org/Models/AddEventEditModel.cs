@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using BeeFee.Model.Projections;
 using BeeFee.OrganizerApp.Projections.Company;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BeeFee.WebApplication.Areas.Org.Models
@@ -46,6 +47,8 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		//public string Price { get; set; }
 
 		public string Html { get; set; }
+
+		public IFormFile File { get; set; }
 
 		public IList<SelectListItem> Categories { get; private set; }
 
