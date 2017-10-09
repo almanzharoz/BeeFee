@@ -2,47 +2,169 @@
 @using BeeFee.WebApplication.Infrastructure
 @model BeeFee.WebApplication.Areas.Org.Models.AddEventEditModel
 @{
-    ViewData["Title"] = "Add";
+    ViewData["Title"] = "Создание нового события";
 }
-
-<h2>Add</h2>
-
 <form asp-action="Add" asp-controller="Event" method="post" class="form-horizontal" enctype="multipart/form-data">
-	<div class="validation" asp-validation-summary="ModelOnly"></div>
-	<input type="hidden" asp-for="CompanyId" />
+    <div class="validation" asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" asp-for="CompanyId"/>
+    @*<div class="create">
+        <div class="create--step is-shown" data-step="1">
+            <div class="create--head">
+                <div class="create--number">1 / 4</div>
+                <div class="create--title">Основная информация</div><a class="create--edit" href="#" data-step-nav="edit">редактировать</a>
+            </div>
+            <div class="create--body">
+                <div class="create--field is-big">
+                    <input class="create--field-i" type="text" placeholder="Название события">
+                </div>
+                <div class="create--field">
+                    <input class="create--field-i" type="text" placeholder="Краткое описание события">
+                </div>
+                <div class="create--file">
+                    <input class="create--file-i" type="file">
+                    <div class="create--file-b">Загрузить изображение</div>
+                </div>
+                <div class="create--field with-icon is-small">
+                    <i class="icon-date"></i>
+                    <div class="create--field-di">
+                        <div class="create--field-dl">Начало</div>
+                        <input type="text" data-range="start"><span class="is-s1">дд/мм/гггг</span><span class="is-s2">чч:мм</span>
+                    </div>
+                    <div class="create--field-di">
+                        <div class="create--field-dl">Конец</div>
+                        <input type="text" data-range="end"><span class="is-s1">дд/мм/гггг</span><span class="is-s2">чч:мм</span>
+                    </div>
+                </div>
+                <div class="create--field with-icon is-small">
+                    <i class="icon-marker"></i>
+                    <input class="create--field-i" type="text" placeholder="Адрес события">
+                    <div class="create--map">
+                        <div class="create--map-in"><ymaps class="ymaps-2-1-55-map" style="width: 535px; height: 192px;"><ymaps class="ymaps-2-1-55-map ymaps-2-1-55-i-ua_js_yes ymaps-2-1-55-map-bg-ru ymaps-2-1-55-islets_map-lang-ru" style="width: 535px; height: 192px;"><ymaps class="ymaps-2-1-55-inner-panes"><ymaps class="ymaps-2-1-55-events-pane ymaps-2-1-55-user-selection-none" unselectable="on" style="height: 100%; width: 100%; top: 0px; left: 0px; position: absolute; z-index: 2500; cursor: url(&quot;https://api-maps.yandex.ru/2.1.55/build/release/images/util_cursor_storage_grab.cur&quot;) 16 16, url(&quot;https://api-maps.yandex.ru/2.1.55/build/release/images/util_cursor_storage_grab.cur&quot;), move;"></ymaps><ymaps class="ymaps-2-1-55-ground-pane" style="top: 0px; left: 0px; position: absolute; transition-duration: 0ms; transform: translate3d(0px, 0px, 0px) scale(1, 1); z-index: 501;"><ymaps style="position: absolute; z-index: 150;"><canvas height="448" width="791" style="position: absolute; width: 791px; height: 448px; left: -128px; top: -128px;"></canvas></ymaps></ymaps><ymaps class="ymaps-2-1-55-copyrights-pane" style="height: 0px; bottom: 5px; right: 3px; top: auto; left: 10px; position: absolute; z-index: 5002;"><ymaps><ymaps class="ymaps-2-1-55-copyright ymaps-2-1-55-copyright_logo_no" style=""><ymaps class="ymaps-2-1-55-copyright__fog">…</ymaps><ymaps class="ymaps-2-1-55-copyright__wrap"><ymaps class="ymaps-2-1-55-copyright__layout"><ymaps class="ymaps-2-1-55-copyright__content-cell"><ymaps class="ymaps-2-1-55-copyright__content"><ymaps class="ymaps-2-1-55-copyright__text">© Яндекс</ymaps><ymaps class="ymaps-2-1-55-copyright__agreement">&nbsp;<a class="ymaps-2-1-55-copyright__link" target="_blank" href="https://yandex.ru/legal/maps_termsofuse/?lang=ru">Условия использования</a></ymaps></ymaps></ymaps><ymaps class="ymaps-2-1-55-copyright__logo-cell"><a class="ymaps-2-1-55-copyright__logo" href="" target="_blank"></a></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps class="ymaps-2-1-55-map-copyrights-promo"><iframe src="https://api-maps.yandex.ru/services/inception/?lang=ru_RU&amp;iframe_id=9011&amp;url=%2Fmap&amp;api_version=2.1.55&amp;mode=release&amp;referer_host=irbis.space&amp;data=%7B%22mapState%22%3A%7B%22origin%22%3A%22jsapi_2_1_55%22%2C%22source%22%3A%22api-maps%22%2C%22from%22%3A%22api-maps%22%2C%22host%22%3A%22irbis.space%22%7D%2C%22options%22%3A%7B%22padding%22%3A%220%200%2010px%2010px%22%7D%2C%22availWidth%22%3A316%7D" width="181" height="34" scrolling="no" frameborder="0" style="overflow: hidden;"></iframe></ymaps></ymaps><ymaps class="ymaps-2-1-55-controls-pane" style="width: 100%; top: 0px; left: 0px; position: absolute; z-index: 4503;"><ymaps class="ymaps-2-1-55-controls__toolbar" style="margin-top: 10px;"><ymaps class="ymaps-2-1-55-controls__toolbar_left"><ymaps class="ymaps-2-1-55-controls__control_toolbar ymaps-2-1-55-user-selection-none" unselectable="on" style="margin-right: 0px; margin-left: 10px;"><ymaps><ymaps class="ymaps-2-1-55-float-button ymaps-2-1-55-_hidden-text" style="max-width: 90px" title="Определить ваше местоположение"><ymaps class="ymaps-2-1-55-float-button-icon ymaps-2-1-55-float-button-icon_icon_geolocation"></ymaps><ymaps class="ymaps-2-1-55-float-button-text"></ymaps></ymaps></ymaps></ymaps><ymaps class="ymaps-2-1-55-controls__control_toolbar" style="margin-right: 0px; margin-left: 10px;"><ymaps><ymaps class="ymaps-2-1-55-searchbox"><ymaps id="id_150757664642823709084" unselectable="on" class="ymaps-2-1-55-user-selection-none"><ymaps><ymaps class="ymaps-2-1-55-float-button ymaps-2-1-55-_hidden-icon" style="max-width: 72px" title="Найти"><ymaps class="ymaps-2-1-55-float-button-icon"></ymaps><ymaps class="ymaps-2-1-55-float-button-text">Найти</ymaps></ymaps></ymaps></ymaps><ymaps id="id_150757664642823709085"></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps class="ymaps-2-1-55-controls__toolbar_right"><ymaps class="ymaps-2-1-55-controls__control_toolbar" style="margin-right: 10px; margin-left: 0px;"><ymaps><ymaps class="ymaps-2-1-55-traffic"><ymaps id="id_150757664642823709075" unselectable="on" class="ymaps-2-1-55-user-selection-none"><ymaps><ymaps class="ymaps-2-1-55-float-button ymaps-2-1-55-float-button_traffic_left" style=""><ymaps class="ymaps-2-1-55-traffic__icon ymaps-2-1-55-traffic__icon_icon_off ymaps-2-1-55-float-button-icon"></ymaps><ymaps class="ymaps-2-1-55-float-button-text"><ymaps>Пробки</ymaps></ymaps></ymaps></ymaps><ymaps></ymaps></ymaps><ymaps id="id_150757664642823709076"><ymaps><ymaps class="ymaps-2-1-55-traffic__panel ymaps-2-1-55-popup ymaps-2-1-55-popup_direction_down ymaps-2-1-55-popup_to_bottom ymaps-2-1-55-popup_theme_ffffff ymaps-2-1-55-user-selection-none" unselectable="on" style="width: 270px;"><ymaps class="ymaps-2-1-55-traffic__tail ymaps-2-1-55-popup__tail"></ymaps><ymaps class="ymaps-2-1-55-traffic__panel-content"><ymaps id="id_150757664642823709077"><ymaps><ymaps class="ymaps-2-1-55-traffic__switcher"><ymaps class="ymaps-2-1-55-traffic__switcher-item ymaps-2-1-55-traffic__switcher-item_data_actual ymaps-2-1-55-traffic__switcher-item_selected_yes">Сегодня</ymaps><ymaps class="ymaps-2-1-55-traffic__switcher-item ymaps-2-1-55-traffic__switcher-item_data_archive">Статистика</ymaps></ymaps></ymaps></ymaps><ymaps></ymaps><ymaps></ymaps><ymaps></ymaps><ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps class="ymaps-2-1-55-controls__control_toolbar" style="margin-right: 10px; margin-left: 0px;"><ymaps><ymaps class="ymaps-2-1-55-listbox ymaps-2-1-55-listbox_opened_no ymaps-2-1-55-listbox_align_right" style="width: 69px;"><ymaps class="ymaps-2-1-55-listbox__button ymaps-2-1-55-_visible-arrow ymaps-2-1-55-_hidden-icon ymaps-2-1-55-user-selection-none" title="" unselectable="on"><ymaps class="ymaps-2-1-55-listbox__button-icon"></ymaps><ymaps class="ymaps-2-1-55-listbox__button-text">Слои</ymaps><ymaps class="ymaps-2-1-55-listbox__button-arrow"></ymaps></ymaps><ymaps class="ymaps-2-1-55-listbox__panel ymaps-2-1-55-i-custom-scroll" style="transform: translate3d(0px, 0px, 0px) scale(1, 1);"><ymaps class="ymaps-2-1-55-listbox__list" style="max-height: 999999px;"><ymaps><ymaps><ymaps id="id_150757664642823709097"><ymaps unselectable="on" class="ymaps-2-1-55-user-selection-none"><ymaps class="ymaps-2-1-55-listbox__list-item ymaps-2-1-55-listbox__list-item_selected_yes"><ymaps class="ymaps-2-1-55-listbox__list-item-text">Схема</ymaps></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps><ymaps><ymaps id="id_150757664642823709098"><ymaps unselectable="on" class="ymaps-2-1-55-user-selection-none"><ymaps class="ymaps-2-1-55-listbox__list-item ymaps-2-1-55-listbox__list-item_selected_no"><ymaps class="ymaps-2-1-55-listbox__list-item-text">Спутник</ymaps></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps><ymaps><ymaps id="id_150757664642823709099"><ymaps unselectable="on" class="ymaps-2-1-55-user-selection-none"><ymaps class="ymaps-2-1-55-listbox__list-item ymaps-2-1-55-listbox__list-item_selected_no"><ymaps class="ymaps-2-1-55-listbox__list-item-text">Гибрид</ymaps></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps><ymaps><ymaps id="id_150757664642823709095"><ymaps><ymaps class="ymaps-2-1-55-listbox__list-separator"></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps><ymaps><ymaps id="id_150757664642823709096"><ymaps unselectable="on" class="ymaps-2-1-55-user-selection-none"><ymaps class="ymaps-2-1-55-listbox__list-item ymaps-2-1-55-listbox__list-item_selected_no"><ymaps class="ymaps-2-1-55-listbox__list-item-text">Панорамы</ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps class="ymaps-2-1-55-controls__control_toolbar ymaps-2-1-55-user-selection-none" style="margin-right: 10px; margin-left: 0px;" unselectable="on"><ymaps><ymaps class="ymaps-2-1-55-float-button ymaps-2-1-55-_hidden-text" style="max-width: 28px" title=""><ymaps class="ymaps-2-1-55-float-button-icon ymaps-2-1-55-float-button-icon_icon_expand"></ymaps><ymaps class="ymaps-2-1-55-float-button-text"></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps class="ymaps-2-1-55-controls__bottom" style="top: 192px;"><ymaps class="ymaps-2-1-55-controls__control" style="margin-right: 0px; margin-left: 0px; bottom: 30px; top: auto; right: 10px; left: auto;"><ymaps><ymaps style="display: block;"><ymaps style="display: inline-block; height: 100%; vertical-align: top;"><ymaps id="id_150757664642823709066"><ymaps><ymaps class="ymaps-2-1-55-scaleline" style="width: 70px; min-width: 59px"><ymaps class="ymaps-2-1-55-scaleline__left"><ymaps class="ymaps-2-1-55-scaleline__left-border"></ymaps><ymaps class="ymaps-2-1-55-scaleline__left-line"></ymaps></ymaps><ymaps class="ymaps-2-1-55-scaleline__center"><ymaps class="ymaps-2-1-55-scaleline__label">6&nbsp;км</ymaps></ymaps><ymaps class="ymaps-2-1-55-scaleline__right"><ymaps class="ymaps-2-1-55-scaleline__right-border"></ymaps><ymaps class="ymaps-2-1-55-scaleline__right-line"></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps style="display: inline-block; width: 10px; height: 0"></ymaps><ymaps style="display: inline-block;"><ymaps id="id_150757664642823709067" unselectable="on" class="ymaps-2-1-55-user-selection-none"><ymaps><ymaps class="ymaps-2-1-55-float-button ymaps-2-1-55-_hidden-text" style="max-width: 28px" title="Измерение расстояний на карте"><ymaps class="ymaps-2-1-55-float-button-icon ymaps-2-1-55-float-button-icon_icon_ruler"></ymaps><ymaps class="ymaps-2-1-55-float-button-text"></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps class="ymaps-2-1-55-controls__control" style="margin-right: 0px; margin-left: 0px; bottom: auto; top: 108px; right: auto; left: 10px;"><ymaps><ymaps class="ymaps-2-1-55-zoom" style="height: 5px"><ymaps class="ymaps-2-1-55-zoom__plus ymaps-2-1-55-zoom__button ymaps-2-1-55-float-button ymaps-2-1-55-user-selection-none" unselectable="on"><ymaps class="ymaps-2-1-55-zoom__icon ymaps-2-1-55-float-button-icon"></ymaps></ymaps><ymaps class="ymaps-2-1-55-zoom__minus ymaps-2-1-55-zoom__button ymaps-2-1-55-float-button ymaps-2-1-55-user-selection-none" unselectable="on"><ymaps class="ymaps-2-1-55-zoom__icon ymaps-2-1-55-float-button-icon"></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps><ymaps class="ymaps-2-1-55-searchpanel-pane" style="width: 100%; top: 0px; left: 0px; position: absolute; z-index: 6509;"><ymaps><ymaps class="ymaps-2-1-55-search ymaps-2-1-55-search_layout_panel ymaps-2-1-55-searchbox__panel-layout"><ymaps class="ymaps-2-1-55-search__layout"><ymaps id="id_150757664642823709086"><ymaps><ymaps class="ymaps-2-1-55-searchbox__input-cell"><ymaps class="ymaps-2-1-55-searchbox-input"><ymaps class="ymaps-2-1-55-searchbox-input__icon"></ymaps><input class="ymaps-2-1-55-searchbox-input__input" placeholder="Адрес или объект"><ymaps class="ymaps-2-1-55-searchbox-input__clear-button"></ymaps></ymaps><ymaps class="ymaps-2-1-55-searchbox-list-button"></ymaps></ymaps><ymaps class="ymaps-2-1-55-searchbox__button-cell"><ymaps class="ymaps-2-1-55-searchbox-button ymaps-2-1-55-user-selection-none" unselectable="on"><ymaps class="ymaps-2-1-55-searchbox-button-text">Найти</ymaps></ymaps></ymaps></ymaps></ymaps><ymaps class="ymaps-2-1-55-searchbox__fold-button-cell"><ymaps class="ymaps-2-1-55-searchbox__fold-button"><ymaps class="ymaps-2-1-55-searchbox__fold-button-icon"></ymaps></ymaps></ymaps></ymaps><ymaps id="id_150757664642823709087"><ymaps><ymaps class="ymaps-2-1-55-islets_serp-popup ymaps-2-1-55-islets__hidden"><ymaps class="ymaps-2-1-55-islets_serp-popup__tail"></ymaps><ymaps class="ymaps-2-1-55-islets_serp" style="max-height: 142px;"><ymaps id="id_150757664642823709088"><ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></ymaps></div>
+                    </div>
+                </div>
+                <div class="create--field with-icon">
+                    <i class="icon-type"></i>
+                    <div class="select is-simple">
+                        <input class="select_hidden" type="hidden">
+                        <div class="select_in">
+                            <div class="select_title"><span class="select_placeholder">Тип события</span></div>
+                        </div>
+                        <ul class="select_list">
+                            <li data-value="1">Екатеринбург</li>
+                            <li data-value="2">Москва</li>
+                            <li data-value="3">Санкт-Петербург</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="create--field with-icon is-sm">
+                    <i class="icon-ruble"></i>
+                    <div class="create--field-l is-s1">Стоимость билетов от</div>
+                    <div class="create--field-b is-s1">
+                        <input class="create--field-i" type="text">
+                    </div>
+                    <div class="create--field-l is-s2">до</div>
+                    <div class="create--field-b is-s2">
+                        <input class="create--field-i" type="text">
+                    </div>
+                </div>
+                <div class="create--field with-icon is-small">
+                    <i class="icon-mail"></i>
+                    <input class="create--field-i" type="text" placeholder="Почта для обратной связи">
+                </div>
+                <div class="create--btn"><a class="btn-blue" href="#" data-step-nav="next">Сохранить и перейти к описанию</a></div>
+            </div>
+        </div>
+        <div class="create--step is-saved" data-step="2">
+            <div class="create--head">
+                <div class="create--number">2 / 4</div>
+                <div class="create--title">Подробное описание</div><a class="create--edit" href="#" data-step-nav="edit">редактировать</a><a class="create--skip" href="#" data-step-nav="next">пропустить описание</a>
+            </div>
+            <div class="create--body">
+                <div class="create--editor">
+                    <div class="trumbowyg-box trumbowyg-editor-visible trumbowyg-ru trumbowyg"><div class="trumbowyg-button-pane"><div class="trumbowyg-button-group "><button type="button" class="trumbowyg-viewHTML-button " title="Посмотреть HTML" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-view-html"></use></svg></button></div><div class="trumbowyg-button-group "><button type="button" class="trumbowyg-undo-button " title="Отменить (Ctrl + Z)" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-undo"></use></svg></button><button type="button" class="trumbowyg-redo-button " title="Повторить (Ctrl + Y)" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-redo"></use></svg></button></div><div class="trumbowyg-button-group "><button type="button" class="trumbowyg-formatting-button  trumbowyg-open-dropdown" title="Форматирование" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-p"></use></svg></button></div><div class="trumbowyg-button-group "><button type="button" class="trumbowyg-strong-button " title="Полужирный (Ctrl + B)" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-strong"></use></svg></button><button type="button" class="trumbowyg-em-button " title="Курсив (Ctrl + I)" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-em"></use></svg></button><button type="button" class="trumbowyg-del-button " title="Зачеркнутый" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-del"></use></svg></button></div><div class="trumbowyg-button-group "><button type="button" class="trumbowyg-superscript-button " title="Надстрочный" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-superscript"></use></svg></button><button type="button" class="trumbowyg-subscript-button " title="Подстрочный" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-subscript"></use></svg></button></div><div class="trumbowyg-button-group "><button type="button" class="trumbowyg-link-button  trumbowyg-open-dropdown" title="Ссылка" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-link"></use></svg></button></div><div class="trumbowyg-button-group "><button type="button" class="trumbowyg-insertImage-button " title="Вставить изображение" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-insert-image"></use></svg></button></div><div class="trumbowyg-button-group "><button type="button" class="trumbowyg-justifyLeft-button " title="По левому краю" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-justify-left"></use></svg></button><button type="button" class="trumbowyg-justifyCenter-button " title="По центру" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-justify-center"></use></svg></button><button type="button" class="trumbowyg-justifyRight-button " title="По правому краю" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-justify-right"></use></svg></button><button type="button" class="trumbowyg-justifyFull-button " title="По ширине" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-justify-full"></use></svg></button></div><div class="trumbowyg-button-group "><button type="button" class="trumbowyg-unorderedList-button " title="Обычный список" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-unordered-list"></use></svg></button><button type="button" class="trumbowyg-orderedList-button " title="Нумерованный список" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-ordered-list"></use></svg></button></div><div class="trumbowyg-button-group "><button type="button" class="trumbowyg-horizontalRule-button " title="Горизонтальная линия" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-horizontal-rule"></use></svg></button></div><div class="trumbowyg-button-group "><button type="button" class="trumbowyg-removeformat-button " title="Очистить форматирование" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-removeformat"></use></svg></button></div><div class="trumbowyg-button-group trumbowyg-right"><button type="button" class="trumbowyg-fullscreen-button trumbowyg-not-disable" title="Во весь экран" tabindex="-1"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-fullscreen"></use></svg></button></div></div><textarea class="trumbowyg-textarea" tabindex="-1" style="height: 0px;"></textarea><div class="wysiwyg-editor trumbowyg-editor" contenteditable="true" dir="ltr" style="height: 0px;"><p style="text-align: right;"><br></p><p><div></div></p></div><div class="trumbowyg-dropdown-formatting trumbowyg-dropdown trumbowyg-fixed-top" data-dropdown="formatting" style="display: none;"><button type="button" class="trumbowyg-p-dropdown-button"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-p"></use></svg>Обычный</button><button type="button" class="trumbowyg-blockquote-dropdown-button"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-blockquote"></use></svg>Цитата</button><button type="button" class="trumbowyg-h1-dropdown-button"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-h1"></use></svg>Заголовок 1</button><button type="button" class="trumbowyg-h2-dropdown-button"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-h2"></use></svg>Заголовок 2</button><button type="button" class="trumbowyg-h3-dropdown-button"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-h3"></use></svg>Заголовок 3</button><button type="button" class="trumbowyg-h4-dropdown-button"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-h4"></use></svg>Заголовок 4</button></div><div class="trumbowyg-dropdown-link trumbowyg-dropdown trumbowyg-fixed-top" data-dropdown="link" style="display: none;"><button type="button" class="trumbowyg-createLink-dropdown-button" title=" (Ctrl + K)"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-create-link"></use></svg>Вставить ссылку</button><button type="button" class="trumbowyg-unlink-dropdown-button"><svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#trumbowyg-unlink"></use></svg>Удалить ссылку</button></div><div class="trumbowyg-overlay"></div></div>
+                </div>
+                <div class="create--btn"><a class="btn-blue" href="#" data-step-nav="next">Сохранить и перейти к настройке регистрации</a></div>
+            </div>
+        </div>
+        <div class="create--step" data-step="3">
+            <div class="create--head">
+                <div class="create--number">3 / 4</div>
+                <div class="create--title">Настройка регистрации</div><a class="create--edit" href="#" data-step-nav="edit">редактировать</a>
+            </div>
+            <div class="create--body">
+                <div class="create--stitle">Покупка билетов на [Название мероприятия]</div>
+                <div class="create--field">
+                    <input class="create--field-i" type="text" placeholder="Сопроводительный текст для регистрации">
+                </div>
+                <div class="create--field">
+                    <input class="create--field-i" type="text" placeholder="Сопроводительный текст для подтверждения регистрации">
+                </div>
+                <div class="create--stitle is-alt">Необходимые поля для регистрации</div>
+                <div class="create--checkers">
+                    <label class="checkbox">
+                        <input class="checkbox--input" type="checkbox">
+                        <div class="checkbox--label">Имя участника</div>
+                    </label>
+                    <label class="checkbox">
+                        <input class="checkbox--input" type="checkbox">
+                        <div class="checkbox--label">Номер телефона</div>
+                    </label>
+                    <label class="checkbox">
+                        <input class="checkbox--input" type="checkbox">
+                        <div class="checkbox--label">Электронная почта</div>
+                    </label>
+                </div>
+                <div class="create--btn"><a class="btn-blue" href="#" data-step-nav="next">Сохранить и перейти к предпросмотру</a></div>
+            </div>
+        </div>
+        <div class="create--step" data-step="4">
+            <div class="create--head">
+                <div class="create--number">4 / 4</div>
+                <div class="create--title">Предпросмотр и публикация</div>
+            </div>
+            <div class="create--body">
+                <div class="create--links">
+                    <div class="create--link"><a href="#">Посмотреть десктопную версию</a></div>
+                    <div class="create--link"><a href="#">Посмотреть мобильную версию</a></div>
+                </div>
+                <div class="create--btn"><a class="btn-blue" href="#">Сохранить и опубликовать событие</a></div>
+            </div>
+        </div>
+    </div>*@
+
     <div class="container">
-        
+
         <div class="form-group">
             <input class="form-control" asp-for="Name" placeholder="Название мероприяние"/>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
-		<div class="form-group">
-		    <input class="form-control" asp-for="Url" placeholder="Url"/>
-		    <span asp-validation-for="Url" class="text-danger"></span>
-	    </div>
+        <div class="form-group">
+            <input class="form-control" asp-for="Url" placeholder="Url"/>
+            <span asp-validation-for="Url" class="text-danger"></span>
+        </div>
 
-		<div class="form-group">
-			<input class="form-control" asp-for="Label" placeholder="Подпись"/>
-			<span asp-validation-for="Label" class="text-danger"></span>
-		</div>
+        <div class="form-group">
+            <input class="form-control" asp-for="Label" placeholder="Подпись"/>
+            <span asp-validation-for="Label" class="text-danger"></span>
+        </div>
 
-		<div class="form-group">
+        <div class="form-group">
             @Html.DropDownListFor(x => x.CategoryId, Model.Categories, null, new {@class = "form-control"})
-	        <span asp-validation-for="CategoryId"></span>
+            <span asp-validation-for="CategoryId"></span>
         </div>
 
         @*<div class="form-group">
             @Html.DropDownListFor(x => x.Type, Html.GetEnumSelectList<EEventState>(), null, new {@class = "form-control"})
         </div>*@
 
-		<div class="form-group">
-			<input class="form-control" asp-for="Email" placeholder="Email для обратной связи" />
-			<span asp-validation-for="Email" class="text-danger"></span>
-		</div>
-        
-		<div class="form-group">
-            <input type="text" class="form-control" asp-for="City" placeholder="City" />
+        <div class="form-group">
+            <input class="form-control" asp-for="Email" placeholder="Email для обратной связи"/>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="text" class="form-control" asp-for="City" placeholder="City"/>
             <span asp-validation-for="City"></span>
         </div>
 
@@ -64,7 +186,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="form-group">
             <label asp-for="FinishDateTime"></label>
             <div class="row">
@@ -78,23 +200,23 @@
                 </div>
             </div>
         </div>
-        
-		<div class="form-group">
-			<input class="form-control" placeholder="Cover" type="file" name="file" id="file" />
-		</div>
 
-		@*<div class="form-group">
+        <div class="form-group">
+            <input class="form-control" placeholder="Cover" type="file" name="file" id="file"/>
+        </div>
+
+        @*<div class="form-group">
             <input type="text" class="form-control" placeholder="Price" asp-for="Price" />
             <span asp-validation-for="Price"></span>
         </div>*@
 
-	    <div class="form-group">
+        <div class="form-group">
             <textarea class="form-control" rows="10" placeholder="HTML here" asp-for="Html" id="html"></textarea>
         </div>
-		
-		@Html.ValidationSummary()
 
-		<div class="form-group">
+        @Html.ValidationSummary()
+
+        <div class="form-group">
             <input type="submit" value="Save" class="btn"/>
         </div>
     </div>

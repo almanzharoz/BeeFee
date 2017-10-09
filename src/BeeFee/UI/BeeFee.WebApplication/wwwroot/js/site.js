@@ -31,8 +31,10 @@
         }
     });
 }
-function initEventPage(phoneselector) {
+function initEventPage(nameselector, phoneselector, emailselector) {
     $(phoneselector).mask("+7 (999) 999-9999", { placeholder: "+7 (___) ___-____" });
+    $(nameselector).trigger("change");
+    $(emailselector).trigger("change");
 }
 //function eventsPageInit(filters, listcontainerselector) {
 //    if (typeof filters == "undefined" || filters == null || filters.length === 0)
