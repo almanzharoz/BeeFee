@@ -35,17 +35,22 @@ namespace BeeFee.OrganizerApp.Services
 
 		/// <exception cref="AddEntityException"></exception>
 		// TODO: добавить проверку 
-		public bool AddEvent(string companyId, string categoryId, string name, string label, string url, string email, 
+		public void AddEvent(string companyId, string categoryId, string name, string label, string url, string email, 
 			EventDateTime dateTime, Address address, TicketPrice[] prices, string html)
 		{
+			// TODO: Проверять и вставлять одним запросом
+			url.IfNull(name, CommonHelper.UriTransliterate)
+				.ThrowIf(ExistsByUrl<EventProjection>, x => new ExistsUrlException<Event>(x));
+
 			var newEvent = new NewEvent(
 				companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)),
 				GetById<BaseUserProjection>(User.Id).HasNotNullEntity("user"),
-				GetById<BaseCategoryProjection>(categoryId), name, label, url,
+				GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), name, label, url,
 				dateTime, address, prices, html, email);
-			return !ExistsByUrl<EventProjection>(url.IfNull(name, CommonHelper.UriTransliterate)) &&
-				Insert<NewEvent, CompanyJoinProjection>(
-					newEvent, true) && Insert(new NewEventTransaction(newEvent), false);
+
+			Insert<NewEvent, CompanyJoinProjection>(newEvent, true).ThrowIfNot<AddEntityException<Event>>();
+
+			Insert(new NewEventTransaction(newEvent), false).ThrowIfNot<AddEntityException<EventTransaction>>(); // TODO: при такой ошибке должен быть откат
 		}
 
 		private EventTransactionProjection GetEventTransactionById(string eventId, string companyId)

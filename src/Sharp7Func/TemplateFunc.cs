@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Sharp7Func;
 
 namespace SharpFuncExt
 {
@@ -233,6 +234,15 @@ namespace SharpFuncExt
 			return result;
 		}
 
+		public static CatchCollection<T, TResult> Try<T, TResult>(this T arg, string type, Func<T, TResult> func)
+			=> new CatchCollection<T, TResult>(type, arg, func);
+
+		public static CatchCollection<T> Try<T>(this T arg, string type, Action<T> func)
+			=> new CatchCollection<T>(type, arg, func);
+
+		public static CatchCollection<T> Try<T>(this T arg, Action<T> func)
+			=> new CatchCollection<T>(null, arg, func);
+
 		public static TResult Using<T, TUsing, TResult>(this T arg, Func<T, TUsing> init, Func<T, TUsing, TResult> func) where TUsing : IDisposable
 		{
 			Exception ex = null;
@@ -382,6 +392,13 @@ namespace SharpFuncExt
 		{
 			if (!arg)
 				throw new TException();
+			return arg;
+		}
+
+		public static bool ThrowIfNot<TException>(this bool arg, Func<TException> func) where TException : Exception
+		{
+			if (!arg)
+				throw func();
 			return arg;
 		}
 
