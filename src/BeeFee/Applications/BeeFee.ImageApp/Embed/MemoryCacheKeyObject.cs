@@ -12,7 +12,7 @@
 		}
 	}
 
-	public enum EKeyType
+	public enum EKeyType // добавить ключ "server"
 	{
 		User,
 		Moderator,
