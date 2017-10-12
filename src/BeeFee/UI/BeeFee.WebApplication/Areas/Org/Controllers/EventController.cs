@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Helpers;
@@ -15,7 +16,7 @@ using SharpFuncExt;
 
 namespace BeeFee.WebApplication.Areas.Org.Controllers
 {
-	[Area("Org")]
+    [Area("Org")]
     [Authorize(Roles = RoleNames.Organizer)]
     public class EventController : BaseController<EventService>
     {
@@ -34,62 +35,62 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             return View(Service.GetMyEvents(id));
         }
 
-		[HttpGet]
-		public IActionResult Add(string companyId)
-			=> View(new AddEventEditModel(
-				Service.GetCompany<CompanyProjection>(companyId)
-					.Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host)),
-				CategoryService.GetAllCategories<BaseCategoryProjection>())
-			{
-				StartDateTime = DateTime.Now,
-				FinishDateTime = DateTime.Now.AddDays(1)
-			});
+        [HttpGet]
+        public IActionResult Add(string companyId)
+            => View("Create", new CreateEventModel(
+                Service.GetCompany<CompanyProjection>(companyId)
+                    .Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host)),
+                CategoryService.GetAllCategories<BaseCategoryProjection>())
+            {
+                StartDateTime = DateTime.Now,
+                FinishDateTime = DateTime.Now.AddDays(1),
+            });
 
-		[HttpPost]
-		public async Task<IActionResult> Add(AddEventEditModel model)
-		{
-			if (ModelState.IsValid)
-			{
-				model.Url = model.Url.IfNull(model.Name, CommonHelper.UriTransliterate)
-					.ThrowIf("/".ContainsExt, x => new InvalidOperationException("url contains \"/\""));
+        [HttpPost]
+        public async Task<IActionResult> Add(CreateEventModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                model.Url = model.Url.IfNull(model.Name, CommonHelper.UriTransliterate)
+                    .ThrowIf("/".ContainsExt, x => new InvalidOperationException("url contains \"/\""));
 
-				if (Service.AddEvent(model.CompanyId,
-					model.CategoryId,
-					model.Name,
-					model.Label,
-					model.Url,
-					model.Email,
-					new EventDateTime(model.StartDateTime, model.FinishDateTime),
-					new Address(model.City, model.Address),
-					new[] {new TicketPrice("ticket", null, 0, 10)},
-					model.Html,
-					model.File != null && model.File.Length > 0 ? model.File.FileName : null
-				))
-				{
-					var company = Service.GetCompany<CompanyJoinProjection>(model.CompanyId);
-					await _imagesService.RegisterEvent(company.Url, model.Url, Request.Host.Host);
-					if (model.File != null && model.File.Length > 0)
-						await _imagesService.AddEventCover(company.Url, model.Url, model.File.FileName, model.File.OpenReadStream());
-					return RedirectToAction("Index", new {id = model.CompanyId});
-				}
-				ModelState.AddModelError("error", "Event dont save");
-			}
-			return View(model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
-		}
+                if (Service.AddEvent(model.CompanyId,
+                    model.CategoryId,
+                    model.Name,
+                    model.Label,
+                    model.Url,
+                    model.Email,
+                    new EventDateTime(model.StartDateTime, model.FinishDateTime),
+                    new Address(model.City, model.Address),
+                    new[] { new TicketPrice("ticket", null, 0, 10) },
+                    model.Html,
+                    model.File != null && model.File.Length > 0 ? model.File.FileName : null
+                ))
+                {
+                    var company = Service.GetCompany<CompanyJoinProjection>(model.CompanyId);
+                    await _imagesService.RegisterEvent(company.Url, model.Url, Request.Host.Host);
+                    if (model.File != null && model.File.Length > 0)
+                        await _imagesService.AddEventCover(company.Url, model.Url, model.File.FileName, model.File.OpenReadStream());
+                    return RedirectToAction("Index", new { id = model.CompanyId });
+                }
+                ModelState.AddModelError("error", "Event dont save");
+            }
+            return View("Create", model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
+        }
 
-		[HttpGet]
+        [HttpGet]
         public IActionResult Edit(string id, string companyId)
         {
             var @event = Service.GetEvent(id, companyId);
             if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
                 return NotFound();
-			_imagesService.GetAccessToFolder(@event.Parent.Url, Request.Host.Host);
+            _imagesService.GetAccessToFolder(@event.Parent.Url, Request.Host.Host);
 
-			return View(new EventEditModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>()));
+            return View(new UpdateEventModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>()));
         }
 
         [HttpPost]
-        public IActionResult Edit(EventEditModel model)
+        public IActionResult Edit(UpdateEventModel model)
         {
             if (ModelState.IsValid)
             {
@@ -114,8 +115,8 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             return View(model);
         }
 
-		public IActionResult Preview(string id, string companyId)
-			=> Service.GetPreviewEvent(id, companyId).If(IsAjax, PartialView, x => (IActionResult)View(x));
+        public IActionResult Preview(string id, string companyId)
+            => Service.GetPreviewEvent(id, companyId).If(IsAjax, PartialView, x => (IActionResult)View(x));
 
         public IActionResult Remove(string id, string companyId, int version)
         {
@@ -124,10 +125,39 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             return RedirectToAction("Index", new { id = companyId });
         }
 
-		public IActionResult ToModerate(string id, string companyId, int version)
-		{
-			Service.ToModerate(id, companyId, version);
-			return RedirectToActionPermanent("Index", new { id = companyId });
-		}
+        public IActionResult ToModerate(string id, string companyId, int version)
+        {
+            Service.ToModerate(id, companyId, version);
+            return RedirectToActionPermanent("Index", new { id = companyId });
+        }
+
+        [HttpPost]
+        public IActionResult LoadInfoStepCreateOrUpdateEvent(CreateOrUpdateEventInfoModel model, bool validate)
+        {
+            TryValidateModel(model);
+            model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>());
+            return View("_CreateOrUpdateEvent.Info", model);
+        }
+
+        [HttpPost]
+        public IActionResult LoadDescriptionStepCreateOrUpdateEvent(CreateOrUpdateEventDescriptionModel model)
+        {
+            TryValidateModel(model);
+            return View("_CreateOrUpdateEvent.Description", model);
+        }
+
+        [HttpPost]
+        public IActionResult LoadSettingFieldsStepCreateOrUpdateEvent(CreateOrUpdateEventSettingFieldsModel model)
+        {
+            TryValidateModel(model);
+            return View("_CreateOrUpdateEvent.SettingFields", model);
+        }
+
+        [HttpPost]
+        public IActionResult LoadPreviewStepCreateOrUpdateEvent(CreateOrUpdateEventPreviewModel model)
+        {
+            TryValidateModel(model);
+            return View("_CreateOrUpdateEvent.Preview", model);
+        }
     }
 }

@@ -36,6 +36,29 @@ function initEventPage(nameselector, phoneselector, emailselector) {
     $(nameselector).trigger("change");
     $(emailselector).trigger("change");
 }
+function getDoc(frame) {
+    var doc = null;
+
+    // IE8 cascading access check
+    try {
+        if (frame.contentWindow) {
+            doc = frame.contentWindow.document;
+        }
+    } catch (err) {
+    }
+
+    if (doc) { // successful getting content
+        return doc;
+    }
+
+    try { // simply checking may throw in ie8 under ssl or mismatched protocol
+        doc = frame.contentDocument ? frame.contentDocument : frame.document;
+    } catch (err) {
+        // last attempt
+        doc = frame.document;
+    }
+    return doc;
+}
 //function eventsPageInit(filters, listcontainerselector) {
 //    if (typeof filters == "undefined" || filters == null || filters.length === 0)
 //        return;
@@ -377,31 +400,108 @@ $(document).ready(function () {
     });
 
     // ----------
+    var showedSection = null;
+    var fakeForm = null;
+    var submitEventHandler = function (e) {
+
+        var formObj = $(this);
+        var formURL = formObj.attr("action");
+
+        if (window.FormData !== undefined)  // for HTML5 browsers
+        {
+
+            var formData = new FormData(this);
+            $.ajax({
+                url: formURL,
+                type: 'POST',
+                data: formData,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                cache: false,
+                processData: false,
+                success: function (data, textStatus, jqXHR) {
+                    showedSection.find(".create-container").html(data);
+                    fakeForm.remove();
+                    showedSection.removeClass('is-saved').addClass('is-shown');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+
+                }
+            });
+            e.preventDefault();
+            //e.unbind();
+        }
+        else  //for olden browsers
+        {
+            //generate a random id
+            var iframeId = 'unique' + (new Date().getTime());
+
+            //create an empty iframe
+            var iframe = $('<iframe src="javascript:false;" name="' + iframeId + '" />');
+
+            //hide it
+            iframe.hide();
+
+            //set form target to iframe
+            formObj.attr('target', iframeId);
+
+            //Add iframe to body
+            iframe.appendTo('body');
+            iframe.load(function (e) {
+                var doc = getDoc(iframe[0]);
+                var docRoot = doc.body ? doc.body : doc.documentElement;
+                var data = docRoot.innerHTML;
+                //data is returned from server.
+                showedSection.find(".create-container").html(data);
+                fakeForm.remove();
+                setTimeout(function () {
+                    iframe.remove();
+                    showedSection.removeClass('is-saved').addClass('is-shown');
+                },
+                    1);
+
+            });
+
+        }
+    }
+    var loadEventSection = function (url) {
+        fakeForm = $("#event-form").clone();
+        fakeForm.hide();
+        fakeForm.attr("action", url);
+        fakeForm.appendTo('body');
+        fakeForm.submit(submitEventHandler);
+        fakeForm.submit();
+    }
 
     $('[data-step-nav="next"]').on('click', function (e) {
         e.preventDefault();
-
         var current = $('.create--step.is-shown');
 
         current.removeClass('is-shown').addClass('is-saved');
+        //showedSection = current.next();
+        //loadEventSection(showedSection.data("url"));
         current.next().removeClass('is-saved').addClass('is-shown');
     });
 
     $('[data-step-nav="edit"]').on('click', function (e) {
         e.preventDefault();
-
         var current = $(this).closest('.create--step');
 
         $('.create--step.is-shown').removeClass('is-shown');
-
+        //showedSection = current;
+        //loadEventSection(showedSection.data("url"));
         current.removeClass('is-saved').addClass('is-shown');
     });
 
     if ($('.wysiwyg-editor').length > 0) {
         $('.wysiwyg-editor').each(function () {
+            var $inpHtml = $(this).prev();
             $(this).trumbowyg({
                 lang: 'ru'
+            }).on('tbwblur', function () {
+                $inpHtml.val($(this).trumbowyg("html"));
             });
+            $(this).trumbowyg('html', $inpHtml.val());
         });
     }
 
@@ -437,6 +537,12 @@ $(document).ready(function () {
             showDate($input.closest('.create--field-di'), dp);
         }
     });
+
+    if ($('[data-range="start"]').length > 0 && $('[data-range="start"]').val().length > 0)
+        showDate($('[data-range="start"]').closest('.create--field-di'), $('[data-range="start"]').data("xdsoft_datetimepicker").getValue());
+
+    if ($('[data-range="end"]').length > 0 && $('[data-range="end"]').val().length > 0)
+        showDate($('[data-range="end"]').closest('.create--field-di'), $('[data-range="end"]').data("xdsoft_datetimepicker").getValue());
 
     $('.js-date').datetimepicker({
         timepicker: false,

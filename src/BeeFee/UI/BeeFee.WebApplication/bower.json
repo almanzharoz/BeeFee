@@ -12,7 +12,8 @@
     "sticky-kit": "v1.1.2",
     "datetimepicker": "2.5.4",
     "ScrollToFixed": "1.0.8",
-    "jquery.maskedinput": "jquery-maskedinput#1.4.1"
+    "jquery.maskedinput": "jquery-maskedinput#1.4.1",
+    "trumbowyg": "v2.8.1"
   },
   "resolutions": {
     "jquery-validation": "1.17.0",

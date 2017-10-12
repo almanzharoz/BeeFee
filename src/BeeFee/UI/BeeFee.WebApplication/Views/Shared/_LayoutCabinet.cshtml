@@ -1,4 +1,4 @@
-﻿@using BeeFee.WebApplication.Models.Account
+@using BeeFee.WebApplication.Models.Account
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,7 +12,7 @@
 		<link rel="stylesheet" href="~/css/validation.css" asp-append-version="true" />
 		<link rel="stylesheet" href="~/css/xdsoft.css" asp-append-version="true" />
 	    <link rel="stylesheet" href="~/css/cabinet.css" asp-append-version="true" />
-	    <link rel="stylesheet" href="~/css/createeventpage.css" asp-append-version="true" />
+	    <link rel="stylesheet" href="~/lib/trumbowyg/dist/ui/trumbowyg.css" asp-append-version="true" />
 	</environment>
 	<environment exclude="Development">
 		<link rel="stylesheet" href="~/css/siteprofile.min.css" asp-append-version="true" />
@@ -33,7 +33,8 @@
 	<environment include="Development">
 		<script src="~/js/jquery.min.js" asp-append-version="true"></script>
 		<script src="~/lib/sticky-kit/jquery.sticky-kit.js"></script>
-		<script src="~/lib/datetimepicker/build/jquery.datetimepicker.full.js"></script>
+	    <script src="~/lib/datetimepicker/build/jquery.datetimepicker.full.js"></script>
+	    <script src="~/lib/trumbowyg/dist/trumbowyg.js"></script>
 		@*<script src="~/lib/ScrollToFixed/jquery-scrolltofixed.js" asp-append-version="true"></script>*@
 		<script src="~/scripts/site_script.js" asp-append-version="true"></script>
 		<script src="~/js/events.js" asp-append-version="true"></script>
@@ -41,7 +42,8 @@
 	</environment>
 	<environment exclude="Development">
 		<script src="~/js/jquery.min.js" asp-append-version="true"></script>
-		<script src="~/lib/sticky-kit/jquery.sticky-kit.js"></script>
+	    <script src="~/lib/sticky-kit/jquery.sticky-kit.js"></script>
+	    <script src="~/lib/trumbowyg/dist/trumbowyg.js"></script>
 		<script src="~/lib/datetimepicker/build/jquery.datetimepicker.full.js"></script>
 		@*<script src="~/lib/ScrollToFixed/jquery-scrolltofixed.js" asp-append-version="true"></script>*@
 		<script src="~/scripts/site_script.js" asp-append-version="true"></script>

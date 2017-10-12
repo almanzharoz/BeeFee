@@ -7,6 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Shared\Components\**" />
+    <Content Remove="Views\Shared\Components\**" />
+    <EmbeddedResource Remove="Views\Shared\Components\**" />
+    <None Remove="Views\Shared\Components\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Areas\Org\Models\CreateOrUpdateEventModel.Description.cs" />
+    <Compile Remove="Areas\Org\Models\CreateOrUpdateEventModel.Info.cs" />
+    <Compile Remove="Areas\Org\Models\CreateOrUpdateEventModel.Preview.cs" />
+    <Compile Remove="Areas\Org\Models\CreateOrUpdateEventModel.SettingFields.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="npm-debug.log" />
     <None Remove="Scripts\site_script.ts" />
   </ItemGroup>
@@ -27,6 +41,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Areas\Org\Views\Event\_CreateOrUpdateEvent.SettingFields.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Applications\BeeFee.AdminApp\BeeFee.AdminApp.csproj" />
     <ProjectReference Include="..\..\Applications\BeeFee.ClientApp\BeeFee.ClientApp.csproj" />
     <ProjectReference Include="..\..\Applications\BeeFee.ImageApp\BeeFee.ImageApp.csproj" />
@@ -43,10 +61,6 @@
     <Content Update="Views\Home\_EventGridItem.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Shared\Components\" />
   </ItemGroup>
 
 </Project>

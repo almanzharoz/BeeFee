@@ -1,137 +1,54 @@
 @using BeeFee.WebApplication.Infrastructure
-@using SharpFuncExt
-@model BeeFee.WebApplication.Areas.Org.Models.EventEditModel
+@using BeeFee.WebApplication.Areas.Org.Models
+@model BeeFee.WebApplication.Areas.Org.Models.UpdateEventModel
 @{
-    ViewData["Title"] = "Редактирование события";
+    ViewData["Title"] = "Редактирование события - " + Model.Name;
 }
-
-<h2>Edit @Model.Name</h2>
-
 <form asp-action="Edit" asp-controller="Event" asp-route-id="@Model.Id" method="post" class="form-horizontal">
-	<div class="validation" asp-validation-summary="ModelOnly"></div>
-	<input type="hidden" asp-for="CompanyId" />
-	<input type="hidden" asp-for="Version" />
-    <div class="container">
+    <div class="validation" asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" asp-for="CompanyId" />
+    <input type="hidden" asp-for="Version" />
+    <a asp-action="ToModerate" style="float: right;" class="btn-blue" asp-route-companyId="@Model.CompanyId" asp-route-id="@Model.Id" asp-route-version="@Model.Version">Опубликовать</a>
+    <div class="create">
+        @Html.Partial("_CreateOrUpdateEvent", Model)
 
-        <div class="form-group">
-            <input class="form-control" asp-for="Name" placeholder="Name"/>
-            <span asp-validation-for="Name" class="text-danger"></span>
-        </div>
-	    <div class="form-group">
-		    <input class="form-control" asp-for="Url" placeholder="Url"/>
-		    <span asp-validation-for="Url" class="text-danger"></span>
-	    </div>
-		
-		<div class="form-group">
-			<input class="form-control" asp-for="Label" placeholder="Подпись"/>
-			<span asp-validation-for="Label" class="text-danger"></span>
-		</div>
+    </div>
 
-		<div class="form-group">
-		    @Html.DropDownListFor(x => x.CategoryId, Model.Categories, null, new {@class = "form-control"})
-		    <span asp-validation-for="CategoryId"></span>
-	    </div>
 
-        @*<div class="form-group">
-            @Html.DropDownListFor(x => x.Type, Html.GetEnumSelectList<EEventState>(), null, new {@class = "form-control"})
-        </div>*@
+    <div class="form-group">
+        @*<input type="submit" value="Save" class="btn" />*@
+        
+    </div>
 
-		<div class="form-group">
-			<input class="form-control" asp-for="Email" placeholder="Email для обратной связи"/>
-			<span asp-validation-for="Email" class="text-danger"></span>
-		</div>
+    @*@if (Model.Comments.IsNotNull())
+        {
+            foreach (var comment in Model.Comments)
+            {
+                <hr />
+                @comment
+            }
+        }*@
+</form>
 
-		<div class="form-group">
-            <input type="text" class="form-control" asp-for="City" placeholder="City"/>
-            <span asp-validation-for="City"></span>
-        </div>
-
-        <div class="form-group">
-            <input type="text" class="form-control" asp-for="Address" placeholder="Address"/>
-            <span asp-validation-for="Address"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="StartDateTime"></label>
-            <div class="row">
-                <div class="col-lg-3">
-                    <div class='input-group date' id='startDateTimePicker'>
-                        <input type='text' class="form-control" asp-for="StartDateTime" value="@Model.StartDateTime"/>
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="FinishDateTime"></label>
-            <div class="row">
-                <div class="col-lg-3">
-                    <div class='input-group date' id='finishDateTimePicker'>
-                        <input type='text' class="form-control" asp-for="FinishDateTime" value="@Model.FinishDateTime"/>
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-	    @*<div class="form-group">
-            <input type="text" class="form-control" placeholder="Price" asp-for="Price"/>
-            <span asp-validation-for="Price"></span>
-        </div>*@
-		
-	    <div class="form-group">
-		    <input class="form-control" placeholder="Cover" type="file" id="file" />
-			@if (!String.IsNullOrEmpty(Model.Cover))
-			{
-				<img src="@Url.GetImageUrl(Model.CompanyUrl, Model.Url, Model.Cover, 368, 190)"/>
-			}
-		    <input type="hidden" class="form-control" placeholder="Cover" asp-for="Cover"/>
-	    </div>
-
-	    <div class="form-group">
-            <textarea class="form-control" rows="10" placeholder="HTML here" asp-for="Html" id="html"></textarea>
-        </div>
-
-		<div class="form-group">
-			<input type="submit" value="Save" class="btn" />
-			<a asp-action="ToModerate" asp-route-companyId="@Model.CompanyId" asp-route-id="@Model.Id" asp-route-version="@Model.Version">Опубликовать</a>
-		</div>
-		
-		@if (Model.Comments.IsNotNull())
-		{
-			foreach (var comment in Model.Comments)
-			{
-				<hr/>
-				@comment
-			}
-		}
-	</div>
-</form> 
-
-@section Scripts{ 
-	<script src="~/lib/ckeditor/ckeditor.js"></script>
-	<script type="text/javascript">
+@section Scripts{
+    @*<script src="~/lib/ckeditor/ckeditor.js"></script>*@
+    <script type="text/javascript">
         $(function () {
-            $('#startDateTimePicker').datetimepicker({
-                format: "DD.MM.YYYY HH:mm"
-            });
-            $('#finishDateTimePicker').datetimepicker({
-                format: "DD.MM.YYYY HH:mm",
-                useCurrent: false //Important! See issue #1075
-            });
-            $("#startDateTimePicker").on("dp.change", function (e) {
-                $('#finishDateTimePicker').data("DateTimePicker").minDate(e.date);
-            });
-            $("#finishDateTimePicker").on("dp.change", function (e) {
-                $('#startDateTimePicker').data("DateTimePicker").maxDate(e.date);
-			});
+   //         $('#startDateTimePicker').datetimepicker({
+   //             format: "DD.MM.YYYY HH:mm"
+   //         });
+   //         $('#finishDateTimePicker').datetimepicker({
+   //             format: "DD.MM.YYYY HH:mm",
+   //             useCurrent: false //Important! See issue #1075
+   //         });
+   //         $("#startDateTimePicker").on("dp.change", function (e) {
+   //             $('#finishDateTimePicker').data("DateTimePicker").minDate(e.date);
+   //         });
+   //         $("#finishDateTimePicker").on("dp.change", function (e) {
+   //             $('#startDateTimePicker').data("DateTimePicker").maxDate(e.date);
+			//});
 
-			CKEDITOR.replace('html');
+			//CKEDITOR.replace('html');
 
 	        $("#file").change(function() {
 		        var $this = $(this);
