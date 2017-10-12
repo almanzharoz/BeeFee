@@ -63,6 +63,7 @@ namespace BeeFee.ImageApp.Services
 		/// Add image for event
 		/// </summary>
 		/// <exception cref="AccessDeniedException"></exception>
+		/// <exception cref="KeyNotFoundException"></exception>
 		public async Task<ImageOperationResult> AddEventImage(Stream stream, string companyName, string eventName,
 			string fileName, string settingName, string key)
 		{
