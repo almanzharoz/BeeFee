@@ -259,3 +259,5 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/src/BeeFee/UI/BeeFee.ImagesWebApplication/images/public/companies/asd/company.jpg
+/src/BeeFee/UI/BeeFee.ImagesWebApplication/images

@@ -1,0 +1,28 @@
+@using BeeFee.WebApplication.Infrastructure
+@using SharpFuncExt
+@{
+    Layout = null;
+}
+@model BeeFee.WebApplication.Areas.Org.Models.CreateOrUpdateEventSettingFieldsModel
+<div class="create--stitle">Покупка билетов на [Название мероприятия]</div>
+<div class="create--field">
+    <input class="create--field-i" type="text" placeholder="Сопроводительный текст для регистрации" />
+</div>
+<div class="create--field">
+    <input class="create--field-i" type="text" placeholder="Сопроводительный текст для подтверждения регистрации" />
+</div>
+<div class="create--stitle is-alt">Необходимые поля для регистрации</div>
+<div class="create--checkers">
+    <label class="checkbox">
+        <input class="checkbox--input" type="checkbox" />
+        <div class="checkbox--label">Имя участника</div>
+    </label>
+    <label class="checkbox">
+        <input class="checkbox--input" type="checkbox" />
+        <div class="checkbox--label">Номер телефона</div>
+    </label>
+    <label class="checkbox">
+        <input class="checkbox--input" type="checkbox" />
+        <div class="checkbox--label">Электронная почта</div>
+    </label>
+</div>

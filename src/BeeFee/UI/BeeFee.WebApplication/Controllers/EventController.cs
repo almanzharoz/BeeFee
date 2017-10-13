@@ -45,15 +45,7 @@ namespace BeeFee.WebApplication.Controllers
             var @event = await Service.GetEventByUrl(cid, id);
             if (@event == null)
                 return NotFound();
-            var model = new EventPageModel
-            {
-                Event = @event,
-                Email = User.Claims.Where(c => c.Type.Equals(ClaimTypes.Email, StringComparison.Ordinal))
-                    .Select(c => c.Value).FirstOrDefault(),
-                Name = User.Identity.Name,
-                RegisterResult = r
-            };
-            return View(model);
+            return View(new EventPageModel(@event, User.Identity.Name, User.Claims.Where(c => c.Type.Equals(ClaimTypes.Email, StringComparison.Ordinal)).Select(c => c.Value).FirstOrDefault(), "", r));
         }
 
         [Route("/event/{cid}/{id}")]

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Exceptions;
@@ -17,7 +18,7 @@ using SharpFuncExt;
 
 namespace BeeFee.WebApplication.Areas.Org.Controllers
 {
-	[Area("Org")]
+    [Area("Org")]
     [Authorize(Roles = RoleNames.Organizer)]
     public class EventController : BaseController<EventService>
     {
@@ -36,19 +37,19 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             return View(Service.GetMyEvents(id));
         }
 
-		[HttpGet]
-		public IActionResult Add(string companyId)
-			=> View(new AddEventEditModel(
-				Service.GetCompany<CompanyProjection>(companyId)
-					.Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host)),
-				CategoryService.GetAllCategories<BaseCategoryProjection>())
-			{
-				StartDateTime = DateTime.Now,
-				FinishDateTime = DateTime.Now.AddDays(1)
-			});
+        [HttpGet]
+        public IActionResult Add(string companyId)
+            => View("Create", new CreateEventModel(
+                Service.GetCompany<CompanyProjection>(companyId)
+                    .Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host)),
+                CategoryService.GetAllCategories<BaseCategoryProjection>())
+            {
+                StartDateTime = DateTime.Now,
+                FinishDateTime = DateTime.Now.AddDays(1),
+            });
 
 		[HttpPost]
-		public async Task<IActionResult> Add(AddEventEditModel model)
+		public async Task<IActionResult> Add(CreateEventModel model)
 		{
 			if (ModelState.IsValid)
 			{
@@ -65,7 +66,8 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 							new EventDateTime(m.StartDateTime, m.FinishDateTime),
 							new Address(m.City, m.Address),
 							new[] {new TicketPrice("ticket", null, 0, 10)},
-							m.Html))
+							m.Html,
+						        model.File != null && model.File.Length > 0 ? model.File.FileName : null))
 					.Catch<EntityAccessException<Company>>((e, m) => $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})")
 					.Catch<ArgumentNullException>((e, m) => $"Не указан или не найден аргумент \"{e.ParamName}\"")
 					.Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
@@ -83,19 +85,19 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 			return View(model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
 		}
 
-		[HttpGet]
+        [HttpGet]
         public IActionResult Edit(string id, string companyId)
         {
             var @event = Service.GetEvent(id, companyId);
             if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
                 return NotFound();
-			_imagesService.GetAccessToFolder(@event.Parent.Url, Request.Host.Host);
+            _imagesService.GetAccessToFolder(@event.Parent.Url, Request.Host.Host);
 
-			return View(new EventEditModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>()));
+            return View(new UpdateEventModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>()));
         }
 
         [HttpPost]
-        public IActionResult Edit(EventEditModel model)
+        public IActionResult Edit(UpdateEventModel model)
         {
             if (ModelState.IsValid)
             {
@@ -120,8 +122,8 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             return View(model);
         }
 
-		public IActionResult Preview(string id, string companyId)
-			=> Service.GetPreviewEvent(id, companyId).If(IsAjax, PartialView, x => (IActionResult)View(x));
+        public IActionResult Preview(string id, string companyId)
+            => Service.GetPreviewEvent(id, companyId).If(IsAjax, PartialView, x => (IActionResult)View(x));
 
         public IActionResult Remove(string id, string companyId, int version)
         {
@@ -130,10 +132,39 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             return RedirectToAction("Index", new { id = companyId });
         }
 
-		public IActionResult ToModerate(string id, string companyId, int version)
-		{
-			Service.ToModerate(id, companyId, version);
-			return RedirectToActionPermanent("Index", new { id = companyId });
-		}
+        public IActionResult ToModerate(string id, string companyId, int version)
+        {
+            Service.ToModerate(id, companyId, version);
+            return RedirectToActionPermanent("Index", new { id = companyId });
+        }
+
+        [HttpPost]
+        public IActionResult LoadInfoStepCreateOrUpdateEvent(CreateOrUpdateEventInfoModel model, bool validate)
+        {
+            TryValidateModel(model);
+            model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>());
+            return View("_CreateOrUpdateEvent.Info", model);
+        }
+
+        [HttpPost]
+        public IActionResult LoadDescriptionStepCreateOrUpdateEvent(CreateOrUpdateEventDescriptionModel model)
+        {
+            TryValidateModel(model);
+            return View("_CreateOrUpdateEvent.Description", model);
+        }
+
+        [HttpPost]
+        public IActionResult LoadSettingFieldsStepCreateOrUpdateEvent(CreateOrUpdateEventSettingFieldsModel model)
+        {
+            TryValidateModel(model);
+            return View("_CreateOrUpdateEvent.SettingFields", model);
+        }
+
+        [HttpPost]
+        public IActionResult LoadPreviewStepCreateOrUpdateEvent(CreateOrUpdateEventPreviewModel model)
+        {
+            TryValidateModel(model);
+            return View("_CreateOrUpdateEvent.Preview", model);
+        }
     }
 }

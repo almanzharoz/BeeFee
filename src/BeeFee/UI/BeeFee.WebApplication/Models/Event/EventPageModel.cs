@@ -5,6 +5,19 @@ namespace BeeFee.WebApplication.Models.Event
 {
     public class EventPageModel
     {
+        public EventPageModel()
+        {
+        }
+
+        public EventPageModel(EventProjection @event, string name, string email, string phone, int? registerResult)
+        {
+            this.Event = @event;
+            this.Name = name;
+            this.Email = email;
+            this.Phone = phone;
+            this.RegisterResult = registerResult;
+        }
+
         public EventProjection Event { get; set; }
 
         [Required]

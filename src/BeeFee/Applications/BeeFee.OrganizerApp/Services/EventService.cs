@@ -36,7 +36,7 @@ namespace BeeFee.OrganizerApp.Services
 		/// <exception cref="AddEntityException"></exception>
 		// TODO: добавить проверку 
 		public void AddEvent(string companyId, string categoryId, string name, string label, string url, string email, 
-			EventDateTime dateTime, Address address, TicketPrice[] prices, string html)
+			EventDateTime dateTime, Address address, TicketPrice[] prices, string html, string cover)
 		{
 			// TODO: Проверять и вставлять одним запросом
 			url.IfNull(name, CommonHelper.UriTransliterate)
@@ -46,7 +46,7 @@ namespace BeeFee.OrganizerApp.Services
 				companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)),
 				GetById<BaseUserProjection>(User.Id).HasNotNullEntity("user"),
 				GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), name, label, url,
-				dateTime, address, prices, html, email);
+				dateTime, address, prices, html, email, cover);
 
 			Insert<NewEvent, CompanyJoinProjection>(newEvent, true).ThrowIfNot<AddEntityException<Event>>();
 

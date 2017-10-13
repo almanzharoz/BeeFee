@@ -20,9 +20,9 @@ namespace BeeFee.OrganizerApp.Services
 		{
 		}
 
-		public CompanyProjection AddCompany(string name, string url)
+		public CompanyProjection AddCompany(string name, string url, string logo)
 			=> url.IfNull(name, CommonHelper.UriTransliterate).IfNot(ExistsByUrl<CompanyProjection>,
-				x => InsertWithVersion<NewCompany, CompanyProjection>(new NewCompany(GetById<BaseUserProjection>(User.Id), name, x)), 
+				x => InsertWithVersion<NewCompany, CompanyProjection>(new NewCompany(GetById<BaseUserProjection>(User.Id), name, x, logo)), 
 				x => null);
 
 		public IReadOnlyCollection<KeyValuePair<CompanyProjection, int>> GetMyCompanies()

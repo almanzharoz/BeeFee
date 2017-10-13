@@ -1,0 +1,139 @@
+@using BeeFee.Model.Embed
+@using BeeFee.WebApplication.Areas.Org.Models
+@using BeeFee.WebApplication.Infrastructure
+@model BeeFee.WebApplication.Areas.Org.Models.CreateOrUpdateEventModel
+@{
+    ViewData["Title"] = "Создание нового события";
+}
+<form asp-action="Add" asp-controller="Event" method="post" class="form-horizontal" enctype="multipart/form-data" id="event-form">
+    <div class="validation" asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" asp-for="CompanyId" />
+    <div class="create">
+        @Html.Partial("_CreateOrUpdateEvent", Model)
+    </div>
+
+
+    @*<div class="container">
+
+            <div class="form-group">
+                <input class="form-control" asp-for="Name" placeholder="Название мероприятие" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input class="form-control" asp-for="Url" placeholder="Url" />
+                <span asp-validation-for="Url" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input class="form-control" asp-for="Label" placeholder="Подпись" />
+                <span asp-validation-for="Label" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                @Html.DropDownListFor(x => x.CategoryId, Model.Categories, null, new { @class = "form-control" })
+                <span asp-validation-for="CategoryId"></span>
+            </div>
+
+            <div class="form-group">
+                    @Html.DropDownListFor(x => x.Type, Html.GetEnumSelectList<EEventState>(), null, new {@class = "form-control"})
+                </div>
+
+            <div class="form-group">
+                <input class="form-control" asp-for="Email" placeholder="Email для обратной связи" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="text" class="form-control" asp-for="City" placeholder="City" />
+                <span asp-validation-for="City"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="text" class="form-control" asp-for="Address" placeholder="Address" />
+                <span asp-validation-for="Address"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StartDateTime"></label>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class='input-group date' id='startDateTimePicker'>
+                            <input type='text' class="form-control" asp-for="StartDateTime" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="FinishDateTime"></label>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class='input-group date' id='finishDateTimePicker'>
+                            <input type='text' class="form-control" asp-for="FinishDateTime" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input class="form-control" placeholder="Cover" type="file" name="file" id="file" />
+            </div>
+
+            <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Price" asp-for="Price" />
+                    <span asp-validation-for="Price"></span>
+                </div>
+
+            <div class="form-group">
+                <textarea class="form-control" rows="10" placeholder="HTML here" asp-for="Html" id="html"></textarea>
+            </div>
+
+            @Html.ValidationSummary()
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn" />
+            </div>
+        </div>*@
+</form>
+
+@section Scripts {
+    <script src="~/lib/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //$('[data-step="1"]').find('[data-step-nav="edit"]').click();
+            @*@if (ViewData.ModelState.ErrorCount>0) {
+                    <text>
+                $("[data-step='3']").removeClass('is-shown').addClass('is-saved');
+                $("[data-step='1']").removeClass('is-shown').addClass('is-saved');
+                $("[data-step='2']").removeClass('is-shown').addClass('is-saved');
+                $("[data-step='4']").removeClass('is-saved').addClass('is-shown');
+                </text>
+                }*@
+            //$('#startDateTimePicker').datetimepicker({
+            //    format: "DD.MM.YYYY HH:mm"
+            //});
+            //$('#finishDateTimePicker').datetimepicker({
+            //    format: "DD.MM.YYYY HH:mm",
+            //    useCurrent: false //Important! See issue #1075
+            //});
+            //$("#startDateTimePicker").on("dp.change",
+            //    function (e) {
+            //        $('#finishDateTimePicker').data("DateTimePicker").minDate(e.date);
+            //    });
+            //$("#finishDateTimePicker").on("dp.change",
+            //    function (e) {
+            //        $('#startDateTimePicker').data("DateTimePicker").maxDate(e.date);
+            //    });
+
+            //CKEDITOR.replace('html');
+
+        });
+        </script>
+}

@@ -23,7 +23,7 @@ body .container {
 	margin: 0 0 0 16px;
 }
 
-.header.in-admin .header--link i {
+.header .header--link i {
 	margin: 3px 0 0 8px;
 	color: rgba(0, 0, 0, 0.54);
 	display: inline-block;
@@ -33,12 +33,12 @@ body .container {
 }
 
 .page {
-	padding: 0 0 100px;
-	position: relative;
-	top: auto;
-	right: auto;
-	bottom: auto;
-	left: auto;
+    padding: 118px 0 100px;
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
 }
 
 .page--title {
@@ -434,4 +434,146 @@ body .container {
 
 .profile {
 	padding: 38px 0 0;
+}
+
+.e-list {
+    padding: 58px 0 0;
+}
+
+.e-item {
+    margin: 0 0 29px;
+}
+
+.e-item--head {
+    margin: 0 0 2px;
+}
+
+.e-item--title {
+    margin: 0 22px 0 0;
+    display: inline-block;
+    vertical-align: top;
+    font-size: 27px;
+    line-height: 30px;
+}
+
+.e-item--btn {
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.54);
+    margin: 0 18px 0 0;
+    text-align: center;
+    display: inline-block;
+    vertical-align: top;
+    width: 30px;
+    height: auto;
+}
+
+    .e-item--btn:last-child {
+        margin: 0;
+    }
+
+    .e-item--btn.is-edit:before {
+        content: '\e912';
+        font-family: 'icomoon' !important;
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 18px;
+        line-height: 30px;
+    }
+
+    .e-item--btn.is-lock:before {
+        content: '\e90c';
+        font-family: 'icomoon' !important;
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 21px;
+        line-height: 30px;
+    }
+
+    .e-item--btn.is-lock.is-active:before {
+        content: '\e90d';
+        font-family: 'icomoon' !important;
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 21px;
+        line-height: 30px;
+    }
+
+    .e-item--btn.is-view:before {
+        content: '\e90b';
+        font-family: 'icomoon' !important;
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 15px;
+        line-height: 30px;
+    }
+
+    .e-item--btn.is-view.is-active:before {
+        content: '\e914';
+        font-family: 'icomoon' !important;
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 19px;
+        line-height: 30px;
+    }
+
+    .e-item--btn.is-delete:before {
+        content: '\e911';
+        font-family: 'icomoon' !important;
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 18px;
+        line-height: 30px;
+    }
+
+    .e-item--btn:hover,
+    .e-item--btn.is-active {
+        color: rgba(219, 68, 50, 0.5);
+    }
+
+.e-item--text {
+    color: rgba(219, 68, 50, 0.5);
+    font-size: 13px;
+    line-height: 15px;
+    min-width: initial;
+    min-height: 15px;
+}
+
+.trumbowyg-button-pane button {
+    vertical-align: inherit !important;
 }

@@ -1,0 +1,11 @@
+@using BeeFee.WebApplication.Infrastructure
+@using SharpFuncExt
+@{
+    Layout = null;
+}
+
+@model BeeFee.WebApplication.Areas.Org.Models.CreateOrUpdateEventDescriptionModel
+<div class="create--editor">
+    <input type="hidden" asp-for="Html" />
+    <div class="wysiwyg-editor"></div>
+</div>
