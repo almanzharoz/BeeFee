@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BeeFee.Model.Embed;
+using BeeFee.Model.Exceptions;
 using BeeFee.Model.Helpers;
+using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
 using BeeFee.Model.Services;
 using BeeFee.OrganizerApp.Projections.Company;
@@ -51,24 +53,32 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 			if (ModelState.IsValid)
 			{
 				model.Url = model.Url.IfNull(model.Name, CommonHelper.UriTransliterate)
-					.ThrowIf("/".ContainsExt, x => new InvalidOperationException("url contains \"/\""));
+					.ThrowIf("/".ContainsExt, x => new InvalidOperationException("url contains \"/\"")); // <- не обращать внимания на эту строчку
 
-				if (Service.AddEvent(model.CompanyId,
-					model.CategoryId,
-					model.Name,
-					model.Label,
-					model.Url,
-					model.Email,
-					new EventDateTime(model.StartDateTime, model.FinishDateTime),
-					new Address(model.City, model.Address),
-					new[] {new TicketPrice("ticket", null, 0, 10)},
-					model.Html
-				))
+				var s = model.Try(m =>
+						Service.AddEvent(m.CompanyId,
+							m.CategoryId,
+							m.Name,
+							m.Label,
+							m.Url,
+							m.Email,
+							new EventDateTime(m.StartDateTime, m.FinishDateTime),
+							new Address(m.City, m.Address),
+							new[] {new TicketPrice("ticket", null, 0, 10)},
+							m.Html))
+					.Catch<EntityAccessException<Company>>((e, m) => $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})")
+					.Catch<ArgumentNullException>((e, m) => $"Не указан или не найден аргумент \"{e.ParamName}\"")
+					.Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
+					.Catch();
+
+				if (s == null) // ошибок нет
 				{
 					await _imagesService.RegisterEvent(Service.GetCompany<CompanyJoinProjection>(model.CompanyId).Url, model.Url, Request.Host.Host);
+					//if (model.File != null && model.File.Length > 0)
+					//	_imagesService.AddCompanyLogo(model.Url, model.File.OpenReadStream());
+
 					return RedirectToAction("Index", new {id = model.CompanyId});
 				}
-				ModelState.AddModelError("error", "Event dont save");
 			}
 			return View(model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
 		}

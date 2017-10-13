@@ -1,15 +1,13 @@
-@using BeeFee.Model.Embed
-@using BeeFee.WebApplication.Infrastructure
 @model BeeFee.WebApplication.Areas.Org.Models.AddEventEditModel
 @{
     ViewData["Title"] = "Add";
 }
 
-<h2>Add</h2>
-
 <form asp-action="Add" asp-controller="Event" method="post" class="form-horizontal">
 	<div class="validation" asp-validation-summary="ModelOnly"></div>
 	<input type="hidden" asp-for="CompanyId" />
+	@Html.ValidationSummary()
+
     <div class="container">
         
         <div class="form-group">
@@ -18,7 +16,7 @@
         </div>
 
 		<div class="form-group">
-		    <input class="form-control" asp-for="Url" placeholder="Url"/>
+			<input class="form-control" asp-for="Url" placeholder="Url" />
 		    <span asp-validation-for="Url" class="text-danger"></span>
 	    </div>
 
@@ -28,9 +26,10 @@
 		</div>
 
 		<div class="form-group">
-            @Html.DropDownListFor(x => x.CategoryId, Model.Categories, null, new {@class = "form-control"})
-	        <span asp-validation-for="CategoryId"></span>
-        </div>
+			<select asp-for="CategoryId" asp-items="Model.Categories" class="form-control"></select>
+			@*@Html.DropDownListFor(x => x.CategoryId, Model.Categories, null, new {@class = "form-control"})*@
+			<span asp-validation-for="CategoryId"></span>
+		</div>
 
         @*<div class="form-group">
             @Html.DropDownListFor(x => x.Type, Html.GetEnumSelectList<EEventState>(), null, new {@class = "form-control"})
@@ -88,8 +87,6 @@
             <textarea class="form-control" rows="10" placeholder="HTML here" asp-for="Html" id="html"></textarea>
         </div>
 		
-		@Html.ValidationSummary()
-
 		<div class="form-group">
             <input type="submit" value="Save" class="btn"/>
         </div>

@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using BeeFee.ModeratorApp;
+using BeeFee.WebApplication.Infrastructure.Middleware;
 
 namespace BeeFee.WebApplication
 {
@@ -90,7 +91,8 @@ namespace BeeFee.WebApplication
 			}
 			else
 			{
-				app.UseExceptionHandler("/Home/Error");
+				//app.UseExceptionHandler("/Home/Error");
+				app.UseMiddleware<ExceptionHandlerMiddleware>();
 			}
 
 			app.UseFileServer(new FileServerOptions()
