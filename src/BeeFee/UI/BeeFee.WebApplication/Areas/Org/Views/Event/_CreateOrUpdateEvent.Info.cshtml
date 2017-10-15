@@ -1,28 +1,31 @@
 @using BeeFee.WebApplication.Infrastructure
 @using SharpFuncExt
-@model BeeFee.WebApplication.Areas.Org.Models.CreateOrUpdateEventInfoModel
+@model BeeFee.WebApplication.Areas.Org.Models.CreateOrUpdateEventModel
 @{
     Layout = null;
 }
-@Html.ValidationSummary(true)
+<span asp-validation-for="Name" class="text-danger"></span>
 <div class="create--field is-big">
-    @Html.TextBoxFor(m => m.Name, new { @class = "create--field-i", placeholder = "Название события" })
+    @Html.TextBoxFor(m => m.Name, new {@class = "create--field-i", placeholder = "Название события"})
     @*<input class="create--field-i" type="text" placeholder="Название события"/>*@
 </div>
+<span asp-validation-for="Label" class="text-danger"></span>
 <div class="create--field">
-    @Html.TextBoxFor(m => m.Label, new { @class = "create--field-i", placeholder = "Краткое описание события" })
+    @Html.TextBoxFor(m => m.Label, new {@class = "create--field-i", placeholder = "Краткое описание события"})
     @*<input class="create--field-i" type="text" placeholder="Краткое описание события"/>*@
 </div>
+<span asp-validation-for="Url" class="text-danger"></span>
 <div class="create--field">
-    @Html.TextBoxFor(m => m.Url, new { @class = "create--field-i", placeholder = "Url события" })
+    @Html.TextBoxFor(m => m.Url, new {@class = "create--field-i", placeholder = "Url события"})
     @*<input class="create--field-i" type="text" placeholder="Краткое описание события"/>*@
 </div>
+<span asp-validation-for="Cover" class="text-danger"></span>
 <div class="create--file">
     @if (!String.IsNullOrEmpty(Model.Cover))
-            {
-        <img src="@Url.GetImageUrl(Model.CompanyUrl, Model.Url, Model.Cover, 368, 190)" />}
-    <input type="hidden" class="form-control" placeholder="Cover" asp-for="Cover" />
-    <input class="create--file-i" type="file" asp-for="File" />
+    {
+        <img src="@Url.GetImageUrl(Model.CompanyUrl, Model.Url, Model.Cover, 368, 190)"/>}
+    <input type="hidden" class="form-control" placeholder="Cover" asp-for="Cover"/>
+    <input class="create--file-i" type="file" asp-for="File"/>
     <div class="create--file-b">Загрузить изображение</div>
 </div>
 <div class="create--field with-icon is-small">
@@ -30,18 +33,20 @@
     <div class="create--field-di">
         <div class="create--field-dl">Начало</div>
         @*@Html.TextBoxFor(m => m.StartDateTime, new Dictionary<string, object>() { { "data-range", "start" } })*@
-        <input type="text" data-range="start" name="@Html.NameFor(m=>m.StartDateTime)" value="@Model.StartDateTime.ToString("u")" /><span class="is-s1">дд/мм/гггг</span><span class="is-s2">чч:мм</span>
+        <input type="text" data-range="start" name="@Html.NameFor(m=>m.StartDateTime)" value="@Model.StartDateTime.ToString("u")" /><span class="is-s1">дд/мм/гггг</span><span class="is-s2">чч:мм</span><span asp-validation-for="StartDateTime" class="text-danger"></span>
     </div>
     <div class="create--field-di">
         <div class="create--field-dl">Конец</div>
         @*@Html.TextBoxFor(m => m.FinishDateTime, new Dictionary<string, object>() { { "data-range", "end" } })*@
-        <input type="text" data-range="end" name="@Html.NameFor(m=>m.FinishDateTime)" value="@Model.FinishDateTime.ToString("u")" /><span class="is-s1">дд/мм/гггг</span><span class="is-s2">чч:мм</span>
+        <input type="text" data-range="end" name="@Html.NameFor(m=>m.FinishDateTime)" value="@Model.FinishDateTime.ToString("u")" /><span class="is-s1">дд/мм/гггг</span><span class="is-s2">чч:мм</span><span asp-validation-for="FinishDateTime" class="text-danger"></span>
     </div>
 </div>
+<span asp-validation-for="City" class="text-danger"></span>
 <div class="create--field with-icon is-small">
     <i class="icon-marker"></i>
     <input class="create--field-i" type="text" placeholder="Город" asp-for="City">
 </div>
+<span asp-validation-for="Address" class="text-danger"></span>
 <div class="create--field with-icon is-small">
     <i class="icon-marker"></i>
     <input class="create--field-i" type="text" placeholder="Адрес события" asp-for="Address">
@@ -49,6 +54,7 @@
             <div class="create--map-in"></div>
         </div>*@
 </div>
+<span asp-validation-for="CategoryId" class="text-danger"></span>
 <div class="create--field with-icon">
     <i class="icon-type"></i>
     <div class="select is-simple">
@@ -80,6 +86,7 @@
             <input class="create--field-i" type="text">
         </div>
     </div>*@
+<span asp-validation-for="Email" class="text-danger"></span>
 <div class="create--field with-icon is-small">
     <i class="icon-mail"></i>
     @Html.TextBoxFor(m => m.Email, new { @class = "create--field-i", placeholder = "Почта для обратной связи" })

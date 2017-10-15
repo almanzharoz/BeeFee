@@ -8,7 +8,7 @@
     <div class="validation" asp-validation-summary="ModelOnly"></div>
     <input type="hidden" asp-for="CompanyId" />
     <input type="hidden" asp-for="Version" />
-    <a asp-action="ToModerate" style="float: right;" class="btn-blue" asp-route-companyId="@Model.CompanyId" asp-route-id="@Model.Id" asp-route-version="@Model.Version">Опубликовать</a>
+    <a asp-action="ToModerate" style="float: right;margin-top:-35px" class="btn-blue" asp-route-companyId="@Model.CompanyId" asp-route-id="@Model.Id" asp-route-version="@Model.Version">Опубликовать</a>
     <div class="create">
         @Html.Partial("_CreateOrUpdateEvent", Model)
 
@@ -31,32 +31,18 @@
 </form>
 
 @section Scripts{
-    @*<script src="~/lib/ckeditor/ckeditor.js"></script>*@
+
     <script type="text/javascript">
         $(function () {
-   //         $('#startDateTimePicker').datetimepicker({
-   //             format: "DD.MM.YYYY HH:mm"
-   //         });
-   //         $('#finishDateTimePicker').datetimepicker({
-   //             format: "DD.MM.YYYY HH:mm",
-   //             useCurrent: false //Important! See issue #1075
-   //         });
-   //         $("#startDateTimePicker").on("dp.change", function (e) {
-   //             $('#finishDateTimePicker').data("DateTimePicker").minDate(e.date);
-   //         });
-   //         $("#finishDateTimePicker").on("dp.change", function (e) {
-   //             $('#startDateTimePicker').data("DateTimePicker").maxDate(e.date);
-			//});
+            initCreateOrUpdateEventPage();
 
-			//CKEDITOR.replace('html');
-
-	        $("#file").change(function() {
+	        $("#File").change(function() {
 		        var $this = $(this);
 		        var fd = new FormData;
 		        fd.append('file', $this.prop('files')[0]);
 				fd.append('setting', 'event');
 				fd.append('companyName', '@(Model.CompanyUrl)');
-				fd.append('eventName', '@(Model.Url)');
+                fd.append('eventName', '@(Model.Url)');
 		        $.ajax({
 					url: '@(BeeFeeWebAppSettings.Instance.ImagesUrl)/api/home',
 			        contentType: false,
@@ -65,13 +51,13 @@
 			        method: "POST",
 			        data: fd,
 					success: function (data) {
-						$this.next("span").remove();
+                        $('#errorUploadImage').remove();
 						if (data.error != null) {
-							$this.after("<span class=error>"+data.error+"</span>");
+                            $this.parent().before("<span id='#errorUploadImage' class=error>"+data.error+"</span>");
 							return;
-						}
-						$this.next("img").remove();
-				        $this.after("<img src='@(BeeFeeWebAppSettings.Instance.ImagesUrl)/min/@(Model.CompanyUrl)/@(Model.Url)/368x190/" + data.path + "' />");
+                        }
+                        $this.prev().prev().remove();
+                        $this.parent().prepend("<img src='@(BeeFeeWebAppSettings.Instance.ImagesUrl)/min/@(Model.CompanyUrl)/@(Model.Url)/368x190/" + data.path + "' />");
 				        $("#Cover").val(data.path);
 			        }
 		        });

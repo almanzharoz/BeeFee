@@ -48,42 +48,44 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
                 FinishDateTime = DateTime.Now.AddDays(1),
             });
 
-		[HttpPost]
-		public async Task<IActionResult> Add(CreateEventModel model)
-		{
-			if (ModelState.IsValid)
-			{
-				model.Url = model.Url.IfNull(model.Name, CommonHelper.UriTransliterate)
-					.ThrowIf("/".ContainsExt, x => new InvalidOperationException("url contains \"/\"")); // <- не обращать внимания на эту строчку
+        [HttpPost]
+        public async Task<IActionResult> Add(CreateEventModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                model.Url = model.Url.IfNull(model.Name, CommonHelper.UriTransliterate)
+                    .ThrowIf("/".ContainsExt, x => new InvalidOperationException("url contains \"/\"")); // <- не обращать внимания на эту строчку
 
-				var s = model.Try(m =>
-						Service.AddEvent(m.CompanyId,
-							m.CategoryId,
-							m.Name,
-							m.Label,
-							m.Url,
-							m.Email,
-							new EventDateTime(m.StartDateTime, m.FinishDateTime),
-							new Address(m.City, m.Address),
-							new[] {new TicketPrice("ticket", null, 0, 10)},
-							m.Html,
-						        model.File != null && model.File.Length > 0 ? model.File.FileName : null))
-					.Catch<EntityAccessException<Company>>((e, m) => $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})")
-					.Catch<ArgumentNullException>((e, m) => $"Не указан или не найден аргумент \"{e.ParamName}\"")
-					.Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
-					.Catch();
+                var s = model.Try(m =>
+                        Service.AddEvent(m.CompanyId,
+                            m.CategoryId,
+                            m.Name,
+                            m.Label,
+                            m.Url,
+                            m.Email,
+                            new EventDateTime(m.StartDateTime, m.FinishDateTime),
+                            new Address(m.City, m.Address),
+                            new[] { new TicketPrice("ticket", null, 0, 10) },
+                            m.Html,
+                                model.File != null && model.File.Length > 0 ? Path.GetFileName(model.File.FileName) : null))
+                    .Catch<EntityAccessException<Company>>((e, m) => $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})")
+                    .Catch<ArgumentNullException>((e, m) => $"Не указан или не найден аргумент \"{e.ParamName}\"")
+                    .Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
+                    .Catch();
 
-				if (s == null) // ошибок нет
-				{
-					await _imagesService.RegisterEvent(Service.GetCompany<CompanyJoinProjection>(model.CompanyId).Url, model.Url, Request.Host.Host);
-					//if (model.File != null && model.File.Length > 0)
-					//	_imagesService.AddCompanyLogo(model.Url, model.File.OpenReadStream());
-
-					return RedirectToAction("Index", new {id = model.CompanyId});
-				}
-			}
-			return View(model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
-		}
+                if (s == null) // ошибок нет
+                {
+                    var company = Service.GetCompany<CompanyJoinProjection>(model.CompanyId);
+                    await _imagesService.RegisterEvent(Service.GetCompany<CompanyJoinProjection>(model.CompanyId).Url, model.Url, Request.Host.Host);
+                    //if (model.File != null && model.File.Length > 0)
+                    //	_imagesService.AddCompanyLogo(model.Url, model.File.OpenReadStream());
+                    if (model.File != null && model.File.Length > 0)
+                        await _imagesService.AddEventCover(company.Url, model.Url, Path.GetFileName(model.File.FileName), model.File.OpenReadStream());
+                    return RedirectToAction("Index", new { id = model.CompanyId });
+                }
+            }
+            return View("Create", model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
+        }
 
         [HttpGet]
         public IActionResult Edit(string id, string companyId)
@@ -136,35 +138,6 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         {
             Service.ToModerate(id, companyId, version);
             return RedirectToActionPermanent("Index", new { id = companyId });
-        }
-
-        [HttpPost]
-        public IActionResult LoadInfoStepCreateOrUpdateEvent(CreateOrUpdateEventInfoModel model, bool validate)
-        {
-            TryValidateModel(model);
-            model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>());
-            return View("_CreateOrUpdateEvent.Info", model);
-        }
-
-        [HttpPost]
-        public IActionResult LoadDescriptionStepCreateOrUpdateEvent(CreateOrUpdateEventDescriptionModel model)
-        {
-            TryValidateModel(model);
-            return View("_CreateOrUpdateEvent.Description", model);
-        }
-
-        [HttpPost]
-        public IActionResult LoadSettingFieldsStepCreateOrUpdateEvent(CreateOrUpdateEventSettingFieldsModel model)
-        {
-            TryValidateModel(model);
-            return View("_CreateOrUpdateEvent.SettingFields", model);
-        }
-
-        [HttpPost]
-        public IActionResult LoadPreviewStepCreateOrUpdateEvent(CreateOrUpdateEventPreviewModel model)
-        {
-            TryValidateModel(model);
-            return View("_CreateOrUpdateEvent.Preview", model);
         }
     }
 }

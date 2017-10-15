@@ -36,6 +36,90 @@ function initEventPage(nameselector, phoneselector, emailselector) {
     $(nameselector).trigger("change");
     $(emailselector).trigger("change");
 }
+
+function initCreateOrUpdateEventPage() {
+    $('[data-step-nav="next"]').on('click', function (e) {
+        e.preventDefault();
+        var current = $('.create--step.is-shown');
+
+        current.removeClass('is-shown').addClass('is-saved');
+        current.next().removeClass('is-saved').addClass('is-shown');
+    });
+
+    $('[data-step-nav="edit"]').on('click', function (e) {
+        e.preventDefault();
+        var current = $(this).closest('.create--step');
+
+        $('.create--step.is-shown').removeClass('is-shown');
+        current.removeClass('is-saved').addClass('is-shown');
+    });
+
+    if ($('.wysiwyg-editor').length > 0) {
+        $('.wysiwyg-editor').each(function () {
+            var $inpHtml = $(this).prev();
+            $(this).trumbowyg({
+                lang: 'ru'
+            }).on('tbwblur', function () {
+                $inpHtml.val($(this).trumbowyg("html"));
+            });
+            $(this).trumbowyg('html', $inpHtml.val());
+        });
+    }
+
+    $('[data-range="start"]').datetimepicker({
+        onChangeDateTime: function (dp, $input) {
+            showDate($input.closest('.create--field-di'), dp);
+        }
+    });
+
+    $('[data-range="end"]').datetimepicker({
+        onChangeDateTime: function (dp, $input) {
+            showDate($input.closest('.create--field-di'), dp);
+        }
+    });
+
+    if ($('[data-range="start"]').length > 0 && $('[data-range="start"]').val().length > 0)
+        showDate($('[data-range="start"]').closest('.create--field-di'), $('[data-range="start"]').data("xdsoft_datetimepicker").getValue());
+
+    if ($('[data-range="end"]').length > 0 && $('[data-range="end"]').val().length > 0)
+        showDate($('[data-range="end"]').closest('.create--field-di'), $('[data-range="end"]').data("xdsoft_datetimepicker").getValue());
+
+    function showDate(el, d) {
+        var date = '';
+        var time = '';
+
+        date += d.getDate() + '/';
+        date += (d.getMonth() + 1) + '/';
+        date += d.getFullYear();
+
+        time += (d.getHours() <= 9) ? ('0' + d.getHours()) : (d.getHours()) + ':';
+        time += (d.getMinutes() <= 9) ? ('0' + d.getMinutes()) : (d.getMinutes());
+
+        el.find('span.is-s1').html(date);
+        el.find('span.is-s2').html(time);
+    }
+
+    var maps = $('.create--map-in');
+
+    var process = function (maps) {
+        if (typeof ymaps != 'undefined') {
+            ymaps.ready(function () {
+                maps.each(function () {
+                    var map = new ymaps.Map(this, {
+                        center: [55.751244, 37.618423],
+                        zoom: 10
+                    });
+                });
+            });
+        }
+    }
+
+    if (maps.length > 0)
+        $.getScript('https://api-maps.yandex.ru/2.1/?lang=ru_RU', function () {
+            process(maps);
+        });
+}
+
 function getDoc(frame) {
     var doc = null;
 
@@ -400,110 +484,6 @@ $(document).ready(function () {
     });
 
     // ----------
-    var showedSection = null;
-    var fakeForm = null;
-    var submitEventHandler = function (e) {
-
-        var formObj = $(this);
-        var formURL = formObj.attr("action");
-
-        if (window.FormData !== undefined)  // for HTML5 browsers
-        {
-
-            var formData = new FormData(this);
-            $.ajax({
-                url: formURL,
-                type: 'POST',
-                data: formData,
-                mimeType: "multipart/form-data",
-                contentType: false,
-                cache: false,
-                processData: false,
-                success: function (data, textStatus, jqXHR) {
-                    showedSection.find(".create-container").html(data);
-                    fakeForm.remove();
-                    showedSection.removeClass('is-saved').addClass('is-shown');
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-
-                }
-            });
-            e.preventDefault();
-            //e.unbind();
-        }
-        else  //for olden browsers
-        {
-            //generate a random id
-            var iframeId = 'unique' + (new Date().getTime());
-
-            //create an empty iframe
-            var iframe = $('<iframe src="javascript:false;" name="' + iframeId + '" />');
-
-            //hide it
-            iframe.hide();
-
-            //set form target to iframe
-            formObj.attr('target', iframeId);
-
-            //Add iframe to body
-            iframe.appendTo('body');
-            iframe.load(function (e) {
-                var doc = getDoc(iframe[0]);
-                var docRoot = doc.body ? doc.body : doc.documentElement;
-                var data = docRoot.innerHTML;
-                //data is returned from server.
-                showedSection.find(".create-container").html(data);
-                fakeForm.remove();
-                setTimeout(function () {
-                    iframe.remove();
-                    showedSection.removeClass('is-saved').addClass('is-shown');
-                },
-                    1);
-
-            });
-
-        }
-    }
-    var loadEventSection = function (url) {
-        fakeForm = $("#event-form").clone();
-        fakeForm.hide();
-        fakeForm.attr("action", url);
-        fakeForm.appendTo('body');
-        fakeForm.submit(submitEventHandler);
-        fakeForm.submit();
-    }
-
-    $('[data-step-nav="next"]').on('click', function (e) {
-        e.preventDefault();
-        var current = $('.create--step.is-shown');
-
-        current.removeClass('is-shown').addClass('is-saved');
-        //showedSection = current.next();
-        //loadEventSection(showedSection.data("url"));
-        current.next().removeClass('is-saved').addClass('is-shown');
-    });
-
-    $('[data-step-nav="edit"]').on('click', function (e) {
-        e.preventDefault();
-        var current = $(this).closest('.create--step');
-
-        $('.create--step.is-shown').removeClass('is-shown');
-        //showedSection = current;
-        //loadEventSection(showedSection.data("url"));
-        current.removeClass('is-saved').addClass('is-shown');
-    });
-
-    if ($('.wysiwyg-editor').length > 0) {
-        $('.wysiwyg-editor').each(function () {
-            var $inpHtml = $(this).prev();
-            $(this).trumbowyg({
-                lang: 'ru'
-            }).on('tbwblur', function () {
-                $inpHtml.val($(this).trumbowyg("html"));
-            });
-            $(this).trumbowyg('html', $inpHtml.val());
-        });
-    }
 
     $('.create--file-i').on('change', function () {
         $(this).parent().find('.create--file-b').html($(this).val().split('\\').pop());
@@ -511,65 +491,12 @@ $(document).ready(function () {
 
     $.datetimepicker.setLocale('ru');
 
-    function showDate(el, d) {
-        var date = '';
-        var time = '';
-
-        date += d.getDate() + '/';
-        date += (d.getMonth() + 1) + '/';
-        date += d.getFullYear();
-
-        time += (d.getHours() <= 9) ? ('0' + d.getHours()) : (d.getHours()) + ':';
-        time += (d.getMinutes() <= 9) ? ('0' + d.getMinutes()) : (d.getMinutes());
-
-        el.find('span.is-s1').html(date);
-        el.find('span.is-s2').html(time);
-    }
-
-    $('[data-range="start"]').datetimepicker({
-        onChangeDateTime: function (dp, $input) {
-            showDate($input.closest('.create--field-di'), dp);
-        }
-    });
-
-    $('[data-range="end"]').datetimepicker({
-        onChangeDateTime: function (dp, $input) {
-            showDate($input.closest('.create--field-di'), dp);
-        }
-    });
-
-    if ($('[data-range="start"]').length > 0 && $('[data-range="start"]').val().length > 0)
-        showDate($('[data-range="start"]').closest('.create--field-di'), $('[data-range="start"]').data("xdsoft_datetimepicker").getValue());
-
-    if ($('[data-range="end"]').length > 0 && $('[data-range="end"]').val().length > 0)
-        showDate($('[data-range="end"]').closest('.create--field-di'), $('[data-range="end"]').data("xdsoft_datetimepicker").getValue());
-
     $('.js-date').datetimepicker({
         timepicker: false,
         format: 'd.m.Y'
     });
 
     // --------
-
-    var maps = $('.create--map-in');
-
-    var process = function (maps) {
-        if (typeof ymaps != 'undefined') {
-            ymaps.ready(function () {
-                maps.each(function () {
-                    var map = new ymaps.Map(this, {
-                        center: [55.751244, 37.618423],
-                        zoom: 10
-                    });
-                });
-            });
-        }
-    }
-
-    if (maps.length > 0)
-        $.getScript('https://api-maps.yandex.ru/2.1/?lang=ru_RU', function () {
-            process(maps);
-        });
 
     $('[data-checkboxes="total"]').on('change', function () {
         $(this).closest('.input-field--c, .vertical-field--c').find('input').prop('checked', $(this).prop('checked'));

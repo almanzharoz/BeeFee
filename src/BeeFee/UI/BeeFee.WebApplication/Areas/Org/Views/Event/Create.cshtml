@@ -104,36 +104,10 @@
 </form>
 
 @section Scripts {
-    <script src="~/lib/ckeditor/ckeditor.js"></script>
+
     <script type="text/javascript">
         $(function () {
-            //$('[data-step="1"]').find('[data-step-nav="edit"]').click();
-            @*@if (ViewData.ModelState.ErrorCount>0) {
-                    <text>
-                $("[data-step='3']").removeClass('is-shown').addClass('is-saved');
-                $("[data-step='1']").removeClass('is-shown').addClass('is-saved');
-                $("[data-step='2']").removeClass('is-shown').addClass('is-saved');
-                $("[data-step='4']").removeClass('is-saved').addClass('is-shown');
-                </text>
-                }*@
-            //$('#startDateTimePicker').datetimepicker({
-            //    format: "DD.MM.YYYY HH:mm"
-            //});
-            //$('#finishDateTimePicker').datetimepicker({
-            //    format: "DD.MM.YYYY HH:mm",
-            //    useCurrent: false //Important! See issue #1075
-            //});
-            //$("#startDateTimePicker").on("dp.change",
-            //    function (e) {
-            //        $('#finishDateTimePicker').data("DateTimePicker").minDate(e.date);
-            //    });
-            //$("#finishDateTimePicker").on("dp.change",
-            //    function (e) {
-            //        $('#startDateTimePicker').data("DateTimePicker").maxDate(e.date);
-            //    });
-
-            //CKEDITOR.replace('html');
-
+            initCreateOrUpdateEventPage();
         });
         </script>
 }

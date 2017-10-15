@@ -3,27 +3,27 @@
 @using SharpFuncExt
 @model BeeFee.WebApplication.Areas.Org.Models.CreateOrUpdateEventModel
 @Html.ValidationSummary(true)
-<div class="create--step is-shown" data-step="1" data-url="@Url.Action("LoadInfoStepCreateOrUpdateEvent")">
+<div class="create--step is-shown" data-step="1">
     <div class="create--head">
         <div class="create--number">1 / 4</div>
         <div class="create--title">Основная информация</div><a class="create--edit" href="#" data-step-nav="edit">редактировать</a>
     </div>
     <div class="create--body">
         <div class="create-container">
-            @Html.Partial("_CreateOrUpdateEvent.Info", new CreateOrUpdateEventInfoModel(Model))
+            @Html.Partial("_CreateOrUpdateEvent.Info", Model)
         </div>
         <div class="create--btn">
             <a class="btn-blue" href="#" data-step-nav="next">Сохранить и перейти к описанию</a>
         </div>
     </div>
 </div>
-<div class="create--step" data-step="2" data-url="@Url.Action("LoadDescriptionStepCreateOrUpdateEvent")">
+<div class="create--step" data-step="2">
     <div class="create--head">
         <div class="create--number">2 / 4</div>
         <div class="create--title">Подробное описание</div><a class="create--edit" href="#" data-step-nav="edit">редактировать</a><a class="create--skip" href="#" data-step-nav="next">пропустить описание</a>
     </div>
     <div class="create--body">
-        <div class="create-container">@Html.Partial("_CreateOrUpdateEvent.Description", new CreateOrUpdateEventDescriptionModel(Model))</div>
+        <div class="create-container">@Html.Partial("_CreateOrUpdateEvent.Description", Model)</div>
         <div class="create--btn">
             <a class="btn-blue" href="#" data-step-nav="next">Сохранить и перейти к настройке регистрации</a>
         </div>
@@ -39,13 +39,13 @@
             <div class="create--btn"><a class="btn-blue" href="#" data-step-nav="next">Сохранить и перейти к предпросмотру</a></div>
         </div>
     </div>*@
-<div class="create--step" data-step="4" data-url="@Url.Action("LoadPreviewStepCreateOrUpdateEvent")">
+<div class="create--step" data-step="4">
     <div class="create--head">
         <div class="create--number">3 / 4</div>
         <div class="create--title">Предпросмотр</div>
     </div>
     <div class="create--body">
-        <div class="create-container"></div>
+        <div class="create-container">@Html.Partial("_CreateOrUpdateEvent.Preview", Model)</div>
         <div class="create--btn">
             <input type="submit" value="Сохранить событие" class="btn-blue" />@*<a class="btn-blue" href="#">Сохранить и опубликовать событие</a>*@
         </div>
