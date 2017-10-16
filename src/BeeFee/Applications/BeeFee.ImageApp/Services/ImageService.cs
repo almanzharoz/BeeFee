@@ -169,9 +169,10 @@ namespace BeeFee.ImageApp.Services
 					return true;
 				}
 			}
-			catch
+			catch(Exception e)
 			{
 				//TODO: Логирование
+				Console.WriteLine(e);
 			}
 			return false;
 		}

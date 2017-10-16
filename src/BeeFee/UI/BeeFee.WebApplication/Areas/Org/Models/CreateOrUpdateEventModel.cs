@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
+using BeeFee.Model.Helpers;
+using BeeFee.Model.Interfaces;
+using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
-using Microsoft.AspNetCore.Http;
+using BeeFee.OrganizerApp.Projections.Company;
+using Core.ElasticSearch.Domain;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BeeFee.WebApplication.Areas.Org.Models
@@ -50,8 +53,6 @@ namespace BeeFee.WebApplication.Areas.Org.Models
         //[Required(ErrorMessage = "Cover is required")]
         public string Cover { get; set; }
 
-        public IFormFile File { get; set; }
-
         public string CompanyUrl { get; set; }
 
         //[DataType(DataType.Currency)]
@@ -59,10 +60,26 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 
         public IList<SelectListItem> Categories { get; private set; }
 
-        public CreateOrUpdateEventModel Init(IReadOnlyCollection<BaseCategoryProjection> categories)
+		public int Step { get; set; }
+
+		public IEventPageProjection Preview { get; private set; }
+
+		public CreateOrUpdateEventModel Init<T>(T company, IReadOnlyCollection<BaseCategoryProjection> categories) where T : IProjection<Company>, IWithUrl
         {
-            Categories = categories.Select(x => new SelectListItem() {Text = x.Name, Value = x.Id}).ToList();
+            Categories = categories.Select(x => new SelectListItem {Text = x.Name, Value = x.Id, Selected = x.Id == CategoryId}).ToList();
+			CompanyId = company.Id;
+			CompanyUrl = company.Url;
             return this;
         }
+
+		public void SetPreviewWithStep(IEventPageProjection @event)
+		{
+			Step = 4;
+			Preview = @event.HasNotNullEntity("Event");
+		}
+		public void SetPreviewWithoutStep(IEventPageProjection @event)
+		{
+			Preview = @event.HasNotNullEntity("Event");
+		}
     }
 }

@@ -8,6 +8,7 @@ using BeeFee.Model;
 using BeeFee.Model.Jobs.Data;
 using Microsoft.Extensions.Options;
 using BuilderExtensions = BeeFee.JobsApp.BuilderExtensions;
+using System.Threading;
 
 namespace BeeFee.ShedulerApplication
 {
@@ -36,8 +37,15 @@ namespace BeeFee.ShedulerApplication
 			serviceProvider
 				.UseBeefeeModel(BuilderExtensions.UseBeefeeJobsApp);
 
-			var service = serviceProvider.GetService<TicketService>();
-			service.CreateTicket(new CreateTicket("My Name", "Tomorow", "ticket")).Wait();
+			var ticketService = serviceProvider.GetService<TicketService>();
+			var mailService = serviceProvider.GetService<MailService>();
+			ticketService.CreateTicket(new CreateTicket("Русское слово", "Tomorow", "ticket", "sdg@sdgfsd.dg", "sdghjksjdhg")).Wait();
+			while (true)
+			{
+				ticketService.CreateNextTicket().Wait();
+				mailService.SendNextMail().Wait();
+				Thread.Sleep(10000);
+			}
 			//Console.WriteLine(service.CreateNextTicket());
 		}
 	}

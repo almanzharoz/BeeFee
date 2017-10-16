@@ -1,29 +1,34 @@
 ﻿@using BeeFee.Model.Embed
 @model BeeFee.WebApplication.Models.Account.ProfileEditModel
-@if (User.IsInRole(RoleNames.Admin))
-{
-	<li><a asp-area="Admin" asp-controller="Category" asp-action="Index">Categories</a></li>
-}
-@if (User.IsInRole(RoleNames.Organizer))
-{
-	<li><a asp-area="Org" asp-controller="Company" asp-action="Index">My Companies</a></li>
-}
-@if (User.IsInRole(RoleNames.EventModerator))
-{
-	<li><a asp-area="Moderator" asp-controller="Event" asp-action="Index">Moderator</a></li>
-}
 
-<form method="post" class="form-horizontal">
-	<div class="validation" asp-validation-summary="ModelOnly"></div>
-	<div class="container">
+<div class="container">
+	<div>Доступные Вам разделы:</div>
+	<ul>
+		@if (User.IsInRole(RoleNames.Admin))
+		{
+			<li><a asp-area="Admin" asp-controller="Category" asp-action="Index">Категории</a></li>
+		}
+		@if (User.IsInRole(RoleNames.Organizer))
+		{
+			<li><a asp-area="Org" asp-controller="Company" asp-action="Index">Мои компании и события</a></li>
+		}
+		@if (User.IsInRole(RoleNames.EventModerator))
+		{
+			<li><a asp-area="Moderator" asp-controller="Event" asp-action="Index">Модерация</a></li>
+		}
+	</ul>
+	@*<form method="post" class="form-horizontal">
+		<div class="validation" asp-validation-summary="ModelOnly"></div>
+		<div class="container">
 
-		<div class="form-group">
-			<input class="form-control" asp-for="Name" placeholder="Название компании" />
-			<span asp-validation-for="Name" class="text-danger"></span>
+			<div class="form-group">
+				<input class="form-control" asp-for="Name" placeholder="Название компании" />
+				<span asp-validation-for="Name" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<input type="submit" value="Save" class="btn" />
+			</div>
 		</div>
-
-		<div class="form-group">
-			<input type="submit" value="Save" class="btn" />
-		</div>
-	</div>
-</form>
+	</form>*@
+</div>

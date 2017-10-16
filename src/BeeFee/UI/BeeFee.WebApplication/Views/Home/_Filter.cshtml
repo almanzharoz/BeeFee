@@ -2,7 +2,7 @@
 
 <div class="filter" data-fixed-wrap="filter">
     <div class="container">
-        <a class="filter--head" href="#" data-toggle="filter">Все события в городе Екатеринбург в ближайшее время</a>
+        <a class="filter--head" href="#" data-toggle="filter">Все события @(!String.IsNullOrWhiteSpace(Model.City) ? "в городе " +Model.City : null) в ближайшее время</a>
     </div>
     <div class="filter--body">
         <div class="container">
@@ -34,9 +34,16 @@
                                         @Html.HiddenFor(x => x.City, new { @class = "select_hidden" })
                                         @*<input class="select_hidden" id="selectCity1" type="hidden" value="@(Model.Cities.FirstOrDefault(x => x.Selected)?.Text)"/>*@
                                         <div class="select_in">
-                                            <div class="select_title">
-                                                <span class="select_placeholder">Выберите город</span>
-                                            </div>
+											<div class="select_title">
+												@if (!String.IsNullOrWhiteSpace(Model.City))
+												{
+													@Model.City
+												}
+												else
+												{
+													<span class="select_placeholder">Выберите город</span>
+												}
+											</div>
                                         </div>
                                         <ul class="select_list">
                                             @{

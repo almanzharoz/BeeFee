@@ -50,6 +50,14 @@ namespace BeeFee.OrganizerApp.Projections.Event
 			return this;
 		}
 
+		internal EventProjection Close()
+		{
+			if (State != EEventState.Open)
+				throw new System.Exception("Dont close event");
+			State = EEventState.Close;
+			return this;
+		}
+
 		public EventProjection(string id, CompanyJoinProjection parent, int version) : base(id, parent, version)
 		{
 		}

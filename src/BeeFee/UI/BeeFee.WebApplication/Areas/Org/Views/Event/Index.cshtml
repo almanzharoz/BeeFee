@@ -22,7 +22,7 @@
             case EEventState.Cancel:
                 return "события отменено";
             case EEventState.Open:
-                return /*!@event.IsPublish?"вы закрыли регистрацию":*/"";
+                return "опубликовано";
 
         }
         return "";
@@ -35,7 +35,23 @@
         {
             <div class="e-item">
                 <div class="e-item--head">
-                    <div class="e-item--title">@e.Name</div><a asp-action="Edit" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" class="e-item--btn is-edit"></a><a class="e-item--btn is-lock" href="#"></a><a asp-action="Preview" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-view"></a><a asp-action="Remove" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-delete"></a>
+					<div class="e-item--title">@e.Name</div>
+					@if (e.State == EEventState.Open)
+					{
+						<a asp-action="Preview" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-view"></a>
+						<a class="e-item--btn is-lock" asp-action="Close" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" onclick="return confirm('Закрыть регистрацию?')"></a>
+					}
+					else if (e.State == EEventState.Close)
+					{
+
+
+					}
+					else
+					{
+						<a asp-action="Edit" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" class="e-item--btn is-edit"></a>
+						<a asp-action="Preview" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-view"></a>
+						<a asp-action="Remove" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-delete" onclick="return confirm('Удалить мероприятие?')"></a>
+					}
                 </div>
                 <div class="e-item--text">@GetDescription(e)</div>
             </div>
@@ -100,4 +116,4 @@ else
     </div>
 }
 <br /><br />
-<a asp-action="Add" asp-route-companyId="@ViewBag.CompanyId">Add</a>
+<a asp-action="Add" asp-route-companyId="@ViewBag.CompanyId">Добавить новое событие</a>

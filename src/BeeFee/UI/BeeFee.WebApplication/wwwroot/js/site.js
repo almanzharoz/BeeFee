@@ -19,9 +19,10 @@
             size,
             $(filter.maxpriceselector).val()).done(function (result) {
                 allLoaded = result.allLoaded;
-                if (result.html.length > 0) {
-                    $(listcontainerselector).append(result.html);
-                }
+			if (result.html.length > 0) {
+				$(listcontainerselector).append(result.html);
+			} else
+				$(listcontainerselector).append("Событий не найдено");
                 page++;
             }).fail(function () { }).always(function () { loading = false; });
     };

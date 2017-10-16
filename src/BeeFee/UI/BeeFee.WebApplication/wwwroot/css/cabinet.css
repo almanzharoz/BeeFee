@@ -110,7 +110,8 @@ body .container {
 .create--edit {
 	color: #4DAAF6;
 	text-decoration: none;
-	display: none;
+	display: block;
+	/*display: none;*/
 	position: absolute;
 	top: 46px;
 	right: 0;
@@ -305,6 +306,7 @@ body .container {
 
 .create--file {
 	margin: 0 0 60px;
+	width: 300px;
 	cursor: pointer;
 	overflow: hidden;
 	position: relative;
@@ -426,6 +428,10 @@ body .container {
 
 .create--step.is-shown .create--body {
 	display: block;
+}
+
+.create--step.is-shown .create--edit {
+	display: none;
 }
 
 .create--step.is-saved .create--edit {

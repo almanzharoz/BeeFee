@@ -1,20 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using SharpFuncExt;
 
 namespace Sharp7Func
 {
-    public class CatchCollection<TArg, TResult>
+	public abstract class BaseCatchCollection<TArg>
 	{
-		private readonly string _type;
-		private readonly TArg _arg;
-		private readonly Func<TArg, TResult> _func;
+		protected readonly string _type;
+		protected readonly TArg _arg;
 		private readonly Dictionary<Type, IExceptionHandler<TArg>> _handlers = new Dictionary<Type, IExceptionHandler<TArg>>();
 
-		internal CatchCollection(string type, TArg arg, Func<TArg, TResult> func)
+		protected BaseCatchCollection(string type, TArg arg)
 		{
 			_type = type;
 			_arg = arg;
+		}
+
+		protected string DefaultHandler<T>(T exception, TArg arg) where T : Exception
+			=> exception.Message;
+
+		internal void AddHandler<T>(IExceptionHandler<TArg> handler) where T : Exception
+			=> _handlers.Add(typeof(T), handler);
+
+		protected HandledException TryUseHandler(Exception e)
+		{
+			if (_handlers.ContainsKey(e.GetType()))
+				new HandledException(_type, _handlers[e.GetType()].Use(e, _arg), e);
+			return null;
+		}
+	}
+
+
+	public class CatchCollection<TArg, TResult> : BaseCatchCollection<TArg>
+	{
+		private readonly Func<TArg, TResult> _func;
+
+		internal CatchCollection(string type, TArg arg, Func<TArg, TResult> func) : base(type, arg)
+		{
+			_func = func;
+		}
+
+		internal CatchCollection(TArg arg, Func<TArg, TResult> func) : base(null, arg)
+		{
 			_func = func;
 		}
 
@@ -26,43 +55,89 @@ namespace Sharp7Func
 		/// <returns></returns>
 		public CatchCollection<TArg, TResult> Catch<T>(Func<T, TArg, string> handler) where T : Exception
 		{
-			_handlers.Add(typeof(T), new ExceptionHandler<T,TArg>(handler));
+			AddHandler<T>(new ExceptionHandler<T, TArg>(handler));
 			return this;
 		}
 
-		public TResult Catch()
+		public CatchCollection<TArg, TResult> Catch<T>(Action<T, TArg> handler) where T : Exception
+		{
+			AddHandler<T>(new ExceptionSimpleHandler<T, TArg>(handler));
+			return this;
+		}
+
+		public CatchCollection<TArg, TResult> Catch<T>() where T : Exception
+		{
+			AddHandler<T>(new ExceptionHandler<T, TArg>(DefaultHandler));
+			return this;
+		}
+
+		public TResult Throw()
 		{
 			try
 			{
 				return _func(_arg);
 			}
+			catch (AggregateException e)
+			{
+				throw new AggregateException(e.InnerExceptions.Select(x => TryUseHandler(x) ?? x));
+			}
 			catch (Exception e)
 			{
-				if (_handlers.ContainsKey(e.GetType()))
-					throw new HandledException(_type, _handlers[e.GetType()].Use(e, _arg), e);
+				TryUseHandler(e).ThrowIf(x => x != null, x => x);
 				throw;
 			}
 		}
-    }
 
-	public class CatchCollection<TArg>
-	{
-		private readonly string _type;
-		private readonly TArg _arg;
-		private readonly Action<TArg> _func;
-		private readonly Dictionary<Type, IExceptionHandler<TArg>> _handlers = new Dictionary<Type, IExceptionHandler<TArg>>();
-
-		internal CatchCollection(string type, TArg arg, Action<TArg> func)
+		public TResult Use()
 		{
-			_type = type;
-			_arg = arg;
+			try
+			{
+				return _func(_arg);
+			}
+			catch (AggregateException e)
+			{
+				throw new AggregateException(e.InnerExceptions.Select(TryUseHandler).Where(x => x != null));
+			}
+			catch (Exception e)
+			{
+				TryUseHandler(e).ThrowIf(x => x != null, x => x);
+			}
+			return default(TResult);
+		}
+
+		public string UseMessage(out TResult result)
+		{
+			result = default(TResult);
+			try
+			{
+				result = _func(_arg);
+				return null;
+			}
+			catch (AggregateException e)
+			{
+				var sb = new StringBuilder();
+				foreach (var exception in e.InnerExceptions)
+					sb.AppendLine(TryUseHandler(exception)?.Message ?? exception.Message);
+				return sb.ToString();
+			}
+			catch (Exception e)
+			{
+				return TryUseHandler(e)?.Message ?? e.Message;
+			}
+		}
+	}
+
+	public class CatchCollection<TArg> : BaseCatchCollection<TArg>
+	{
+		private readonly Action<TArg> _func;
+
+		internal CatchCollection(string type, TArg arg, Action<TArg> func) : base(type, arg)
+		{
 			_func = func;
 		}
 
-		internal CatchCollection(TArg arg, Action<TArg> func)
+		internal CatchCollection(TArg arg, Action<TArg> func) : base(null, arg)
 		{
-			_type = null;
-			_arg = arg;
 			_func = func;
 		}
 
@@ -74,27 +149,25 @@ namespace Sharp7Func
 		/// <returns></returns>
 		public CatchCollection<TArg> Catch<T>(Func<T, TArg, string> handler) where T : Exception
 		{
-			_handlers.Add(typeof(T), new ExceptionHandler<T, TArg>(handler));
+			AddHandler<T>(new ExceptionHandler<T, TArg>(handler));
 			return this;
 		}
 
 		public CatchCollection<TArg> Catch<T>(Action<T, TArg> handler) where T : Exception
 		{
-			_handlers.Add(typeof(T), new ExceptionSimpleHandler<T, TArg>(handler));
+			AddHandler<T>(new ExceptionSimpleHandler<T, TArg>(handler));
 			return this;
 		}
 
 		public CatchCollection<TArg> Catch<T>() where T : Exception
 		{
-			_handlers.Add(typeof(T), new ExceptionHandler<T, TArg>(DefaultHandler));
+			AddHandler<T>(new ExceptionHandler<T, TArg>(DefaultHandler));
 			return this;
 		}
 
-		private string DefaultHandler<T>(T exception, TArg arg) where T : Exception
-			=> exception.Message;
 
 		/// <summary>
-		/// Без обработки ошибок - прокидывание дальше
+		/// Без обработки ошибок - прокидывание входящей ошибки дальше или преобразование в HandledException
 		/// </summary>
 		public void Throw()
 		{
@@ -104,13 +177,12 @@ namespace Sharp7Func
 			}
 			catch (Exception e)
 			{
-				if (_handlers.ContainsKey(e.GetType()))
-					throw new HandledException(_type, _handlers[e.GetType()].Use(e, _arg), e);
+				TryUseHandler(e).ThrowIf(x => x != null, x => x);
 				throw;
 			}
 		}
 
-		public string Catch()
+		public string UseMessage()
 		{
 			try
 			{
@@ -121,31 +193,14 @@ namespace Sharp7Func
 			{
 				var sb = new StringBuilder();
 				foreach (var exception in e.InnerExceptions)
-					sb.AppendLine(_handlers.ContainsKey(e.GetType()) ? _handlers[e.GetType()].Use(e, _arg) : exception.Message);
+					sb.AppendLine(TryUseHandler(exception)?.Message ?? exception.Message);
 				return sb.ToString();
 			}
 			catch (Exception e)
 			{
-				if (_handlers.ContainsKey(e.GetType()))
-					return _handlers[e.GetType()].Use(e, _arg);
-				throw;
+				return TryUseHandler(e)?.Message ?? e.Message;
 			}
 		}
-
-		//public void Catch(Action<TArg, string> errorHandler)
-		//{
-		//	try
-		//	{
-		//		_func(_arg);
-		//	}
-		//	catch (Exception e)
-		//	{
-		//		if (_handlers.ContainsKey(e.GetType()))
-		//			errorHandler(_arg, _handlers[e.GetType()].Use(e, _arg));
-		//		else throw;
-		//	}
-		//}
-
 	}
 
 	public class HandledException : Exception

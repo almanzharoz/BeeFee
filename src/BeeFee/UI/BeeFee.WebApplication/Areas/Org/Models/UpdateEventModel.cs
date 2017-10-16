@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using BeeFee.Model.Projections;
+using BeeFee.OrganizerApp.Projections.Company;
 using BeeFee.OrganizerApp.Projections.Event;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BeeFee.WebApplication.Areas.Org.Models
 {
@@ -21,18 +20,12 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 
         public UpdateEventModel(EventProjection @event, IReadOnlyCollection<BaseCategoryProjection> categories)
         {
-            Init(categories);
             Id = @event.Id;
-            CompanyId = @event.Parent.Id;
-            CompanyUrl = @event.Parent.Url;
             Version = @event.Version;
             Name = @event.Name;
             Label = @event.Page.Label;
             Url = @event.Url;
             CategoryId = @event.Category.Id;
-            var categoryItem = Categories.FirstOrDefault(x => x.Value == CategoryId);
-            if (categoryItem != null)
-                categoryItem.Selected = true;
             StartDateTime = @event.DateTime.Start;
             FinishDateTime = @event.DateTime.Finish;
             City = @event.Address.City;
@@ -41,12 +34,13 @@ namespace BeeFee.WebApplication.Areas.Org.Models
             Cover = @event.Page.Cover;
             Email = @event.Email;
             Comments = @event.Comments;
+			Init(@event.Parent, categories);
         }
 
-        public new UpdateEventModel Init(IReadOnlyCollection<BaseCategoryProjection> categories)
-        {
-            base.Init(categories);
-            return this;
-        }
-    }
+		public UpdateEventModel Saved()
+		{
+			Version++;
+			return this;
+		}
+	}
 }

@@ -24,7 +24,8 @@ namespace BeeFee.WebApplication.Infrastructure.Middleware
 			IOptions<ExceptionHandlerOptions> options/*, DiagnosticSource diagnosticSource*/)
 		{
 			_next = next;
-			_options = options.Value;
+			_options = options.Value ?? new ExceptionHandlerOptions();
+			_options.ExceptionHandlingPath = new PathString("/Home/Error");
 			_logger = loggerFactory.CreateLogger<ExceptionHandlerMiddleware>();
 			if (_options.ExceptionHandler == null)
 			{

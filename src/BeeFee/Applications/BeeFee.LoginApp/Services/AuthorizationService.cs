@@ -22,7 +22,7 @@ namespace BeeFee.LoginApp.Services
         }
 
 	    public UserProjection TryLogin(string email, string password)
-		    => Filter<User, UserProjection>(q => q.Term(x => x.Email, email), null, 1)
+		    => Filter<User, UserProjection>(q => q.Term(x => x.Email, email), null, 0,1)
 			    .FirstOrDefault(x => x.CheckPassword(password));
 
         public UserRegistrationResult Register(string email, string name, string password)

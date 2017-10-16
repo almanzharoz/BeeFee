@@ -1,20 +1,20 @@
 ﻿@using BeeFee.Model.Embed
 <div class="container clearfix">
-	<a class="header--logo" href="#">@*<img src="#" alt="" />*@</a>
+	<a class="header--logo" href="/">@*<img src="#" alt="" />*@</a>
 	<nav class="header--nav hidden-xs">
 		<ul class="header--list">
 			<li class="header--item"><a asp-area="" asp-controller="Account" asp-action="Profile">Профиль</a></li>
 			@if (User.IsInRole(RoleNames.Admin))
 			{
-				<li class="header--item"><a asp-area="Admin" asp-controller="Category" asp-action="Index">Categories</a></li>
+				<li class="header--item"><a asp-area="Admin" asp-controller="Category" asp-action="Index">Категории</a></li>
 			}
 			@if (User.IsInRole(RoleNames.Organizer))
 			{
-				<li class="header--item"><a asp-area="Org" asp-controller="Company" asp-action="Index">My Companies</a></li>
+				<li class="header--item"><a asp-area="Org" asp-controller="Company" asp-action="Index">Мои компании</a></li>
 			}
 			@if (User.IsInRole(RoleNames.EventModerator))
 			{
-				<li class="header--item"><a asp-area="Moderator" asp-controller="Event" asp-action="Index">Moderator</a></li>
+				<li class="header--item"><a asp-area="Moderator" asp-controller="Event" asp-action="Index">Модерация</a></li>
 			}
 		</ul>
 	</nav>

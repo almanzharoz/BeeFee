@@ -38,8 +38,11 @@
 		</div>
 	</div>
 </div>
-<div class="event-form hidden-xs">
-	<div class="container">
-		@Html.Partial("_RegisterToEventForm", Model.Item2)
+@if (Model.Item2 != null)
+{
+	<div class="event-form hidden-xs">
+		<div class="container">
+			@Html.Partial("_RegisterToEventForm", Model.Item2)
+		</div>
 	</div>
-</div>
+}

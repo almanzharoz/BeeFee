@@ -1,5 +1,12 @@
 @model Core.ElasticSearch.Pager<BeeFee.ClientApp.Projections.Event.EventGridItem>
-@foreach (var item in Model)
+@if (Model.Any())
 {
-    Html.RenderPartial("Home/_EventGridItem", item);
+	foreach (var item in Model)
+	{
+		Html.RenderPartial("Home/_EventGridItem", item);
+	}
+}
+else
+{
+	<div>Событий не найдено</div>
 }

@@ -1,9 +1,9 @@
 @model BeeFee.WebApplication.Models.Event.EventPageModel
 @*TODO на форме добавить шаблоны в поля почты и номера телефона*@
-<div class="event-form--title">На Queens of the Stone Age идут 1025 человек. Присоединяйтесь! </div>
+<div class="event-form--title">@*На Queens of the Stone Age идут 1025 человек. Присоединяйтесь!*@ </div>
 <div class="row">
     @if (!Model.RegisterResult.HasValue)
-            {
+	{
         <form asp-controller="Event" asp-action="RegisterToEvent" method="post" class="form-horizontal">
             <div class="col-xs-4 col-md-3">
                 <div class="input-field">
@@ -36,20 +36,28 @@
                 <button class="btn is-block" type="submit">Регистрация</button>
             </div>
         </form>
-            }
-            else
-            {
-                if (Model.RegisterResult == 0)
-                {
+	}
+	else
+	{
+		if (Model.RegisterResult == 0)
+		{
         <div class="event-form--title" style="text-align: center; color: #3f7d25;">
             Регистрация прошла успешно
         </div>
-                }
-                else
-                {
-        <div class="event-form--title" style="text-align: center; color: #bf1b1b;">
+		}
+		else if (Model.RegisterResult == 3)
+		{
+			<div class="event-form--title" style="text-align: center; color: #3f7d25;">
+				Регистрация закрыта
+			</div>
+		}
+		else
+		{
+
+		<div class="event-form--title" style="text-align: center; color: #bf1b1b;">
             <span class="danger">При регистрация произошла ошибка, возможно свободных мест больше нет</span>
         </div>
-                }
-            }
+
+		}
+	}
 </div>

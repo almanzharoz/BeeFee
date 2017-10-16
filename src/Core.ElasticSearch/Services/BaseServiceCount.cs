@@ -12,7 +12,7 @@ namespace Core.ElasticSearch
 	{
 		protected IReadOnlyCollection<KeyValuePair<TProjection, int>> SearchWithScore<T, TProjection>(
 			Func<QueryContainerDescriptor<T>, QueryContainer> query,
-			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 0, bool load = true)
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 100, bool load = true)
 			where TProjection : class, IProjection<T>, ISearchProjection
 			where T : class, IModel
 			=> _mapping.GetProjectionItem<TProjection>()

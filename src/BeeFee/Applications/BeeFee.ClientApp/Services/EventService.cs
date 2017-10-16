@@ -6,6 +6,7 @@ using Core.ElasticSearch;
 using BeeFee.ClientApp.Projections.Event;
 using BeeFee.Model;
 using BeeFee.Model.Embed;
+using BeeFee.Model.Jobs.Data;
 using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
 using Microsoft.Extensions.Logging;
@@ -79,14 +80,16 @@ namespace BeeFee.ClientApp.Services
 
 
         public bool RegisterToEvent(string id, string companyId, string email, string name, string phoneNumber, Guid ticketId)
-            => Update<RegisterToEventProjection>(f => f
+            => (Update<RegisterToEventProjection>(f => f
                 .Term(p => p.Event, id.HasNotNullArg(nameof(id))) && f.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId))) &&
                     f.Nested(n => n.Path(p => p.Prices).Query(q => q.Term(t => t.Prices.First().Id, ticketId) && q.Range(r => r.Field(p => p.Prices.First().Left).GreaterThan(0.0)))),
                 u => u
                     .Inc(p => p.TicketsLeft, -1)
                     .IncNested(p => p.Prices, p => p.Left, ticketId, -1)
                     .Add(p => p.Transactions, new RegisterToEventTransaction(ticketId, DateTime.Now, new Contact(name, email, phoneNumber), 0, ETransactionType.Registrition))
-                , true) > 0;
+                , true) > 0).IfTrue(() => AddJob(
+					base.GetById<EventProjection, BaseCompanyProjection>(id, companyId).Convert(x => new CreateTicket(x.Name, name, x.Page.Date, email, Guid.NewGuid().ToString()))
+					, DateTime.UtcNow));
 
 
         //TODO сделать агргегацию посредством эластика+кеширование

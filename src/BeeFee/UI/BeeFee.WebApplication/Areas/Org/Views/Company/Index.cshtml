@@ -4,13 +4,13 @@
 }
 @if (Model.Count > 0)
 {
-    <table class="table table-striped">
+    <table>
         <thead>
             <tr>
-                <th>Name</th>
+                <th>Название</th>
                 <th>Url</th>
-                <th>Users</th>
-                <th>Events</th>
+                <th>Пользователи</th>
+                <th>События</th>
                 <th></th>
             </tr>
         </thead>
@@ -21,10 +21,13 @@
                     <td>@e.Key.Name</td>
                     <td>@e.Key.Url</td>
                     <td>@(String.Join("<br/>", e.Key.Users.Select(x => x.User.Name)))</td>
-                    <td><a asp-action="Index" asp-controller="Event" asp-route-id="@e.Key.Id">Events [@e.Value]</a></td>
+                    <td><a asp-action="Index" asp-controller="Event" asp-route-id="@e.Key.Id">[@e.Value]</a></td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@e.Key.Id">Edit</a>
-                        <a asp-action="Remove" asp-route-id="@e.Key.Id" asp-route-version="@e.Key.Version">Remove</a>
+						<a asp-action="Edit" asp-route-id="@e.Key.Id">Править</a>
+						@if (e.Value == 0)
+						{
+							<a asp-action="Remove" asp-route-id="@e.Key.Id" asp-route-version="@e.Key.Version" onclick="return confirm('Удалить компанию?')">Удалить</a>
+						}
                     </td>
                 </tr>}
         </tbody>
@@ -34,8 +37,8 @@
 else
 {
     <div class="text-center">
-        You don't have any companies
+        У Вас не создано ни одной компании
     </div>
 }
 <br /><br />
-<a asp-action="Add">Add</a>
+<a asp-action="Add">Добавить компанию</a>

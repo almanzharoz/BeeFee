@@ -237,6 +237,9 @@ namespace SharpFuncExt
 		public static CatchCollection<T, TResult> Try<T, TResult>(this T arg, string type, Func<T, TResult> func)
 			=> new CatchCollection<T, TResult>(type, arg, func);
 
+		public static CatchCollection<T, TResult> Try<T, TResult>(this T arg, Func<T, TResult> func)
+			=> new CatchCollection<T, TResult>(null, arg, func);
+
 		public static CatchCollection<T> Try<T>(this T arg, string type, Action<T> func)
 			=> new CatchCollection<T>(type, arg, func);
 

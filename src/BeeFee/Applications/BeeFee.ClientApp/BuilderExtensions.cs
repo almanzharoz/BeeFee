@@ -22,6 +22,7 @@ namespace BeeFee.ClientApp
         {
             return services
                 .AddProjection<NewJob<SendMail>, Job<SendMail>>()
+                .AddProjection<NewJob<CreateTicket>, Job<CreateTicket>>()
                 .AddProjection<EventProjection, Event>()
                 .AddProjection<EventGridItem, Event>()
                 .AddProjection<EventAddressProjection, Event>()

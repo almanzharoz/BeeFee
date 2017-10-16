@@ -12,7 +12,7 @@ namespace Core.ElasticSearch
 	{
 		protected IReadOnlyCollection<TProjection> Filter<T, TProjection>(
 			Func<QueryContainerDescriptor<T>, QueryContainer> query,
-			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 0, bool load = true)
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 100, bool load = true)
 			where TProjection : class, IProjection<T>, ISearchProjection
 			where T : class, IModel
 			=> _mapping.GetProjectionItem<TProjection>()
@@ -50,7 +50,7 @@ namespace Core.ElasticSearch
 
 		protected IReadOnlyCollection<TProjection> Search<T, TProjection>(
 			Func<QueryContainerDescriptor<T>, QueryContainer> query,
-			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 0, bool load = true)
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 100, bool load = true)
 			where TProjection : class, IProjection<T>, ISearchProjection
 			where T : class, IModel
 			=> _mapping.GetProjectionItem<TProjection>()
@@ -70,7 +70,7 @@ namespace Core.ElasticSearch
 
 		protected IReadOnlyCollection<T> Filter<T>(
 			Func<QueryContainerDescriptor<T>, QueryContainer> query,
-			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 0, bool load = true)
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 100, bool load = true)
 			where T : class, IProjection, ISearchProjection
 			=> _mapping.GetProjectionItem<T>()
 				.Convert(
@@ -89,7 +89,7 @@ namespace Core.ElasticSearch
 
 		protected Task<IReadOnlyCollection<T>> FilterAsync<T>(
 			Func<QueryContainerDescriptor<T>, QueryContainer> query,
-			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 0, bool load = true)
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 100, bool load = true)
 			where T : class, IProjection, ISearchProjection
 			=> _mapping.GetProjectionItem<T>()
 				.Convert(
@@ -108,7 +108,7 @@ namespace Core.ElasticSearch
 
 		protected IReadOnlyCollection<T> Search<T>(
 			Func<QueryContainerDescriptor<T>, QueryContainer> query,
-			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 0, bool load = true)
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 100, bool load = true)
 			where T : class, IProjection, ISearchProjection
 			=> _mapping.GetProjectionItem<T>()
 				.Convert(
@@ -126,7 +126,7 @@ namespace Core.ElasticSearch
 						RepositoryLoggingEvents.ES_SEARCH));
 
 		protected IReadOnlyCollection<KeyValuePair<TProjection, string>> CompletionSuggest<T, TProjection>(
-           Func<CompletionSuggesterDescriptor<T>, ICompletionSuggester> suggester, int page = 0, int take = 0, bool load = true)
+           Func<CompletionSuggesterDescriptor<T>, ICompletionSuggester> suggester, int page = 0, int take = 100, bool load = true)
            where TProjection : class, IProjection<T>, ISearchProjection
            where T : class, IModel
            => _mapping.GetProjectionItem<TProjection>()

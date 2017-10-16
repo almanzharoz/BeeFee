@@ -180,6 +180,10 @@ namespace BeeFee.ImageApp.Embed
 			if (Directory.Exists(privateDir) || Directory.Exists(publicDir) || Directory.Exists(resizedDir))
 				throw new DirectoryAlreadyExistsException();
 
+			Console.WriteLine(privateDir);
+			Console.WriteLine(publicDir);
+			Console.WriteLine(resizedDir);
+
 			Directory.CreateDirectory(privateDir);
 			Directory.CreateDirectory(publicDir);
 			Directory.CreateDirectory(resizedDir);

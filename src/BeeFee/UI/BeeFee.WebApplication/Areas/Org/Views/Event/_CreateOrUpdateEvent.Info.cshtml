@@ -1,3 +1,4 @@
+@using BeeFee.WebApplication.Areas.Org.Models
 @using BeeFee.WebApplication.Infrastructure
 @using SharpFuncExt
 @model BeeFee.WebApplication.Areas.Org.Models.CreateOrUpdateEventModel
@@ -21,12 +22,21 @@
 </div>
 <span asp-validation-for="Cover" class="text-danger"></span>
 <div class="create--file">
-    @if (!String.IsNullOrEmpty(Model.Cover))
-    {
-        <img src="@Url.GetImageUrl(Model.CompanyUrl, Model.Url, Model.Cover, 368, 190)"/>}
-    <input type="hidden" class="form-control" placeholder="Cover" asp-for="Cover"/>
-    <input class="create--file-i" type="file" asp-for="File"/>
-    <div class="create--file-b">Загрузить изображение</div>
+	@if (!String.IsNullOrEmpty(Model.Cover))
+	{
+		<img style="display: block; margin-bottom: 15px;" src="@Url.GetImageUrl(Model.CompanyUrl, Model.Url, Model.Cover, 368, 190)"/>
+	}
+	<input type="hidden" class="form-control" placeholder="Cover" asp-for="Cover"/>
+	@if (Model is CreateEventModel)
+	{
+		<input class="create--file-i" type="file" name="File"/>
+		@Html.ValidationMessage("File")
+	}
+	else
+	{
+		<input class="create--file-i" type="file" id="File" />
+	}
+	<div class="create--file-b">Загрузить изображение</div>
 </div>
 <div class="create--field with-icon is-small">
     <i class="icon-date"></i>
@@ -60,7 +70,7 @@
     <div class="select is-simple">
         <input class="select_hidden" type="hidden" asp-for="CategoryId" />
         <div class="select_in">
-            <div class="select_title">@Html.Raw(Model.Categories.Any(x => x.Selected) ? @Model.Categories.Where(x => x.Selected).Select(x => x.Text).FirstOrDefault() : "<span class=\"select_placeholder\">Категория</span>")</div>
+            <div class="select_title">@Html.Raw(Model.Categories.Any(x => x.Selected) ? Model.Categories.Where(x => x.Selected).Select(x => x.Text).FirstOrDefault() : "<span class=\"select_placeholder\">Категория</span>")</div>
         </div>
         <ul class="select_list">
             @foreach (var category in Model.Categories)
@@ -68,11 +78,6 @@
                 <li data-value="@category.Value">@category.Text</li>
             }
         </ul>
-        @*<ul class="select_list">
-                <li data-value="1">Екатеринбург</li>
-                <li data-value="2">Москва</li>
-                <li data-value="3">Санкт-Петербург</li>
-            </ul>*@
     </div>
 </div>
 @*<div class="create--field with-icon is-sm">

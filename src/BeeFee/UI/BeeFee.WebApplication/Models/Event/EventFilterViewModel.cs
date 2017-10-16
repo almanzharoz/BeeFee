@@ -19,7 +19,7 @@ namespace BeeFee.WebApplication.Models.Event
             Text = request.Text;
             City = request.City;
             MaxPrice = request.MaxPrice;
-            EventHtml = loadEventsResult.html;
+            EventHtml = !String.IsNullOrEmpty(loadEventsResult.html) ? loadEventsResult.html : "Событий не найдено";
             AllLoaded = loadEventsResult.allLoaded;
             //Events = events;
         }

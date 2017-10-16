@@ -35,7 +35,7 @@ namespace BeeFee.OrganizerApp.Services
 
 		/// <exception cref="AddEntityException"></exception>
 		// TODO: добавить проверку 
-		public void AddEvent(string companyId, string categoryId, string name, string label, string url, string email, 
+		public string AddEvent(string companyId, string categoryId, string name, string label, string url, string email, 
 			EventDateTime dateTime, Address address, TicketPrice[] prices, string html, string cover)
 		{
 			// TODO: Проверять и вставлять одним запросом
@@ -51,6 +51,7 @@ namespace BeeFee.OrganizerApp.Services
 			Insert<NewEvent, CompanyJoinProjection>(newEvent, true).ThrowIfNot<AddEntityException<Event>>();
 
 			Insert(new NewEventTransaction(newEvent), false).ThrowIfNot<AddEntityException<EventTransaction>>(); // TODO: при такой ошибке должен быть откат
+			return newEvent.Id;
 		}
 
 		private EventTransactionProjection GetEventTransactionById(string eventId, string companyId)
@@ -63,6 +64,10 @@ namespace BeeFee.OrganizerApp.Services
 			=> Remove<EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version,
 				q => q.Term(p=>p.State, EEventState.Created), true)
 			&& Remove(GetEventTransactionById(id, company), false);
+
+		public bool CloseEvent(string id, string companyId, int version)
+			=> UpdateById<EventProjection, CompanyJoinProjection>(id,
+					companyId.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version, u => u.Close(), true);
 
 		///<exception cref="UpdateEntityException"></exception>
 		public bool UpdateEvent(string id, string company, int version, string name, string label, string url, string cover, string email,
