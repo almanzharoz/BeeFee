@@ -410,6 +410,18 @@ namespace SharpFuncExt
 			throw func(arg);
 		}
 
+		public static void InvokeIfNotNull<T>(this Action<T> action, T arg)
+		{
+			if (action != null)
+				action(arg);
+		}
+
+		public static void InvokeIfNotNull<T1, T2>(this Action<T1, T2> action, T1 arg1, T2 arg2)
+		{
+			if (action != null)
+				action(arg1, arg2);
+		}
+
 		public static SwitchResult<TResult, T> Switch<T, TResult>(this T arg, T checkValue, Func<T, TResult> func)
 		{
 			if (arg.IsNull() && checkValue.IsNull() || arg.IsNotNull() && arg.Equals(checkValue))

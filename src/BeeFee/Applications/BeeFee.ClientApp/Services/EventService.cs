@@ -88,7 +88,7 @@ namespace BeeFee.ClientApp.Services
                     .IncNested(p => p.Prices, p => p.Left, ticketId, -1)
                     .Add(p => p.Transactions, new RegisterToEventTransaction(ticketId, DateTime.Now, new Contact(name, email, phoneNumber), 0, ETransactionType.Registrition))
                 , true) > 0).IfTrue(() => AddJob(
-					base.GetById<EventProjection, BaseCompanyProjection>(id, companyId).Convert(x => new CreateTicket(x.Name, name, x.Page.Date, email, Guid.NewGuid().ToString()))
+					base.GetById<EventProjection, BaseCompanyProjection>(id, companyId).Convert(x => new CreateTicket(x.Name, name, x.Page.Date, email, x.Page.Cover, Guid.NewGuid().ToString()))
 					, DateTime.UtcNow));
 
 

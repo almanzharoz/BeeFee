@@ -39,7 +39,7 @@ namespace BeeFee.ShedulerApplication
 
 			var ticketService = serviceProvider.GetService<TicketService>();
 			var mailService = serviceProvider.GetService<MailService>();
-			ticketService.CreateTicket(new CreateTicket("Русское слово", "Tomorow", "ticket", "sdg@sdgfsd.dg", "sdghjksjdhg")).Wait();
+			ticketService.CreateTicket(new CreateTicket("Русское слово", "Tomorow", "ticket", "sdg@sdgfsd.dg", null, "sdghjksjdhg")).Wait();
 			while (true)
 			{
 				ticketService.CreateNextTicket().Wait();

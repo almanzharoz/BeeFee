@@ -188,5 +188,31 @@ namespace SharpFuncExt
 				}
 			}
 		}
+
+		public static async Task Using<T, TUsing>(this T arg, Func<T, TUsing> init, Func<T, TUsing, Task> func, Action<TUsing> dispose) where TUsing : IDisposable
+		{
+			Exception ex = null;
+			TUsing u = init(arg);
+			try
+			{
+				await func(arg, u);
+			}
+			catch (Exception e)
+			{
+				throw ex = e;
+			}
+			finally
+			{
+				try
+				{
+					dispose.InvokeIfNotNull(u);
+					u?.Dispose();
+				}
+				catch (Exception e)
+				{
+					throw ex != null ? new AggregateException(ex, e) : e;
+				}
+			}
+		}
 	}
 }

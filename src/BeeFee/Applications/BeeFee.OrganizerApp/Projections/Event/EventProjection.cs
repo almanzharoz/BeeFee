@@ -3,10 +3,12 @@ using BeeFee.Model.Embed;
 using BeeFee.Model.Helpers;
 using BeeFee.Model.Interfaces;
 using BeeFee.Model.Projections;
+using BeeFee.OrganizerApp.Exceptions;
 using BeeFee.OrganizerApp.Projections.Company;
 using Core.ElasticSearch.Domain;
 using SharpFuncExt;
 using System;
+using BeeFee.Model.Exceptions;
 
 namespace BeeFee.OrganizerApp.Projections.Event
 {
@@ -30,7 +32,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 			BaseCategoryProjection category, TicketPrice[] prices, string html)
 		{
 			if (State != EEventState.Created && State != EEventState.NotModerated)
-				throw new Exception("Dont change this event");
+				throw new EventStateException(State, ExceptionResources.ChangeEventStateException);
 			Name = name;
 			Url = url.IfNull(name, CommonHelper.UriTransliterate);
 			DateTime = dateTime;
@@ -44,8 +46,8 @@ namespace BeeFee.OrganizerApp.Projections.Event
 
 		internal EventProjection ToModerate()
 		{
-			if (State != EEventState.Created && State != EEventState.Moderating)
-				throw new System.Exception("Dont send event to moderate");
+			if (State != EEventState.Created && State != EEventState.NotModerated)
+				throw new EventStateException(State, ExceptionResources.ToModerateEventStateException);
 			State = EEventState.Moderating;
 			return this;
 		}
@@ -53,7 +55,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 		internal EventProjection Close()
 		{
 			if (State != EEventState.Open)
-				throw new System.Exception("Dont close event");
+				throw new EventStateException(State, ExceptionResources.CloseEventStateException);
 			State = EEventState.Close;
 			return this;
 		}

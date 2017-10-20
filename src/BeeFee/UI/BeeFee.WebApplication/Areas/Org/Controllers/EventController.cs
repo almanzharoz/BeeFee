@@ -129,7 +129,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 					.Catch<EntityAccessException<Company>>((e, m) => ModelState.AddModelError("error", $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
 					.Catch<ArgumentNullException>((e, m) => ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
 					.Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
-					.Catch<EventStatusException>((e, m) => ModelState.AddModelError("error", $"Cобытие со статусом {e.State} нельзя изменить"))
+					.Catch<EventStateException>((e, m) => ModelState.AddModelError("error", $"Cобытие со статусом {e.State} нельзя изменить"))
 					.Use())
 				{
 					ModelState[nameof(model.Version)].RawValue = model.Saved().Version; // hack

@@ -25,7 +25,7 @@ namespace BeeFee.OrganizerApp.Services
 		}
 
 		public T GetCompany<T>(string id) where T : BaseEntityWithVersion, IGetProjection, IProjection<Company>
-			=> GetWithVersionByIdAndQuery<Company, T>(id, f => Query<Company>.Term(p => p.Users.First().User, User.HasNotNullArg(x => x.Id, "user").Id));
+			=> GetWithVersionByIdAndQuery<Company, T>(id.HasNotNullArg("companyId"), f => Query<Company>.Term(p => p.Users.First().User, User.HasNotNullArg(x => x.Id, "user").Id));
 
 		public EventProjection GetEvent(string id, string company)
 			=> GetWithVersionByIdAndQuery<Event, EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)).Id, q => UserQuery<EventProjection>());
@@ -69,19 +69,28 @@ namespace BeeFee.OrganizerApp.Services
 			=> UpdateById<EventProjection, CompanyJoinProjection>(id,
 					companyId.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version, u => u.Close(), true);
 
-		///<exception cref="UpdateEntityException"></exception>
+		/// <exception cref="UpdateEntityException"></exception>
+		/// <exception cref="EntityAccessException{T}"></exception>
+		/// <exception cref="ArgumentNullException">companyId, user, category</exception>
+		/// <exception cref="EventStateException"></exception>
+		/// <exception cref="Core.ElasticSearch.Exceptions.VersionException"></exception>
 		public bool UpdateEvent(string id, string company, int version, string name, string label, string url, string cover, string email,
 			EventDateTime dateTime, Address address,
 			string categoryId, TicketPrice[] prices, string html)
 			=> UpdateById<EventProjection, CompanyJoinProjection>(id,
 					company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version,
-					x => x.ThrowIf(t => t.State != EEventState.Created && t.State != EEventState.NotModerated, t => new EventStatusException(t.State))
-					.Change(name, label, url, cover, email, dateTime, address,
+					x => x.Change(name, label, url, cover, email, dateTime, address,
 						GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), prices, html), true);
 
 		public IReadOnlyCollection<EventProjection> GetMyEvents(string companyId) 
 			=> Filter<Event, EventProjection>(q => UserQuery<EventProjection>(x => x.HasParent<Company>(p=>p.Query(pq => pq.Ids(id => id.Values(companyId.HasNotNullArg("company")))))));
 
+		/// <summary>
+		/// Отправить мероприятие на модерацию
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="EntityAccessException{T}"></exception>
+		/// <exception cref="ArgumentNullException"></exception>
 		public bool ToModerate(string id, string company, int version)
 			=> UpdateById<EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version, x => x.ToModerate(), true);
 	}

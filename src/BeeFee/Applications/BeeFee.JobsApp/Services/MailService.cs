@@ -27,7 +27,7 @@ namespace BeeFee.JobsApp.Services
 		private Task SendMail(SendMail data)
 			=> data.Using(d => CreateSmtpClient(),
 				(mail, client) => mail.Using(CreateMessage, (d, m) =>
-				 client.SendMailAsync(m)/*.ContinueWith(t => m.Attachments.Each(x => x.Dispose()))*/));
+				 client.SendMailAsync(m), m => m.Attachments.Each(x => x.Dispose())));
 
 		private SmtpClient CreateSmtpClient()
 			=> _serviceSettings.If(x => x.PickupDirectory.NotNull(),
