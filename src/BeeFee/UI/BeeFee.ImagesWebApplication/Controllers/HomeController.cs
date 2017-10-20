@@ -49,6 +49,8 @@ namespace BeeFee.ImagesWebApplication.Controllers
 		[HttpPut("{companyName}/{eventName}")]
         public bool Put(string companyName, string eventName, string host)
 		{
+			Console.WriteLine("Host: "+host);
+			Console.WriteLine("Server: "+ Request.Host.Host);
 			if (_registratorHost != Request.Host.Host)
 				throw new AccessDeniedException();
 			return _service.RegisterEvent(companyName, eventName, host);

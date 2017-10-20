@@ -71,12 +71,12 @@ namespace BeeFee.OrganizerApp.Services
 
 		///<exception cref="UpdateEntityException"></exception>
 		public bool UpdateEvent(string id, string company, int version, string name, string label, string url, string cover, string email,
-			EventDateTime dateTime, Address address, 
+			EventDateTime dateTime, Address address,
 			string categoryId, TicketPrice[] prices, string html)
-			// TODO: Добавить проверку статуса редактирования
 			=> UpdateById<EventProjection, CompanyJoinProjection>(id,
 					company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version,
-					x => x.Change(name, label, url, cover, email, dateTime, address, 
+					x => x.ThrowIf(t => t.State != EEventState.Created && t.State != EEventState.NotModerated, t => new EventStatusException(t.State))
+					.Change(name, label, url, cover, email, dateTime, address,
 						GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), prices, html), true);
 
 		public IReadOnlyCollection<EventProjection> GetMyEvents(string companyId) 

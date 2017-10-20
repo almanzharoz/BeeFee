@@ -27,7 +27,15 @@ namespace BeeFee.JobsApp.Services
 
 		protected Task<bool> JobExecute(TJob job, Func<TData, Task> action)
 			=> Task.FromResult(job.IfNotNull(
-				x => UpdateWithVersion(x, j => j.Fluent(f => f.Execute(d => action.HasNotNullArg(nameof(action))(d))),
+				x => UpdateWithVersion(x, j => j.Fluent(f => {
+					try
+					{
+						f.Execute(d => action.HasNotNullArg(nameof(action))(d));
+					}catch(Exception e)
+					{
+						Console.WriteLine(e.Message);
+					}
+				}),
 					false), () => false));
 
 	}

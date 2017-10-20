@@ -111,23 +111,30 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         {
 			if (ModelState.IsValid)
 			{
-				if (Service.UpdateEvent(
-					model.Id,
-					model.CompanyId,
-					model.Version,
-					model.Name,
-					model.Label,
-					model.Url,
-					model.Cover,
-					model.Email,
-					new EventDateTime(model.StartDateTime, model.FinishDateTime),
-					new Address(model.City, model.Address),
-					model.CategoryId,
+				if (model.Try(m => Service.UpdateEvent(
+					m.Id,
+					m.CompanyId,
+					m.Version,
+					m.Name,
+					m.Label,
+					m.Url,
+					m.Cover,
+					m.Email,
+					new EventDateTime(m.StartDateTime, m.FinishDateTime),
+					new Address(m.City, m.Address),
+					m.CategoryId,
 					//new[] { new TicketPrice() { Price = new Price(model.Price) } },
 					null,
-					model.Html))
+					m.Html))
+					.Catch<EntityAccessException<Company>>((e, m) => ModelState.AddModelError("error", $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
+					.Catch<ArgumentNullException>((e, m) => ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
+					.Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
+					.Catch<EventStatusException>((e, m) => ModelState.AddModelError("error", $"Cобытие со статусом {e.State} нельзя изменить"))
+					.Use())
+				{
 					ModelState[nameof(model.Version)].RawValue = model.Saved().Version; // hack
-				model.SetPreviewWithStep(Service.GetPreviewEvent(model.Id, model.CompanyId));
+					model.SetPreviewWithStep(Service.GetPreviewEvent(model.Id, model.CompanyId));
+				}
 			}
 			model.Init(Service.GetCompany<CompanyJoinProjection>(model.CompanyId), CategoryService.GetAllCategories<BaseCategoryProjection>());
             return View(model);
@@ -152,7 +159,8 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 
 		public IActionResult ToModerate(string id, string companyId, int version)
         {
-            Service.ToModerate(id, companyId, version);
+			// TODO: добавить обработку ошибок
+			Service.ToModerate(id, companyId, version);
             return RedirectToActionPermanent("Index", new { id = companyId });
         }
     }

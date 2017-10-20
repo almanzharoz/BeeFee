@@ -41,7 +41,7 @@ namespace BeeFee.JobsApp.Services
 				using (var file = File.OpenWrite(Path.Combine(_ticketSettings.Folder, data.Filename+".pdf")))
 					report.Content.CopyTo(file);
 
-				AddJob(new SendMail("ticket@beefee.ru", data.Email, "Ваш билет", "Ваш билет", new[] { Path.Combine(_ticketSettings.Folder, data.Filename + ".pdf") }), DateTime.UtcNow);
+				AddJob(new SendMail("ticket@beefee.ru", data.Email, "Ваш билет", "Ваш билет", new[] { data.Filename + ".pdf" }), DateTime.UtcNow);
 			}
 			catch (Exception e)
 			{
