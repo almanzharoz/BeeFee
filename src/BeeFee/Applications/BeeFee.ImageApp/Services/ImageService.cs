@@ -46,6 +46,8 @@ namespace BeeFee.ImageApp.Services
 			_cacheTime = cacheTime;
 			_timeToDelete = TimeSpan.FromMinutes(timeToDeleteInMinutes);
 			_logger = loggerFactory.CreateLogger<ImageService>();
+
+			GetAdminAccess("server");
 		}
 
 		/// <summary>

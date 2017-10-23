@@ -80,7 +80,6 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				if (eventId != null) // ошибок нет, событие сохранено
 				{
 					var company = Service.GetCompany<CompanyJoinProjection>(model.CompanyId);
-					_imagesService.GetAccessToFolder(company.Url, model.Url, Request.Host.Host);
 					var r = await _imagesService.RegisterEvent(company.Url, model.Url, Request.Host.Host);
 					if (model.File != null && model.File.Length > 0)
 						await _imagesService.AddEventCover(company.Url, model.Url, Path.GetFileName(model.File.FileName),

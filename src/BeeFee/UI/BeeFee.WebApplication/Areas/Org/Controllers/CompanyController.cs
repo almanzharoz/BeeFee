@@ -35,7 +35,6 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				() => Service.AddCompany(model.Name, model.Url, model.File != null && model.File.Length > 0 ? "company.jpg" : null) //TODO: Переделать заливку логотипа
 					.IfNotNull<CompanyProjection, IActionResult>(x =>
 					{
-						_imagesService.GetAccessToFolder(x.Url, Request.Host.Host);
 						if (model.File != null && model.File.Length > 0)
 							_imagesService.AddCompanyLogo(x.Url, model.File.OpenReadStream());
 						return RedirectToActionPermanent("Index");

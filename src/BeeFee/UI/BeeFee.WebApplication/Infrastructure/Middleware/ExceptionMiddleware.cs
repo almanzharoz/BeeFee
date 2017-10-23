@@ -13,7 +13,7 @@ using Microsoft.Net.Http.Headers;
 
 namespace BeeFee.WebApplication.Infrastructure.Middleware
 {
-	public class DeveloperExceptionPageMiddleware
+	public class ExceptionHandlerMiddleware
 	{
 		private readonly RequestDelegate _next;
 		private readonly ILogger _logger;
@@ -26,7 +26,7 @@ namespace BeeFee.WebApplication.Infrastructure.Middleware
 		/// <param name="loggerFactory"></param>
 		/// <param name="hostingEnvironment"></param>
 		/// <param name="diagnosticSource"></param>
-		public DeveloperExceptionPageMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
+		public ExceptionHandlerMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
 		{
 			if (next == null)
 				throw new ArgumentNullException(nameof(next));
@@ -61,7 +61,7 @@ namespace BeeFee.WebApplication.Infrastructure.Middleware
 					context.Response.Clear();
 					context.Response.StatusCode = 500;
 
-					await DisplayException(context, ex);
+					//await DisplayException(context, ex);
 
 					return;
 				}
@@ -75,104 +75,104 @@ namespace BeeFee.WebApplication.Infrastructure.Middleware
 		}
 
 		// Assumes the response headers have not been sent.  If they have, still attempt to write to the body.
-		private Task DisplayException(HttpContext context, Exception ex)
-		{
-			var compilationException = ex as ICompilationException;
-			if (compilationException != null)
-			{
-				return DisplayCompilationException(context, compilationException);
-			}
+		//private Task DisplayException(HttpContext context, Exception ex)
+		//{
+		//	var compilationException = ex as ICompilationException;
+		//	if (compilationException != null)
+		//	{
+		//		return DisplayCompilationException(context, compilationException);
+		//	}
 
-			return DisplayRuntimeException(context, ex);
-		}
+		//	return DisplayRuntimeException(context, ex);
+		//}
 
-		private Task DisplayCompilationException(
-			HttpContext context,
-			ICompilationException compilationException)
-		{
-			var model = new CompilationErrorPageModel
-			{
-				Options = _options,
-			};
+		//private Task DisplayCompilationException(
+		//	HttpContext context,
+		//	ICompilationException compilationException)
+		//{
+		//	var model = new CompilationErrorPageModel
+		//	{
+		//		Options = _options,
+		//	};
 
-			var errorPage = new CompilationErrorPage
-			{
-				Model = model
-			};
+		//	var errorPage = new CompilationErrorPage
+		//	{
+		//		Model = model
+		//	};
 
-			if (compilationException.CompilationFailures == null)
-			{
-				return errorPage.ExecuteAsync(context);
-			}
+		//	if (compilationException.CompilationFailures == null)
+		//	{
+		//		return errorPage.ExecuteAsync(context);
+		//	}
 
-			foreach (var compilationFailure in compilationException.CompilationFailures)
-			{
-				if (compilationFailure == null)
-				{
-					continue;
-				}
+		//	foreach (var compilationFailure in compilationException.CompilationFailures)
+		//	{
+		//		if (compilationFailure == null)
+		//		{
+		//			continue;
+		//		}
 
-				var stackFrames = new List<StackFrameSourceCodeInfo>();
-				var exceptionDetails = new ExceptionDetails
-				{
-					StackFrames = stackFrames,
-					ErrorMessage = compilationFailure.FailureSummary,
-				};
-				model.ErrorDetails.Add(exceptionDetails);
-				model.CompiledContent.Add(compilationFailure.CompiledContent);
+		//		var stackFrames = new List<StackFrameSourceCodeInfo>();
+		//		var exceptionDetails = new ExceptionDetails
+		//		{
+		//			StackFrames = stackFrames,
+		//			ErrorMessage = compilationFailure.FailureSummary,
+		//		};
+		//		model.ErrorDetails.Add(exceptionDetails);
+		//		model.CompiledContent.Add(compilationFailure.CompiledContent);
 
-				if (compilationFailure.Messages == null)
-				{
-					continue;
-				}
+		//		if (compilationFailure.Messages == null)
+		//		{
+		//			continue;
+		//		}
 
-				var sourceLines = compilationFailure
-						.SourceFileContent?
-						.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+		//		var sourceLines = compilationFailure
+		//				.SourceFileContent?
+		//				.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
-				foreach (var item in compilationFailure.Messages)
-				{
-					if (item == null)
-					{
-						continue;
-					}
+		//		foreach (var item in compilationFailure.Messages)
+		//		{
+		//			if (item == null)
+		//			{
+		//				continue;
+		//			}
 
-					var frame = new StackFrameSourceCodeInfo
-					{
-						File = compilationFailure.SourceFilePath,
-						Line = item.StartLine,
-						Function = string.Empty
-					};
+		//			var frame = new StackFrameSourceCodeInfo
+		//			{
+		//				File = compilationFailure.SourceFilePath,
+		//				Line = item.StartLine,
+		//				Function = string.Empty
+		//			};
 
-					if (sourceLines != null)
-					{
-						_exceptionDetailsProvider.ReadFrameContent(frame, sourceLines, item.StartLine, item.EndLine);
-					}
+		//			if (sourceLines != null)
+		//			{
+		//				_exceptionDetailsProvider.ReadFrameContent(frame, sourceLines, item.StartLine, item.EndLine);
+		//			}
 
-					frame.ErrorDetails = item.Message;
+		//			frame.ErrorDetails = item.Message;
 
-					stackFrames.Add(frame);
-				}
-			}
+		//			stackFrames.Add(frame);
+		//		}
+		//	}
 
-			return errorPage.ExecuteAsync(context);
-		}
+		//	return errorPage.ExecuteAsync(context);
+		//}
 
-		private Task DisplayRuntimeException(HttpContext context, Exception ex)
-		{
-			var request = context.Request;
+		//private Task DisplayRuntimeException(HttpContext context, Exception ex)
+		//{
+		//	var request = context.Request;
 
-			var model = new ErrorPageModel
-			{
-				Options = _options,
-				ErrorDetails = _exceptionDetailsProvider.GetDetails(ex),
-				Query = request.Query,
-				Cookies = request.Cookies,
-				Headers = request.Headers
-			};
+		//	var model = new ErrorPageModel
+		//	{
+		//		Options = _options,
+		//		ErrorDetails = _exceptionDetailsProvider.GetDetails(ex),
+		//		Query = request.Query,
+		//		Cookies = request.Cookies,
+		//		Headers = request.Headers
+		//	};
 
-			var errorPage = new ErrorPage(model);
-			return errorPage.ExecuteAsync(context);
-		}
+		//	var errorPage = new ErrorPage(model);
+		//	return errorPage.ExecuteAsync(context);
+		//}
 	}
 }

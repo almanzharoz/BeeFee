@@ -60,7 +60,7 @@ namespace BeeFee.ImagesWebApplication.Controllers
 			Console.WriteLine("Server: "+ Request.Host.Host);
 			if (_registratorHost != Request.Host.Host)
 				throw new AccessDeniedException();
-			return _service.RegisterEvent(companyName, eventName, host);
+			return _service.RegisterEvent(companyName, eventName, "server");
 		}
 
         [HttpDelete("{companyName}/{eventName}")]
