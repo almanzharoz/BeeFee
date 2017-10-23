@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using BeeFee.ImageApp.Caching;
 using BeeFee.ImageApp.Embed;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using SharpFuncExt;
 
 namespace BeeFee.ImageApp.Tests
 {
@@ -184,6 +186,14 @@ namespace BeeFee.ImageApp.Tests
 		{
 			Task.Run(() => _service.AddCompanyLogo(GetTestImage(TestImageName), "testCompany", Key)).Wait();
 			Assert.IsTrue(File.Exists(Path.Combine("images", "public", "companies", "testCompany", "logo.jpg")));
+		}
+
+		[TestMethod]
+		public void GetAccessToSubfolders()
+		{
+			_service.GetAccessToFolder("123.213.312.321", "testCompany", false);
+			Assert.ThrowsException<AggregateException>(() => _service.AddEventImage(GetTestImage(TestImageName),
+				"testCompany", "testEvent", "test.jpg", "test", "123.213.312.321").Wait());
 		}
 	}
 }
