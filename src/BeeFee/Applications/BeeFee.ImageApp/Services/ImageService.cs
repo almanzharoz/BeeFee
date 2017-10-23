@@ -45,7 +45,7 @@ namespace BeeFee.ImageApp.Services
 			_pathHandler = pathHandler;
 			_cacheTime = cacheTime;
 			_timeToDelete = TimeSpan.FromMinutes(timeToDeleteInMinutes);
-			_logger = loggerFactory.CreateLogger<ImageApp>();
+			_logger = loggerFactory.CreateLogger<ImageService>();
 		}
 
 		/// <summary>

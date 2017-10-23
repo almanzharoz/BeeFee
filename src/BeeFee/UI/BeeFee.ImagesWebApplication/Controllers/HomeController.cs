@@ -43,7 +43,15 @@ namespace BeeFee.ImagesWebApplication.Controllers
 		{
 			if (_registratorHost != Request.Host.Host)
 				throw new AccessDeniedException();
-			_service.GetAccessToFolder(host, companyName);
+			_service.GetAccessToFolder(host, companyName, false);
+		}
+
+		[HttpGet("{companyName}/{eventName}")]
+		public void Get(string companyName, string eventName, string host)
+		{
+			if (_registratorHost != Request.Host.Host)
+				throw new AccessDeniedException();
+			_service.GetAccessToFolder(host, companyName, eventName);
 		}
 
 		[HttpPut("{companyName}/{eventName}")]

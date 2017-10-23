@@ -22,6 +22,10 @@ namespace BeeFee.OrganizerApp.Services
 			=> companyUrl.HasNotNullArg(nameof(companyUrl)).Using(x => new WebClient {BaseAddress = _imagesHost},
 				(u, c) => c.DownloadDataAsync(new Uri(String.Concat(_imagesHost, "/api/home/", u, "?host=", host))));
 
+		public void GetAccessToFolder(string companyUrl, string eventUrl, string host)
+			=> companyUrl.HasNotNullArg(nameof(companyUrl)).Using(x => new WebClient { BaseAddress = _imagesHost },
+				(u, c) => c.DownloadDataAsync(new Uri(String.Concat(_imagesHost, "/api/home/", u, "/", eventUrl.HasNotNullArg(nameof(eventUrl)), "?host=", host))));
+
 		public Task<bool> RegisterEvent(string companyUrl, string eventUrl, string host)
 			=> eventUrl.HasNotNullArg(nameof(eventUrl)).Using(x => new WebClient {BaseAddress = _imagesHost},
 				async (u, c) => Convert.ToBoolean(
