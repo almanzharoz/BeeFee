@@ -6,8 +6,9 @@ using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Exceptions;
 using BeeFee.ImageApp.Services;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace BeeFee.ImageApp.Tests
 {
@@ -32,7 +33,7 @@ namespace BeeFee.ImageApp.Tests
 			var pathHandler = new PathHandler("images", "private", "public", "resized", "users", "companies", "avatar.jpg", "logo.jpg");
 
 			_service = new ImageService(new MemoryCacheManager(new MemoryCache(new MemoryCacheOptions())), "settings.json", new ImageSize(200, 200), 
-				new ImageSize(200, 200), new ImageSize(4000, 2000), pathHandler, 20, 20, new NullLoggerFactory());
+				new ImageSize(200, 200), new ImageSize(4000, 2000), pathHandler, 20, 20, new LoggerFactory());
 			_service.SetSetting("test", new ImageSettings(new[] { new ImageSize(200, 200), new ImageSize(400, 200) }, false, true), Key);
 			_service.GetAccessToFolder(Key, "testCompany", true);
 			_service.GetAccessToFolder(Key, "testUser", true);

@@ -6,18 +6,22 @@
 		public string Directory { get; set; }
 		public bool HasAccessToSubdirectories { get; set; }
 
-		public MemoryCacheKeyObject(EKeyType keyType, string directory, bool hasAccessToSubdirectories)
+		internal MemoryCacheKeyObject(EKeyType keyType, string directory, bool hasAccessToSubdirectories)
 		{
 			Type = keyType;
 			Directory = directory;
 			HasAccessToSubdirectories = hasAccessToSubdirectories;
 		}
+
+		internal bool IsServerKey
+			=> Type == EKeyType.Server;
 	}
 
-	public enum EKeyType // добавить ключ "server"
+	public enum EKeyType // 
 	{
 		User,
 		Moderator,
-		Company
+		Company,
+		Server
 	}
 }
