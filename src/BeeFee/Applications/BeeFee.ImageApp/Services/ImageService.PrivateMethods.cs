@@ -79,20 +79,37 @@ namespace BeeFee.ImageApp.Services
 		}
 
 		private bool IsKeyValid(string key, string companyName, string eventName) //TODO: Нужна проверка companyName/eventName
-			=> key == "server" || _cacheManager.IsSet(MakeKey(key, Path.Combine(companyName, eventName))) &&
-			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, Path.Combine(companyName, eventName))).Directory ==
-			   Path.Combine(companyName, eventName) ||
-			   _cacheManager.IsSet(MakeKey(key, companyName)) &&
-			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName)).Directory == companyName &&
-			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName)).HasAccessToSubdirectories;
+			//=> _cacheManager.IsSet(MakeKey(key, Path.Combine(companyName, eventName))) &&
+			//   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, Path.Combine(companyName, eventName))).Directory ==
+			//   Path.Combine(companyName, eventName) ||
+			//   _cacheManager.IsSet(MakeKey(key, companyName)) &&
+			//   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName)).Directory == companyName &&
+			//   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName)).HasAccessToSubdirectories;
+
+		{
+			var eventKey = _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, Path.Combine(companyName, eventName)));
+			var companyKey = _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName));
+			var serverKey = _cacheManager.Get<MemoryCacheKeyObject>(key);
+
+			if (eventKey != null && eventKey.Directory == Path.Combine(companyName, eventName)) return true;
+			if (companyKey != null && companyKey.Directory == companyName && companyKey.HasAccessToSubdirectories) return true;
+			return serverKey != null && serverKey.IsServerKey;
+		}
 
 		private bool IsKeyValid(string key, string companyName)
-			=> key == "server" ||
-			   _cacheManager.IsSet(MakeKey(key, companyName)) &&
-			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName)).Directory == companyName &&
-			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName)).HasAccessToSubdirectories;
+			//=> key == "server" ||
+			//   _cacheManager.IsSet(MakeKey(key, companyName)) &&
+			//   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName)).Directory == companyName &&
+			//   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName)).HasAccessToSubdirectories;
+		{
+			var companyKey = _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName));
+			var serverKey = _cacheManager.Get<MemoryCacheKeyObject>(key);
 
-		private void SerializeSettings()
+			if (companyKey != null && companyKey.Directory == companyName && companyKey.HasAccessToSubdirectories) return true;
+			return serverKey != null && serverKey.IsServerKey;
+		}
+
+	private void SerializeSettings()
 		{
 			lock (_locker)
 				File.WriteAllText(_settingsJsonFile, JsonConvert.SerializeObject(_settings));

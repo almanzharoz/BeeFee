@@ -3,6 +3,7 @@ using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace BeeFee.ImageApp
 {
@@ -18,6 +19,7 @@ namespace BeeFee.ImageApp
 					    settings.CompaniesDirectory, settings.UserAvatarFileName, settings.CompanyLogoFileName);
 			    })
 				.AddSingleton(x => new MemoryCacheManager(x.GetService<IMemoryCache>()))
+				.AddSingleton(x => new LoggerFactory())
 			    .AddSingleton(x =>
 			    {
 				    var setting = x.GetService<ImagesAppStartSettings>();
@@ -25,7 +27,8 @@ namespace BeeFee.ImageApp
 					    new ImageSize(setting.UserAvatarWidth, setting.UserAvatarHeight),
 					    new ImageSize(setting.CompanyLogoWidth, setting.CompanyLogoHeight),
 					    new ImageSize(setting.EventImageOriginalWidth, setting.EventImageOriginalHeight), x.GetService<PathHandler>(),
-					    setting.CacheTime, setting.TimeToDeleteInMinutes);
+					    setting.CacheTime, setting.TimeToDeleteInMinutes,
+						x.GetService<LoggerFactory>());
 			    });
     }
 }
