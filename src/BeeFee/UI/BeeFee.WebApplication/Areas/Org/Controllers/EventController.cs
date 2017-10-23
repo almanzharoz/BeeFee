@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharpFuncExt;
 using System.Linq;
+using BeeFee.WebApplication.Models;
 
 namespace BeeFee.WebApplication.Areas.Org.Controllers
 {
@@ -148,23 +149,56 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 
         public IActionResult Remove(string id, string companyId, int version)
         {
-            // TODO: добавить обработку ошибок
-            Service.RemoveEvent(id, companyId, version);
-            return RedirectToAction("Index", new { id = companyId });
+			// TODO: добавить обработку ошибок
+	        try
+	        {
+		        Service.RemoveEvent(id, companyId, version);
+	        }
+	        catch (RemoveEntityException)
+	        {
+		        return View("Error", new ErrorViewModel() {Message = "Произошла ошибка при удалении мероприятия"});
+	        }
+	        catch
+	        {
+		        return View("Error", new ErrorViewModel() {Message = "Произошла неизвестная ошибка"});
+	        }
+	        return RedirectToAction("Index", new { id = companyId });
         }
 
 		public IActionResult Close(string id, string companyId, int version)
 		{
 			// TODO: добавить обработку ошибок
-			Service.CloseEvent(id, companyId, version);
+			try
+			{
+				Service.CloseEvent(id, companyId, version);
+			}
+			catch
+			{
+				return View("Error", new ErrorViewModel() { Message = "Произошла неизвестная ошибка" });
+			}
 			return RedirectToAction("Index", new { id = companyId });
 		}
 
 		public IActionResult ToModerate(string id, string companyId, int version)
         {
 			// TODO: добавить обработку ошибок
-			Service.ToModerate(id, companyId, version);
-            return RedirectToActionPermanent("Index", new { id = companyId });
+	        try
+	        {
+		        Service.ToModerate(id, companyId, version);
+	        }
+	        catch (EntityAccessException<Company>)
+	        {
+		        return View("Error", new ErrorViewModel() {Message = "Произошла ошибка доступа"});
+	        }
+	        catch (ArgumentNullException)
+	        {
+		        return View("Error", new ErrorViewModel {Message = "Внутренняя ошибка сервера"});
+	        }
+	        catch
+	        {
+				return View("Error", new ErrorViewModel() { Message = "Произошла неизвестная ошибка" });
+			}
+			return RedirectToActionPermanent("Index", new { id = companyId });
         }
     }
 }

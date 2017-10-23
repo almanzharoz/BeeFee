@@ -31,7 +31,8 @@ namespace BeeFee.ImageApp.Services
 			}
 		}
 
-		private Task AddOriginalImage(Image<Rgba32> image, string companyName, string eventName, string fileName, EImageType imageType)
+		private Task AddOriginalImage(Image<Rgba32> image, string companyName, string eventName, string fileName,
+			EImageType imageType)
 		{
 			if (imageType != EImageType.EventPrivateOriginalImage && imageType != EImageType.EventPublicOriginalImage)
 				throw new ArgumentException("Image type must be EventPrivateOriginalImage or EventPublicOriginalImage");
@@ -93,7 +94,7 @@ namespace BeeFee.ImageApp.Services
 
 			if (eventKey != null && eventKey.Directory == Path.Combine(companyName, eventName)) return true;
 			if (companyKey != null && companyKey.Directory == companyName && companyKey.HasAccessToSubdirectories) return true;
-			return serverKey != null && serverKey.IsServerKey;
+			return serverKey != null && serverKey.IsAdminKey;
 		}
 
 		private bool IsKeyValid(string key, string companyName)
@@ -106,10 +107,10 @@ namespace BeeFee.ImageApp.Services
 			var serverKey = _cacheManager.Get<MemoryCacheKeyObject>(key);
 
 			if (companyKey != null && companyKey.Directory == companyName && companyKey.HasAccessToSubdirectories) return true;
-			return serverKey != null && serverKey.IsServerKey;
+			return serverKey != null && serverKey.IsAdminKey;
 		}
 
-	private void SerializeSettings()
+		private void SerializeSettings()
 		{
 			lock (_locker)
 				File.WriteAllText(_settingsJsonFile, JsonConvert.SerializeObject(_settings));
@@ -120,7 +121,8 @@ namespace BeeFee.ImageApp.Services
 			if (!File.Exists(_settingsJsonFile) || string.IsNullOrEmpty(File.ReadAllText(_settingsJsonFile)))
 				return null;
 			lock (_locker)
-				return JsonConvert.DeserializeObject<ConcurrentDictionary<string, ImageSettings>>(File.ReadAllText(_settingsJsonFile));
+				return JsonConvert.DeserializeObject<ConcurrentDictionary<string, ImageSettings>>(
+					File.ReadAllText(_settingsJsonFile));
 		}
 	}
 }
