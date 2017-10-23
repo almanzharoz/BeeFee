@@ -13,8 +13,8 @@
 			HasAccessToSubdirectories = hasAccessToSubdirectories;
 		}
 
-		internal bool IsServerKey
-			=> Type == EKeyType.Server;
+		internal bool IsAdminKey
+			=> Type == EKeyType.Admin;
 	}
 
 	public enum EKeyType // 
@@ -22,6 +22,6 @@
 		User,
 		Moderator,
 		Company,
-		Server
+		Admin
 	}
 }
