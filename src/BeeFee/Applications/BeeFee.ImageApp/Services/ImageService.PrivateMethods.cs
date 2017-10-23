@@ -78,7 +78,7 @@ namespace BeeFee.ImageApp.Services
 			}
 		}
 
-		private bool IsKeyValid(string key, string companyName, string eventName) //TODO: Нужна проверка companyName/eventName
+		private bool IsKeyValid(string key, string companyName, string eventName)
 			//=> _cacheManager.IsSet(MakeKey(key, Path.Combine(companyName, eventName))) &&
 			//   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, Path.Combine(companyName, eventName))).Directory ==
 			//   Path.Combine(companyName, eventName) ||
