@@ -79,9 +79,8 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				if (eventId != null) // ошибок нет, событие сохранено
 				{
 					var company = Service.GetCompany<CompanyJoinProjection>(model.CompanyId);
-					_imagesService.GetAccessToFolder(company.Url, Request.Host.Host);
-					var r = await _imagesService.RegisterEvent(company.Url, model.Url,
-						Request.Host.Host);
+					_imagesService.GetAccessToFolder(company.Url, model.Url, Request.Host.Host);
+					var r = await _imagesService.RegisterEvent(company.Url, model.Url, Request.Host.Host);
 					if (model.File != null && model.File.Length > 0)
 						await _imagesService.AddEventCover(company.Url, model.Url, Path.GetFileName(model.File.FileName),
 							model.File.OpenReadStream());
@@ -97,7 +96,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             var @event = Service.GetEvent(id, companyId);
             if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
                 return NotFound();
-            _imagesService.GetAccessToFolder(@event.Parent.Url, Request.Host.Host);
+            _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.Host.Host);
 			var model = new UpdateEventModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>());
 			if (preview)
 				model.SetPreviewWithStep(Service.GetPreviewEvent(id, companyId));
@@ -106,41 +105,45 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 			return View(model);
         }
 
-        [HttpPost]
-        public IActionResult Edit(UpdateEventModel model)
-        {
+		[HttpPost]
+		public IActionResult Edit(UpdateEventModel model)
+		{
 			if (ModelState.IsValid)
 			{
 				if (model.Try(m => Service.UpdateEvent(
-					m.Id,
-					m.CompanyId,
-					m.Version,
-					m.Name,
-					m.Label,
-					m.Url,
-					m.Cover,
-					m.Email,
-					new EventDateTime(m.StartDateTime, m.FinishDateTime),
-					new Address(m.City, m.Address),
-					m.CategoryId,
-					//new[] { new TicketPrice() { Price = new Price(model.Price) } },
-					null,
-					m.Html))
-					.Catch<EntityAccessException<Company>>((e, m) => ModelState.AddModelError("error", $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
-					.Catch<ArgumentNullException>((e, m) => ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
+						m.Id,
+						m.CompanyId,
+						m.Version,
+						m.Name,
+						m.Label,
+						m.Url,
+						m.Cover,
+						m.Email,
+						new EventDateTime(m.StartDateTime, m.FinishDateTime),
+						new Address(m.City, m.Address),
+						m.CategoryId,
+						//new[] { new TicketPrice() { Price = new Price(model.Price) } },
+						null,
+						m.Html))
+					.Catch<EntityAccessException<Company>>((e, m) => ModelState.AddModelError("error",
+						$"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
+					.Catch<ArgumentNullException>((e, m) =>
+						ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
 					.Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
-					.Catch<EventStateException>((e, m) => ModelState.AddModelError("error", $"Cобытие со статусом {e.State} нельзя изменить"))
+					.Catch<EventStateException>((e, m) =>
+						ModelState.AddModelError("error", $"Cобытие со статусом {e.State} нельзя изменить"))
 					.Use())
 				{
 					ModelState[nameof(model.Version)].RawValue = model.Saved().Version; // hack
 					model.SetPreviewWithStep(Service.GetPreviewEvent(model.Id, model.CompanyId));
 				}
 			}
-			model.Init(Service.GetCompany<CompanyJoinProjection>(model.CompanyId), CategoryService.GetAllCategories<BaseCategoryProjection>());
-            return View(model);
-        }
+			model.Init(Service.GetCompany<CompanyJoinProjection>(model.CompanyId),
+				CategoryService.GetAllCategories<BaseCategoryProjection>());
+			return View(model);
+		}
 
-        public IActionResult Preview(string id, string companyId)
+		public IActionResult Preview(string id, string companyId)
             => Service.GetPreviewEvent(id, companyId).If(IsAjax, PartialView, x => (IActionResult)View(x));
 
         public IActionResult Remove(string id, string companyId, int version)
