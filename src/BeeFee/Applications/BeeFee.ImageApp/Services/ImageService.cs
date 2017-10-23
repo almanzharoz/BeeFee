@@ -170,6 +170,12 @@ namespace BeeFee.ImageApp.Services
 					_cacheTime);
 		}
 
+		public void GetServerAccess(string key)
+		{
+			if (!_cacheManager.IsSet(key))
+				_cacheManager.Set(key, new MemoryCacheKeyObject(EKeyType.Server, null, true), _cacheTime);
+		}
+
 		public bool RegisterEvent(string companyName, string eventName, string key)
 		{
 			try
