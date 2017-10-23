@@ -33,9 +33,9 @@ namespace BeeFee.ImageApp.Tests
 			_service = new ImageService(new MemoryCacheManager(new MemoryCache(new MemoryCacheOptions())), "settings.json", new ImageSize(200, 200), 
 				new ImageSize(200, 200), new ImageSize(4000, 2000), pathHandler, 20, 20);
 			_service.SetSetting("test", new ImageSettings(new[] { new ImageSize(200, 200), new ImageSize(400, 200) }, false, true), Key);
+			_service.GetAccessToFolder(Key, "testCompany", true);
+			_service.GetAccessToFolder(Key, "testUser", true);
 			_service.RegisterEvent("testCompany", "testEvent", Key);
-			_service.GetAccessToFolder(Key, "testCompany");
-			_service.GetAccessToFolder(Key, "testUser");
 		}
 
 		private static void DeleteDirectory(string path, int i = 0)
@@ -76,11 +76,11 @@ namespace BeeFee.ImageApp.Tests
 			Assert.IsTrue(Directory.Exists(Path.Combine("images", "resized", "testCompany", "testEvent")));
 		}
 
-		[TestMethod]
-		public void CreateExistingDirectories()
-		{
-			Assert.ThrowsException<DirectoryAlreadyExistsException>(() => _service.RegisterEvent("testCompany", "testEvent", Key));
-		}
+		//[TestMethod]
+		//public void CreateExistingDirectories()
+		//{
+		//	Assert.ThrowsException<DirectoryAlreadyExistsException>(() => _service.RegisterEvent("testCompany", "testEvent", Key));
+		//}
 
 		[TestMethod]
 		public void SimpleAddImageAndTestPath()

@@ -8,6 +8,7 @@ using BeeFee.ImageApp.Caching;
 using BeeFee.ImageApp.Embed;
 using BeeFee.ImageApp.Exceptions;
 using BeeFee.ImageApp.Helpers;
+using Microsoft.Extensions.Logging;
 using SharpFuncExt;
 using SixLabors.ImageSharp;
 
@@ -25,10 +26,11 @@ namespace BeeFee.ImageApp.Services
 		private readonly object _locker;
 		private readonly string _settingsJsonFile;
 		private readonly TimeSpan _timeToDelete;
+		private readonly ILogger _logger;
 
 		public ImageService(MemoryCacheManager cacheManager, string settingsJsonFile,
 			ImageSize userAvatarSize, ImageSize companyLogoSize, ImageSize eventImageOriginalMaxSize, PathHandler pathHandler,
-			int cacheTime, int timeToDeleteInMinutes)
+			int cacheTime, int timeToDeleteInMinutes, ILoggerFactory loggerFactory)
 		{
 			_cacheManager = cacheManager;
 			_locker = new object();
@@ -43,6 +45,7 @@ namespace BeeFee.ImageApp.Services
 			_pathHandler = pathHandler;
 			_cacheTime = cacheTime;
 			_timeToDelete = TimeSpan.FromMinutes(timeToDeleteInMinutes);
+			_logger = loggerFactory.CreateLogger<ImageApp>();
 		}
 
 		/// <summary>
@@ -67,7 +70,7 @@ namespace BeeFee.ImageApp.Services
 		public async Task<ImageOperationResult> AddEventImage(Stream stream, string companyName, string eventName,
 			string fileName, string settingName, string key)
 		{
-			if (!IsKeyValid(key, companyName)) throw new AccessDeniedException();
+			if (!IsKeyValid(key, companyName, eventName)) throw new AccessDeniedException();
 			if (!_settings.TryGetValue(settingName, out var setting))
 				throw new KeyNotFoundException($"setting with {settingName} not found");
 
@@ -95,7 +98,7 @@ namespace BeeFee.ImageApp.Services
 		/// <exception cref="FileNotFoundException"></exception>
 		public void RemoveEventImage(string companyName, string eventName, string fileName, string key)
 		{
-			if(!IsKeyValid(key, companyName) || 
+			if(!IsKeyValid(key, companyName, eventName) || 
 				_pathHandler.IsFileLivesLessThan(_timeToDelete, _pathHandler.FindPathToOriginalEventImage(companyName, eventName, fileName)))
 				throw new AccessDeniedException();
 			if(!_pathHandler.IsEventImageExists(companyName, eventName, fileName)) throw new FileNotFoundException();
@@ -112,7 +115,7 @@ namespace BeeFee.ImageApp.Services
 		/// <exception cref="FileNotFoundException"></exception>
 		public ImageOperationResult RenameEventImage(string companyName, string eventName, string oldFileName, string newFileName, bool canChangeName, string key)
 		{
-			if(!IsKeyValid(key, companyName)) throw new AccessDeniedException();
+			if(!IsKeyValid(key, companyName, eventName)) throw new AccessDeniedException();
 			if (!_pathHandler.IsEventImageExists(companyName, eventName, oldFileName)) throw new FileNotFoundException();
 
 			try
@@ -133,7 +136,7 @@ namespace BeeFee.ImageApp.Services
 		public async Task<ImageOperationResult> UpdateEventImage(Stream stream, string companyName, string eventName,
 			string fileName, string settingName, string key)
 		{
-			if (!IsKeyValid(key, companyName)) throw new AccessDeniedException();
+			if (!IsKeyValid(key, companyName, eventName)) throw new AccessDeniedException();
 			if (!_settings.TryGetValue(settingName, out var setting))
 				throw new KeyNotFoundException($"setting with {settingName} not found");
 
@@ -150,29 +153,34 @@ namespace BeeFee.ImageApp.Services
 			return new ImageOperationResult(EImageOperationResult.Ok, fileName);
 		}
 
-		public void GetAccessToFolder(string key, string directoryName)
+		public void GetAccessToFolder(string key, string companyName, bool hasAccessToSubDirectories)
 		{
-			var fullKey = MakeKey(key, directoryName);
+			var fullKey = MakeKey(key, companyName);
 			//if (_cacheManager.IsSet(fullKey))
 				//_cacheManager.Remove(fullKey); // TODO: А зачем здесь Remove и дальнейший Set?
 			if (!_cacheManager.IsSet(fullKey))
-				_cacheManager.Set(fullKey, new MemoryCacheKeyObject(EKeyType.User, directoryName), _cacheTime);
+				_cacheManager.Set(fullKey, new MemoryCacheKeyObject(EKeyType.User, companyName, hasAccessToSubDirectories), _cacheTime);
+		}
+
+		public void GetAccessToFolder(string key, string companyName, string eventName)
+		{
+			var fullKey = MakeKey(key, Path.Combine(companyName, eventName));
+			if (!_cacheManager.IsSet(fullKey))
+				_cacheManager.Set(fullKey, new MemoryCacheKeyObject(EKeyType.User, Path.Combine(companyName, eventName), true),
+					_cacheTime);
 		}
 
 		public bool RegisterEvent(string companyName, string eventName, string key)
 		{
 			try
 			{
-				if (IsKeyValid(key, companyName))
-				{
-					_pathHandler.CreateEventFolder(companyName, eventName);
-					return true;
-				}
+				if (!IsKeyValid(key, companyName, eventName)) throw new AccessDeniedException();
+				_pathHandler.CreateEventFolder(companyName, eventName);
+				return true;
 			}
-			catch(Exception e)
+			catch(DirectoryAlreadyExistsException e)
 			{
-				//TODO: Логирование
-				Console.WriteLine(e);
+				Console.WriteLine(e); //TODO: логгирование
 			}
 			return false;
 		}

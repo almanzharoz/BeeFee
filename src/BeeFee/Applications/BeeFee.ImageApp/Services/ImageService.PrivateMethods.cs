@@ -78,9 +78,19 @@ namespace BeeFee.ImageApp.Services
 			}
 		}
 
-		private bool IsKeyValid(string key, string directoryName) //TODO: Нужна проверка companyName/eventName
-			=> key == "server" || _cacheManager.IsSet(MakeKey(key, directoryName)) &&
-			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, directoryName)).Directory == directoryName;
+		private bool IsKeyValid(string key, string companyName, string eventName) //TODO: Нужна проверка companyName/eventName
+			=> key == "server" || _cacheManager.IsSet(MakeKey(key, Path.Combine(companyName, eventName))) &&
+			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, Path.Combine(companyName, eventName))).Directory ==
+			   Path.Combine(companyName, eventName) ||
+			   _cacheManager.IsSet(MakeKey(key, companyName)) &&
+			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName)).Directory == companyName &&
+			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName)).HasAccessToSubdirectories;
+
+		private bool IsKeyValid(string key, string companyName)
+			=> key == "server" ||
+			   _cacheManager.IsSet(MakeKey(key, companyName)) &&
+			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName)).Directory == companyName &&
+			   _cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName)).HasAccessToSubdirectories;
 
 		private void SerializeSettings()
 		{
