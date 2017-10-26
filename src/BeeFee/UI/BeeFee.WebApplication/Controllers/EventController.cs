@@ -9,6 +9,7 @@ using BeeFee.Model.Services;
 using BeeFee.WebApplication.Infrastructure.Services;
 using BeeFee.WebApplication.Models.Event;
 using Microsoft.AspNetCore.Mvc;
+using SharpFuncExt;
 
 namespace BeeFee.WebApplication.Controllers
 {
@@ -56,7 +57,7 @@ namespace BeeFee.WebApplication.Controllers
             var @event = await Service.GetEventByUrl(cid, id);
             if (@event == null)
                 return NotFound();
-            if (ModelState.IsValid)
+			if (ModelState.IsValid)
             {
                 if (Service.RegisterToEvent(@event.Id, @event.Parent.Id, model.Email, model.Name, model.Phone,
                     @event.Prices.First().Id))

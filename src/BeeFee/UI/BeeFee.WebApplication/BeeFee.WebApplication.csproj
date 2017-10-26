@@ -47,7 +47,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Applications\BeeFee.AdminApp\BeeFee.AdminApp.csproj" />
     <ProjectReference Include="..\..\Applications\BeeFee.ClientApp\BeeFee.ClientApp.csproj" />
-    <ProjectReference Include="..\..\Applications\BeeFee.ImageApp\BeeFee.ImageApp.csproj" />
     <ProjectReference Include="..\..\Applications\BeeFee.LoginApp\BeeFee.LoginApp.csproj" />
     <ProjectReference Include="..\..\Applications\BeeFee.ModeratorApp\BeeFee.ModeratorApp.csproj" />
     <ProjectReference Include="..\..\Applications\BeeFee.OrganizerApp\BeeFee.OrganizerApp.csproj" />

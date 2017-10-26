@@ -7,10 +7,15 @@
 		@if (User.IsInRole(RoleNames.Admin))
 		{
 			<li><a asp-area="Admin" asp-controller="Category" asp-action="Index">Категории</a></li>
+			<li><a asp-area="Admin" asp-controller="Users" asp-action="Index">Пользователи</a></li>
 		}
 		@if (User.IsInRole(RoleNames.Organizer))
 		{
 			<li><a asp-area="Org" asp-controller="Company" asp-action="Index">Мои компании и события</a></li>
+		}
+		else if (User.IsInRole(RoleNames.User))
+		{
+			<li><a asp-area="Org" asp-controller="Company" asp-action="Add">Создать компанию</a></li>
 		}
 		@if (User.IsInRole(RoleNames.EventModerator))
 		{

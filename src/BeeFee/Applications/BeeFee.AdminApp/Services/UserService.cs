@@ -34,6 +34,9 @@ namespace BeeFee.AdminApp.Services
 		public UserProjection GetUser(string id)
 			=> GetById<UserProjection>(id);
 
+		public Pager<UserProjection> GetUsers(int page = 0, int limit = 10)
+			=> FilterPager<User, UserProjection>(q=>q, page, limit);
+
 		public IReadOnlyCollection<UserProjection> SearchUsersByEmail(string query)
 			=> Search<User, UserProjection>(q => q
 				.Wildcard(w => w
@@ -41,5 +44,8 @@ namespace BeeFee.AdminApp.Services
 					.Value($"*{query.ToLowerInvariant()}*")));
 
 		public bool DeleteUser(string id) => Remove<UserProjection>(id, true);
+
+		public bool ChangeRole(string id, EUserRole role)
+			=> UpdateById<UserUpdateProjection>(id, u => u.ChangeRole(role), true);
 	}
 }

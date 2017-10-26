@@ -42,7 +42,7 @@ namespace BeeFee.LoginApp.Services
             if (FilterCount<UserProjection>(q => q.Term(x => x.Email, email.ToLowerInvariant())) > 0)
                 return UserRegistrationResult.EmailAlreadyExists;
 
-	        return Insert(new RegisterUserProjection(email, name, password, new[] {EUserRole.User, EUserRole.Organizer, EUserRole.Admin, EUserRole.EventModerator}), true)
+	        return Insert(new RegisterUserProjection(email, name, password, email=="admin@dk.ru"?new[]{ EUserRole.Admin } : new[] {EUserRole.User/*, EUserRole.Organizer, EUserRole.Admin, EUserRole.EventModerator*/}), true)
 		        ? UserRegistrationResult.Ok
 		        : UserRegistrationResult.UnknownError;
         }
