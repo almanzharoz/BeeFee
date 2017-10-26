@@ -8,5 +8,10 @@ namespace BeeFee.WebApplication.Models
         public string Message { get; set; }
 
 		public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+	    public ErrorViewModel(string message)
+	    {
+		    Message = message;
+	    }
     }
 }

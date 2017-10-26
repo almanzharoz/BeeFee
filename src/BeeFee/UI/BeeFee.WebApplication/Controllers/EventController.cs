@@ -5,9 +5,14 @@ using System.Threading.Tasks;
 using BeeFee.ClientApp.Projections.Event;
 using BeeFee.ClientApp.Services;
 using BeeFee.Model.Embed;
+using BeeFee.Model.Exceptions;
+using BeeFee.Model.Interfaces;
+using BeeFee.Model.Models;
 using BeeFee.Model.Services;
 using BeeFee.WebApplication.Infrastructure.Services;
 using BeeFee.WebApplication.Models.Event;
+using Core.ElasticSearch.Domain;
+using Core.ElasticSearch.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeeFee.WebApplication.Controllers
@@ -45,6 +50,7 @@ namespace BeeFee.WebApplication.Controllers
             var @event = await Service.GetEventByUrl(cid, id);
             if (@event == null)
                 return NotFound();
+			throw new UpdateEntityException();
             return View(new EventPageModel(@event, User.Identity.Name, User.Claims.Where(c => c.Type.Equals(ClaimTypes.Email, StringComparison.Ordinal)).Select(c => c.Value).FirstOrDefault(), "", @event.Prices.First().Left>0 && @event.State != EEventState.Close /*TODO: Добавить проверки дат*/ ? r : 3));
         }
 

@@ -86,13 +86,14 @@ namespace BeeFee.WebApplication
 		{
 			if (env.IsDevelopment())
 			{
-				app.UseDeveloperExceptionPage();
+				//app.UseDeveloperExceptionPage();
+				app.UseExceptionHandler("/Home/Error");
 				app.UseBrowserLink();
 			}
 			else
 			{
-				//app.UseExceptionHandler("/Home/Error");
-				app.UseMiddleware<ExceptionHandlerMiddleware>();
+				app.UseExceptionHandler("/Home/Error");
+				//app.UseMiddleware<ExceptionHandlerMiddleware>();
 			}
 
 			app.UseFileServer(new FileServerOptions()
