@@ -1,7 +1,13 @@
+@using BeeFee.Model.Embed
 @model BeeFee.WebApplication.Models.Event.EventFilterViewModel
 @{
-    ViewData["Title"] = "Home Page";
-    Layout = "_LayoutMain";
+	ViewData["Title"] = "Home Page";
+	Layout = "_LayoutMain";
+	var startUrl = Url.Action("Register", "Account");
+	if (User.Identity != null && User.Identity.IsAuthenticated)
+	{
+		startUrl = User.IsInRole(RoleNames.Organizer) ? Url.Action("Index", "Company", new {area="Org"}) : Url.Action("Add", "Company", new { area = "Org" });
+	}
 }
 @section fixed_header
     {
@@ -14,7 +20,7 @@
         <div class="container">
             <div class="intro--title">Создай своё событие</div>
             <div class="intro--text">И расскажи о нём всем</div>
-            <div class="intro--btn"><a class="btn is-block is-sm" href="#">Начать</a></div>
+            <div class="intro--btn"><a class="btn is-block is-sm" href="@startUrl">Начать</a></div>
         </div>
     </div>
 </div>

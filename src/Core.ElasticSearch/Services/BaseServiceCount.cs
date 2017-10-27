@@ -27,7 +27,7 @@ namespace Core.ElasticSearch
 								.IfNotNull(sort, y => y.Sort(sort))
 								.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())
 								.IfNotNull(take, y => y.Take(take).Skip(page * take))),
-						r => r.Hits.Select(x => new KeyValuePair<TProjection, int>(x.Source, (int)x.Score)).ToArray().If(load, Load),
+						r => r.Hits.Select(x => new KeyValuePair<TProjection, int>(x.Source, (int)(x.Score>1 && x.Score<2?0:x.Score))).ToArray().If(load, Load),
 						RepositoryLoggingEvents.ES_SEARCH));
 
 		protected int FilterCount<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query) where T : class, IEntity

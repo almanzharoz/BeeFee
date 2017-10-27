@@ -51,7 +51,7 @@ namespace BeeFee.WebApplication.Controllers
             var @event = await Service.GetEventByUrl(cid, id);
             if (@event == null)
                 return NotFound();
-			throw new UpdateEntityException();
+			//throw new UpdateEntityException();
             return View(new EventPageModel(@event, User.Identity.Name, User.Claims.Where(c => c.Type.Equals(ClaimTypes.Email, StringComparison.Ordinal)).Select(c => c.Value).FirstOrDefault(), "", @event.Prices.First().Left>0 && @event.State != EEventState.Close /*TODO: Добавить проверки дат*/ ? r : 3));
         }
 

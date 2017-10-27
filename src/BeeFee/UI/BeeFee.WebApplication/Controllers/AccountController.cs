@@ -40,30 +40,46 @@ namespace BeeFee.WebApplication.Controllers
 				return TryAjaxView("_LoginForm", vm);
 			}
 
-			var claims = new List<Claim>
-			{
-				new Claim(ClaimTypes.Name, user.Name),
-			    new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-				new Claim("IP", Request.Host.Host, ClaimValueTypes.String),
-				new Claim("permission-foo", "grant")
-			};
-			claims.AddRange((user.Roles ?? new[] { EUserRole.Anonym }).Select(x => new Claim(ClaimTypes.Role, x.ToString().ToLower())));
-
-            var identity = new ClaimsIdentity("MyCookieAuthenticationScheme");
-            identity.AddClaims(claims);
-
-            var principal = new ClaimsPrincipal(identity);
-
-	        await HttpContext.SignInAsync("MyCookieAuthenticationScheme", principal, new AuthenticationProperties
-	        {
-		        ExpiresUtc = DateTime.UtcNow.AddMinutes(20)
-	        });
+			await Login(user);
 
 			//_logger.LogInformation(4, "User logged in.");
 
 			return IsAjax ? (IActionResult)Json(new {url = vm.ReturnUrl}) : Redirect(vm.ReturnUrl ?? "/");
         }
+
+		private async Task<UserProjection> Login(UserProjection user)
+		{
+			var claims = new List<Claim>
+			{
+				new Claim(ClaimTypes.Name, user.Name),
+				new Claim(ClaimTypes.Email, user.Email),
+				new Claim(ClaimTypes.NameIdentifier, user.Id),
+				new Claim("IP", Request.Host.Host, ClaimValueTypes.String),
+				//new Claim("permission-foo", "grant")
+			};
+			claims.AddRange((user.Roles ?? new[] { EUserRole.Anonym }).Select(x => new Claim(ClaimTypes.Role, x.ToString().ToLower())));
+
+			var identity = new ClaimsIdentity("MyCookieAuthenticationScheme");
+			identity.AddClaims(claims);
+
+			var principal = new ClaimsPrincipal(identity);
+
+			await HttpContext.SignInAsync("MyCookieAuthenticationScheme", principal, new AuthenticationProperties
+			{
+				ExpiresUtc = DateTime.UtcNow.AddMinutes(20)
+			});
+
+			return user;
+		}
+
+		public async Task<IActionResult> Relogin(string returnUrl)
+		{
+			var user = Service.GetUser<UserProjection>();
+
+			await Login(user);
+
+			return Redirect(returnUrl ?? "/");
+		}
 
 		[Authorize]
         [HttpGet]
@@ -89,15 +105,16 @@ namespace BeeFee.WebApplication.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var result = Service.Register(model.Email, model.Name, model.Password);
-                switch (result)
+                switch (result.Item1)
                 {
                     case UserRegistrationResult.Ok:
                         model.Result = "Пользователь успешно зарегистрирован.";
+						await Login(result.Item2);
                         break;
                     case UserRegistrationResult.EmailAlreadyExists:
                         ModelState.AddModelError("", "Указанный email уже существует");

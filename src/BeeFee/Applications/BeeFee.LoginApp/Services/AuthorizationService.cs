@@ -25,26 +25,32 @@ namespace BeeFee.LoginApp.Services
 		    => Filter<User, UserProjection>(q => q.Term(x => x.Email, email), null, 0,1)
 			    .FirstOrDefault(x => x.CheckPassword(password));
 
-        public UserRegistrationResult Register(string email, string name, string password)
+        public (UserRegistrationResult, UserProjection) Register(string email, string name, string password)
         {
             if (String.IsNullOrEmpty(email))
-                return UserRegistrationResult.EmailIsEmpty;
+                return (UserRegistrationResult.EmailIsEmpty, null);
 
             if (!CommonHelper.IsValidEmail(email))
-                return UserRegistrationResult.WrongEmail;
+                return (UserRegistrationResult.WrongEmail, null);
 
-            if (String.IsNullOrWhiteSpace(password))
-                return UserRegistrationResult.PasswordIsEmpty;
+			if (String.IsNullOrWhiteSpace(password))
+                return (UserRegistrationResult.PasswordIsEmpty, null);
 
-            if (String.IsNullOrEmpty(name))
-                return UserRegistrationResult.NameIsEmpty;
+			if (String.IsNullOrEmpty(name))
+                return (UserRegistrationResult.NameIsEmpty, null);
 
-            if (FilterCount<UserProjection>(q => q.Term(x => x.Email, email.ToLowerInvariant())) > 0)
-                return UserRegistrationResult.EmailAlreadyExists;
+			if (FilterCount<UserProjection>(q => q.Term(x => x.Email, email.ToLowerInvariant())) > 0)
+                return (UserRegistrationResult.EmailAlreadyExists, null);
 
-	        return Insert(new RegisterUserProjection(email, name, password, email=="admin@dk.ru"?new[]{ EUserRole.Admin } : new[] {EUserRole.User/*, EUserRole.Organizer, EUserRole.Admin, EUserRole.EventModerator*/}), true)
+			var result = Insert<RegisterUserProjection, UserProjection>(
+				new RegisterUserProjection(email, name, password,
+					email == "admin@dk.ru"
+						? new[] {EUserRole.Admin}
+						: new[] {EUserRole.User /*, EUserRole.Organizer, EUserRole.Admin, EUserRole.EventModerator*/}));
+
+			return (result != null
 		        ? UserRegistrationResult.Ok
-		        : UserRegistrationResult.UnknownError;
+		        : UserRegistrationResult.UnknownError, result);
         }
 
 	    public bool ChangePassword(string email, string oldPassword, string newPassword)

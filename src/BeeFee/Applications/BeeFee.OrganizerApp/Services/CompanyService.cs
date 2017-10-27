@@ -21,16 +21,18 @@ namespace BeeFee.OrganizerApp.Services
 		{
 		}
 
-		public CompanyProjection AddCompany(string name, string url, string logo)
+		public CompanyProjection AddCompany(string name, string url, string email, string logo)
 			=> url.IfNull(name, CommonHelper.UriTransliterate).IfNot(ExistsByUrl<CompanyProjection>,
-				x => InsertWithVersion<NewCompany, CompanyProjection>(new NewCompany(GetById<BaseUserProjection>(User.Id), name, x, logo)), 
+				x => InsertWithVersion<NewCompany, CompanyProjection>(new NewCompany(GetById<BaseUserProjection>(User.Id), name, x, email, logo)), 
 				x => null);
 
 		public bool StartOrg()
 			=> UpdateById<UserUpdateProjection>(User.Id, u => u.StartOrg(), true);
 
 		public IReadOnlyCollection<KeyValuePair<CompanyProjection, int>> GetMyCompanies()
-			=> SearchWithScore<Company, CompanyProjection>(f => (f.Term(p => p.Users.First().User, User.Id) && f.HasChild<Event>(c => c.Query(q => q.MatchAll()).ScoreMode(ChildScoreMode.Sum))) || f.Term(p => p.Users.First().User, User.Id));
+			=> SearchWithScore<Company, CompanyProjection>(f =>
+				f.Bool(b => b.Must(m => m.Term(p => p.Users.First().User, User.Id, 0.0))
+					.Should(s => s.HasChild<Event>(c => c.Query(q => q.MatchAll()).ScoreMode(ChildScoreMode.Sum)))));
 
 		public CompanyProjection GetCompany(string id)
 			=> GetWithVersionByIdAndQuery<Company, CompanyProjection>(id, f => f.Term(p => p.Users.First().User, User.Id));

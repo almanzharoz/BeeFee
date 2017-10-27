@@ -1,4 +1,6 @@
-﻿using BeeFee.Model.Embed;
+﻿using System.Collections.Generic;
+using System.Linq;
+using BeeFee.Model.Embed;
 using BeeFee.Model.Services;
 using BeeFee.OrganizerApp.Projections.Company;
 using BeeFee.OrganizerApp.Services;
@@ -33,12 +35,14 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 		[HttpPost]
 		public IActionResult Add(AddCompanyEditModel model)
 			=> ModelState.IsValid.If(
-				() => Service.AddCompany(model.Name, model.Url, model.File != null && model.File.Length > 0 ? "company.jpg" : null) //TODO: Переделать заливку логотипа
+				() => Service.AddCompany(model.Name, model.Url, model.Email, model.File != null && model.File.Length > 0 ? "company.jpg" : null)
 					.IfNotNull<CompanyProjection, IActionResult>(x =>
 					{
-						Service.StartOrg();
 						if (model.File != null && model.File.Length > 0)
 							_imagesService.AddCompanyLogo(x.Url, model.File.OpenReadStream());
+						if (Service.StartOrg())
+							return RedirectToActionPermanent("Relogin", "Account",
+								new {area = "", returnUrl = "/Org/Event/Add?companyId=" + x.Id});
 						return RedirectToActionPermanent("Index");
 					}, () => View("SaveError")),
 				() => View(model));

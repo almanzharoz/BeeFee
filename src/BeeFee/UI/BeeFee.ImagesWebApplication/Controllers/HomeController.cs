@@ -21,7 +21,7 @@ namespace BeeFee.ImagesWebApplication.Controllers
     public class HomeController : Controller
     {
 	    private readonly ImageService _service;
-		private readonly string _registratorHost = "localhost";
+		private readonly string _registratorHost = "92.63.110.223";
 
 		public HomeController(ImageService service)
 	    {
@@ -60,6 +60,7 @@ namespace BeeFee.ImagesWebApplication.Controllers
 			Console.WriteLine("Server: "+ Request.Host.Host);
 			if (_registratorHost != Request.Host.Host)
 				throw new AccessDeniedException();
+			_service.GetAccessToFolder(host, companyName, eventName);
 			return _service.RegisterEvent(companyName, eventName, "server");
 		}
 
