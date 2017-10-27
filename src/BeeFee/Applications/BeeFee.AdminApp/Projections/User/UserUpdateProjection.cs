@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Helpers;
 using Core.ElasticSearch.Domain;
@@ -30,6 +31,15 @@ namespace BeeFee.AdminApp.Projections.User
 			Roles = roles;
 			Password = password;
 			Salt = salt;
+		}
+
+		public UserUpdateProjection ChangeRole(EUserRole role)
+		{
+			Roles = role.IfIn(Roles,
+					(r, a) => a.Remove(r),
+					(r, a) => a.Add(r))
+				.ToArray();
+			return this;
 		}
 	}
 }

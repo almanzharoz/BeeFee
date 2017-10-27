@@ -14,6 +14,7 @@ using BeeFee.WebApplication.Models.Event;
 using Core.ElasticSearch.Domain;
 using Core.ElasticSearch.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using SharpFuncExt;
 
 namespace BeeFee.WebApplication.Controllers
 {
@@ -62,7 +63,7 @@ namespace BeeFee.WebApplication.Controllers
             var @event = await Service.GetEventByUrl(cid, id);
             if (@event == null)
                 return NotFound();
-            if (ModelState.IsValid)
+			if (ModelState.IsValid)
             {
                 if (Service.RegisterToEvent(@event.Id, @event.Parent.Id, model.Email, model.Name, model.Phone,
                     @event.Prices.First().Id))

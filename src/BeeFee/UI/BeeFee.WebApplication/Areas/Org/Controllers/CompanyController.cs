@@ -12,7 +12,7 @@ using SharpFuncExt;
 namespace BeeFee.WebApplication.Areas.Org.Controllers
 {
 	[Area("Org")]
-	[Authorize(Roles = RoleNames.Organizer)]
+	[Authorize(Roles = RoleNames.User)]
 	public class CompanyController : BaseController<CompanyService>
 	{
         private readonly ImagesService _imagesService;
@@ -22,6 +22,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             _imagesService = new ImagesService(BeeFeeWebAppSettings.Instance.ImagesUrl);
 		}
 
+		[Authorize(Roles = RoleNames.Organizer)]
 		public IActionResult Index()
 			=> View(Service.GetMyCompanies());
 
@@ -35,16 +36,19 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 				() => Service.AddCompany(model.Name, model.Url, model.File != null && model.File.Length > 0 ? "company.jpg" : null) //TODO: Переделать заливку логотипа
 					.IfNotNull<CompanyProjection, IActionResult>(x =>
 					{
+						Service.StartOrg();
 						if (model.File != null && model.File.Length > 0)
 							_imagesService.AddCompanyLogo(x.Url, model.File.OpenReadStream());
 						return RedirectToActionPermanent("Index");
 					}, () => View("SaveError")),
 				() => View(model));
 
+		[Authorize(Roles = RoleNames.Organizer)]
 		[HttpGet]
 		public IActionResult Edit(string id)
 			=> View(new CompanyEditModel(Service.GetCompany(id).Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host))));
 
+		[Authorize(Roles = RoleNames.Organizer)]
 		[HttpPost]
 		public IActionResult Edit(CompanyEditModel model)
 			=> ModelState.IsValid.If(
@@ -52,6 +56,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 					.If<IActionResult>(() => RedirectToActionPermanent("Index"), () => View("SaveError")),
 				() => View(model));
 
+		[Authorize(Roles = RoleNames.Organizer)]
 		public IActionResult Remove(string id, int version)
 		{
 			Service.RemoveCompany(id, version);

@@ -11,6 +11,7 @@ namespace BeeFee.Model.Embed
 		public const string Organizer = "organizer";
 		public const string User = "user";
 		public const string EventModerator = "eventmoderator";
+		public const string OrganizerGroup = "organizergroup";
 	}
 
 	[JsonConverter(typeof(StringEnumConverter))]
@@ -25,6 +26,8 @@ namespace BeeFee.Model.Embed
 		[EnumMember(Value = RoleNames.User)]
 		User,
 		[EnumMember(Value = RoleNames.EventModerator)]
-		EventModerator
+		EventModerator,
+		[EnumMember(Value = RoleNames.OrganizerGroup)]
+		OrganizerGroup
 	}
 }

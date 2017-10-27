@@ -129,6 +129,5 @@ namespace BeeFee.WebApplication.Controllers
 				Service.UpdateUser(model.Name);
 			return View(model);
 		}
-
 	}
 }

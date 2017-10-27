@@ -8,6 +8,7 @@ using BeeFee.Model.Exceptions;
 using BeeFee.Model.Helpers;
 using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
+using BeeFee.OrganizerApp.Projections;
 using BeeFee.OrganizerApp.Projections.Company;
 using BeeFee.OrganizerApp.Projections.Event;
 using Core.ElasticSearch.Domain;
@@ -51,6 +52,7 @@ namespace BeeFee.OrganizerApp.Services
 			Insert<NewEvent, CompanyJoinProjection>(newEvent, true).ThrowIfNot<AddEntityException<Event>>();
 
 			Insert(new NewEventTransaction(newEvent), false).ThrowIfNot<AddEntityException<EventTransaction>>(); // TODO: при такой ошибке должен быть откат
+
 			return newEvent.Id;
 		}
 

@@ -16,10 +16,13 @@ namespace BeeFee.WebApplication.Areas.Admin.Controllers
 		{
 		}
 
-		public IActionResult Index()
+		public IActionResult Index(int page = 0)
 		{
-			return View();
+			return View(Service.GetUsers(page));
 		}
+
+		public bool ChangeRole(string id, EUserRole role)
+			=> Service.ChangeRole(id, role);
 
 		[HttpGet]
 		public IActionResult Add()

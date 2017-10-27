@@ -1,5 +1,4 @@
 ﻿using System;
-using BeeFee.ImageApp;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeeFee.WebApplication.Infrastructure
@@ -10,7 +9,7 @@ namespace BeeFee.WebApplication.Infrastructure
 			=> String.Concat(BeeFeeWebAppSettings.Instance.ImagesUrl, "/min/", companyUrl, "/", url, "/", filename);
 
 		public static string GetImageUrl(this IUrlHelper helper, string companyUrl, string url, string filename, int width, int height)
-			=> String.Concat(BeeFeeWebAppSettings.Instance.ImagesUrl, "/min/", companyUrl, "/", url, "/", new ImageSize(width, height).ToString(), "/", filename);
+			=> String.Concat(BeeFeeWebAppSettings.Instance.ImagesUrl, "/min/", companyUrl, "/", url, "/", width, "x", height, "/", filename);
 
 		public static string GetImageUrl(this IUrlHelper helper, string companyUrl, string filename)
 			=> String.Concat(BeeFeeWebAppSettings.Instance.ImagesUrl, "/public/companies/", companyUrl, "/", filename);
