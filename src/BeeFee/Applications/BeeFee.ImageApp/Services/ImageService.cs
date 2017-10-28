@@ -11,6 +11,7 @@ using BeeFee.ImageApp.Helpers;
 using Microsoft.Extensions.Logging;
 using SharpFuncExt;
 using SixLabors.ImageSharp;
+using Sharp7Func;
 
 namespace BeeFee.ImageApp.Services
 {
@@ -155,22 +156,32 @@ namespace BeeFee.ImageApp.Services
 			return new ImageOperationResult(EImageOperationResult.Ok, fileName);
 		}
 
+		//public void GetAccessToFolder(string key, string companyName, bool hasAccessToSubDirectories)
+		//{
+		//	var fullKey = MakeKey(key, companyName);
+		//	//if (_cacheManager.IsSet(fullKey))
+		//	//_cacheManager.Remove(fullKey); // TODO: А зачем здесь Remove и дальнейший Set?
+		//	if (!_cacheManager.IsSet(fullKey))
+		//		_cacheManager.Set(fullKey, new MemoryCacheKeyObject(EKeyType.User, companyName, hasAccessToSubDirectories), _cacheTime);
+		//}
+
 		public void GetAccessToFolder(string key, string companyName, bool hasAccessToSubDirectories)
-		{
-			var fullKey = MakeKey(key, companyName);
-			//if (_cacheManager.IsSet(fullKey))
-				//_cacheManager.Remove(fullKey); // TODO: А зачем здесь Remove и дальнейший Set?
-			if (!_cacheManager.IsSet(fullKey))
-				_cacheManager.Set(fullKey, new MemoryCacheKeyObject(EKeyType.User, companyName, hasAccessToSubDirectories), _cacheTime);
-		}
+			=> MakeKey(key, companyName)
+				.IfNot(_cacheManager.IsSet, k =>
+					_cacheManager.Set(k, new MemoryCacheKeyObject(EKeyType.User, companyName, hasAccessToSubDirectories), _cacheTime));
+
+		//public void GetAccessToFolder(string key, string companyName, string eventName)
+		//{
+		//	var fullKey = MakeKey(key, Path.Combine(companyName, eventName));
+		//	if (!_cacheManager.IsSet(fullKey))
+		//		_cacheManager.Set(fullKey, new MemoryCacheKeyObject(EKeyType.User, Path.Combine(companyName, eventName), true),
+		//			_cacheTime);
+		//}
 
 		public void GetAccessToFolder(string key, string companyName, string eventName)
-		{
-			var fullKey = MakeKey(key, Path.Combine(companyName, eventName));
-			if (!_cacheManager.IsSet(fullKey))
-				_cacheManager.Set(fullKey, new MemoryCacheKeyObject(EKeyType.User, Path.Combine(companyName, eventName), true),
-					_cacheTime);
-		}
+			=> MakeKey(key, Path.Combine(companyName, eventName))
+				.IfNot(_cacheManager.IsSet, k =>
+					_cacheManager.Set(k, new MemoryCacheKeyObject(EKeyType.User, Path.Combine(companyName, eventName), true), _cacheTime));
 
 		public void GetAdminAccess(string key)
 		{
@@ -178,20 +189,26 @@ namespace BeeFee.ImageApp.Services
 				_cacheManager.Set(key, new MemoryCacheKeyObject(EKeyType.Admin, null, true), _cacheTime);
 		}
 
+		//public bool RegisterEvent(string companyName, string eventName, string key)
+		//{
+		//	try
+		//	{
+		//		if (!IsKeyValid(key, companyName, eventName)) throw new AccessDeniedException();
+		//		_pathHandler.CreateEventFolder(companyName, eventName);
+		//		return true;
+		//	}
+		//	catch (DirectoryAlreadyExistsException e)
+		//	{
+		//		Console.WriteLine(e); //TODO: логгирование
+		//	}
+		//	return false;
+		//}
+
 		public bool RegisterEvent(string companyName, string eventName, string key)
-		{
-			try
-			{
-				if (!IsKeyValid(key, companyName, eventName)) throw new AccessDeniedException();
-				_pathHandler.CreateEventFolder(companyName, eventName);
-				return true;
-			}
-			catch(DirectoryAlreadyExistsException e)
-			{
-				Console.WriteLine(e); //TODO: логгирование
-			}
-			return false;
-		}
+			=> key.ThrowIf<string, AccessDeniedException>(k => !IsKeyValid(k, companyName, eventName))
+					.Try(k => _pathHandler.CreateEventFolder(companyName, eventName))
+					.Catch<DirectoryAlreadyExistsException>((e, k) => Console.WriteLine(e))
+					.Use();
 
 		public void SetSetting(string settingName, ImageSettings setting, string key)
 		{

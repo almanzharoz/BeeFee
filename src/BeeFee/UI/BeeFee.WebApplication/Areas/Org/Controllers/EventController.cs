@@ -108,11 +108,45 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         }
 
 		[HttpPost]
+		//public IActionResult Edit(UpdateEventModel model)
+		//{
+		//	if (ModelState.IsValid)
+		//	{
+		//		if (model.Try(m => Service.UpdateEvent(
+		//				m.Id,
+		//				m.CompanyId,
+		//				m.Version,
+		//				m.Name,
+		//				m.Label,
+		//				m.Url,
+		//				m.Cover,
+		//				m.Email,
+		//				new EventDateTime(m.StartDateTime, m.FinishDateTime),
+		//				new Address(m.City, m.Address),
+		//				m.CategoryId,
+		//				//new[] { new TicketPrice() { Price = new Price(model.Price) } },
+		//				null,
+		//				m.Html))
+		//			.Catch<EntityAccessException<Company>>((e, m) => ModelState.AddModelError("error",
+		//				$"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
+		//			.Catch<ArgumentNullException>((e, m) =>
+		//				ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
+		//			.Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
+		//			.Catch<EventStateException>((e, m) =>
+		//				ModelState.AddModelError("error", $"Cобытие со статусом {e.State} нельзя изменить"))
+		//			.Use())
+		//		{
+		//			ModelState[nameof(model.Version)].RawValue = model.Saved().Version; // hack
+		//			model.SetPreviewWithStep(Service.GetPreviewEvent(model.Id, model.CompanyId));
+		//		}
+		//	}
+		//	model.Init(Service.GetCompany<CompanyJoinProjection>(model.CompanyId),
+		//		CategoryService.GetAllCategories<BaseCategoryProjection>());
+		//	return View(model);
+		//}
+
 		public IActionResult Edit(UpdateEventModel model)
-		{
-			if (ModelState.IsValid)
-			{
-				if (model.Try(m => Service.UpdateEvent(
+		=> ModelStateIsValid(model, m1 => m1.If(m2 => m2.Try(m => Service.UpdateEvent(
 						m.Id,
 						m.CompanyId,
 						m.Version,
@@ -134,16 +168,14 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 					.Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
 					.Catch<EventStateException>((e, m) =>
 						ModelState.AddModelError("error", $"Cобытие со статусом {e.State} нельзя изменить"))
-					.Use())
-				{
-					ModelState[nameof(model.Version)].RawValue = model.Saved().Version; // hack
-					model.SetPreviewWithStep(Service.GetPreviewEvent(model.Id, model.CompanyId));
-				}
-			}
-			model.Init(Service.GetCompany<CompanyJoinProjection>(model.CompanyId),
-				CategoryService.GetAllCategories<BaseCategoryProjection>());
-			return View(model);
-		}
+					.Use(), m =>
+					{
+						ModelState[nameof(m.Version)].RawValue = m.Saved().Version; // hack
+						m.SetPreviewWithStep(Service.GetPreviewEvent(m.Id, m.CompanyId));
+					}),
+			m => View(m.Init(Service.GetCompany<CompanyJoinProjection>(model.CompanyId),
+				CategoryService.GetAllCategories<BaseCategoryProjection>())));
+			
 
 		public IActionResult Preview(string id, string companyId)
             => Service.GetPreviewEvent(id, companyId).If(IsAjax, PartialView, x => (IActionResult)View(x));

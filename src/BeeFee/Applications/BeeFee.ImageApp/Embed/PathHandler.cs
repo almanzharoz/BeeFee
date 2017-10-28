@@ -171,7 +171,7 @@ namespace BeeFee.ImageApp.Embed
 				yield return path;
 		}
 
-		public void CreateEventFolder(string companyName, string eventName)
+		public bool CreateEventFolder(string companyName, string eventName)
 		{
 			var privateDir = GetParentDirectory(EImageType.EventPrivateOriginalImage, companyName, eventName);
 			var publicDir = GetParentDirectory(EImageType.EventPublicOriginalImage, companyName, eventName);
@@ -187,6 +187,7 @@ namespace BeeFee.ImageApp.Embed
 			Directory.CreateDirectory(privateDir);
 			Directory.CreateDirectory(publicDir);
 			Directory.CreateDirectory(resizedDir);
+			return true;
 		}
 
 		internal bool IsAvatarOrLogoExists(string name, EImageType imageType)

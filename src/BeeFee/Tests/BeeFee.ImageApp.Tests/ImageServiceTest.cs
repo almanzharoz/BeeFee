@@ -9,7 +9,6 @@ using BeeFee.ImageApp.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using SharpFuncExt;
 
 namespace BeeFee.ImageApp.Tests

@@ -34,18 +34,18 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 
 		[HttpPost]
 		public IActionResult Add(AddCompanyEditModel model)
-			=> ModelState.IsValid.If(
-				() => Service.AddCompany(model.Name, model.Url, model.Email, model.File != null && model.File.Length > 0 ? "company.jpg" : null)
+			=> ModelStateIsValid(model, 
+				m => Service.AddCompany(m.Name, m.Url, m.Email, m.File != null && m.File.Length > 0 ? "company.jpg" : null)
 					.IfNotNull<CompanyProjection, IActionResult>(x =>
 					{
-						if (model.File != null && model.File.Length > 0)
-							_imagesService.AddCompanyLogo(x.Url, model.File.OpenReadStream());
+						if (m.File != null && m.File.Length > 0)
+							_imagesService.AddCompanyLogo(x.Url, m.File.OpenReadStream());
 						if (Service.StartOrg())
 							return RedirectToActionPermanent("Relogin", "Account",
 								new {area = "", returnUrl = "/Org/Event/Add?companyId=" + x.Id});
 						return RedirectToActionPermanent("Index");
 					}, () => View("SaveError")),
-				() => View(model));
+				View);
 
 		[Authorize(Roles = RoleNames.Organizer)]
 		[HttpGet]

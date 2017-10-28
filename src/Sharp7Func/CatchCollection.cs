@@ -105,6 +105,23 @@ namespace Sharp7Func
 			return default(TResult);
 		}
 
+		public TArg UseFluent()
+		{
+			try
+			{
+				_func(_arg);
+			}
+			catch (AggregateException e)
+			{
+				throw new AggregateException(e.InnerExceptions.Select(TryUseHandler).Where(x => x != null));
+			}
+			catch (Exception e)
+			{
+				TryUseHandler(e).ThrowIf(x => x != null, x => x);
+			}
+			return _arg;
+		}
+
 		public string UseMessage(out TResult result)
 		{
 			result = default(TResult);

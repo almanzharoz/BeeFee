@@ -6,7 +6,7 @@ using BeeFee.Model.Services;
 
 namespace BeeFee.WebApplication.Controllers
 {
-    public abstract class BaseController<TService> : Controller where TService : BaseBeefeeService
+	public abstract class BaseController<TService> : Controller where TService : BaseBeefeeService
 	{
 		protected readonly TService Service;
 		protected readonly CategoryService CategoryService;
@@ -34,6 +34,24 @@ namespace BeeFee.WebApplication.Controllers
 		[NonAction]
 		public IActionResult TryAjaxView<T>(string ajaxViewName, T model)
 			=> IsAjax ? PartialView(ajaxViewName, model) : (IActionResult)View(model);
+
+		public TResult ModelStateIsValid<T, TResult>(T model, Func<T, TResult> funcIfTrue, Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		{
+			if (ModelState.IsValid)
+				return funcIfTrue(model);
+			return funcIfFalse(model);
+		}
+
+		public TResult ModelStateIsValid<T, TResult>(T model, Func<T, T> funcIfTrue, Func<T, TResult> next) where TResult : IActionResult
+		{
+			if (ModelState.IsValid)
+				funcIfTrue(model);
+			return next(model);
+		}
+	}
+
+	public static class BaseControllerExtensions
+	{
 
 	}
 }
