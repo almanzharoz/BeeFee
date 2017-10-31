@@ -19,10 +19,10 @@
             size,
             $(filter.maxpriceselector).val()).done(function (result) {
                 allLoaded = result.allLoaded;
-			if (result.html.length > 0) {
-				$(listcontainerselector).append(result.html);
-			} else
-				$(listcontainerselector).append("Событий не найдено");
+                if (result.html.length > 0) {
+                    $(listcontainerselector).append(result.html);
+                } else
+                    $(listcontainerselector).append("Событий не найдено");
                 page++;
             }).fail(function () { }).always(function () { loading = false; });
     };
@@ -39,33 +39,44 @@ function initEventPage(nameselector, phoneselector, emailselector) {
 }
 
 function initCreateOrUpdateEventPage() {
+
     $('[data-step-nav="next"]').on('click', function (e) {
         e.preventDefault();
         var current = $('.create--step.is-shown');
-
-        current.removeClass('is-shown').addClass('is-saved');
-        current.next().removeClass('is-saved').addClass('is-shown');
+        current.find("form").submit();
     });
 
-    $('[data-step-nav="edit"]').on('click', function (e) {
-        e.preventDefault();
-        var current = $(this).closest('.create--step');
-
-        $('.create--step.is-shown').removeClass('is-shown');
-        current.removeClass('is-saved').addClass('is-shown');
-    });
-
-    if ($('.wysiwyg-editor').length > 0) {
-        $('.wysiwyg-editor').each(function () {
-            var $inpHtml = $(this).prev();
-            $(this).trumbowyg({
-                lang: 'ru'
-            }).on('tbwblur', function () {
-                $inpHtml.val($(this).trumbowyg("html"));
-            });
-            $(this).trumbowyg('html', $inpHtml.val());
-        });
+    if ($(".html-editor").length > 0) {
+        CKEDITOR.replace($(".html-editor")[0]);
+        $(".html-editor").fadeIn("slow");
     }
+
+    $("#File").change(function () {
+        var $this = $(this);
+        var fd = new FormData;
+        fd.append('file', $this.prop('files')[0]);
+        fd.append('setting', 'event');
+        fd.append('companyName', $this.data("companyurl"));
+        fd.append('eventName', $this.data("eventurl"));
+        $.ajax({
+            url: $this.data("imageserverurl") + '/api/home',
+            contentType: false,
+            processData: false,
+            dataType: 'json',
+            method: "POST",
+            data: fd,
+            success: function (data) {
+                $('#errorUploadImage').remove();
+                if (data.error != null) {
+                    $this.parent().before("<span id='#errorUploadImage' class=error>" + data.error + "</span>");
+                    return;
+                }
+                $this.prev().prev().remove();
+                $this.parent().prepend("<img src='" + $this.data("imageserverurl") + "/min/" + $this.data("companyurl") + "/" + $this.data("eventurl") + "/368x190/" + data.path + "' />");
+                $("#Cover").val(data.path);
+            }
+        });
+    });
 
     $('[data-range="start"]').datetimepicker({
         onChangeDateTime: function (dp, $input) {
@@ -119,6 +130,8 @@ function initCreateOrUpdateEventPage() {
         $.getScript('https://api-maps.yandex.ru/2.1/?lang=ru_RU', function () {
             process(maps);
         });
+
+
 }
 
 function getDoc(frame) {

@@ -1,0 +1,101 @@
+@using BeeFee.Model.Embed
+@using BeeFee.WebApplication.Areas.Org.Models
+@model CreateOrUpdateEventModel
+@{
+    Layout = "~/Views/Shared/_LayoutCabinet.cshtml";
+}
+@functions
+{
+    string getClassForStepSection(int currentStep)
+    {
+        if (Model.Step == currentStep)
+            return "is-shown";
+        if (Model.Step > currentStep)
+            return "is-saved";
+        return null;
+    }
+
+}
+<div class="create">
+    <div class="create--step @getClassForStepSection(0)">
+        <div class="create--head">
+            <div class="create--number">1 / 4</div>
+            <div class="create--title">Основная информация</div>
+            @if (!Model.IsNew)
+            {
+                @Html.ActionLink("редактировать", "Edit", "Event", new { area = "Org", id = Model.Id, companyId = Model.CompanyId }, new { @class = "create--edit" })
+            }
+        </div>
+        <div class="create--body">
+            <div class="create-container">
+                @RenderSection("generalsection", false)
+            </div>
+            <div class="create--btn">
+                <a class="btn-blue" href="#" data-step-nav="next">Сохранить и перейти к описанию</a>
+            </div>
+        </div>
+    </div>
+    <div class="create--step @getClassForStepSection(1)">
+        <div class="create--head">
+            <div class="create--number">2 / 4</div>
+            <div class="create--title">Подробное описание</div>
+            @if (!Model.IsNew)
+            {
+                @Html.ActionLink("редактировать", "EditDescriptionStep", "Event", new { area = "Org", id = Model.Id, companyId = Model.CompanyId }, new { @class = "create--edit" })
+            }
+            @if (Model.Step == 1)
+            {
+                @Html.ActionLink("пропустить описание", "PreviewStep", "Event", new { area = "Org", id = Model.Id, companyId = Model.CompanyId }, new { @class = "create--skip" })
+            }
+        </div>
+        <div class="create--body">
+            <div class="create-container">
+                @RenderSection("descriptionsection", false)
+            </div>
+            <div class="create--btn">
+                <a class="btn-blue" href="#" data-step-nav="next">Сохранить и перейти к предпросмотру</a>
+            </div>
+        </div>
+    </div>
+    @*<div class="create--step @getClassForStepSection(2)" data-step="3" data-url="@Url.Action("LoadSettingFieldsStepCreateOrUpdateEvent")" data-step="preview">
+            <div class="create--head">
+                <div class="create--number">3 / 4</div>
+                <div class="create--title">Настройка регистрации</div><a class="create--edit" href="#" data-step-nav="edit">редактировать</a>
+            </div>
+            <div class="create--body">
+        <div class="container"></div>
+                <div class="create--btn"><a class="btn-blue" href="#" data-step-nav="next">Сохранить и перейти к предпросмотру</a></div>
+            </div>
+        </div>*@
+    <div class="create--step @getClassForStepSection(3)" data-step="finally">
+        <div class="create--head">
+            <div class="create--number">4 / 4</div>
+            <div class="create--title">Предпросмотр</div>
+            @if (!Model.IsNew)
+            {
+                @Html.ActionLink("показать", "PreviewStep", "Event", new { area = "Org", id = Model.Id, companyId = Model.CompanyId }, new { @class = "create--edit" })
+            }
+        </div>
+        <div class="create--body">
+            <div class="create-container">
+                @RenderSection("previewsection", false)
+            </div>
+            @if ((Model.State == EEventState.Created || Model.State == EEventState.NotModerated))
+            {
+                <div class="create--btn">
+                    @Html.ActionLink("Опубликовать", "ToModerate", "Event", new { area = "Org", id = Model.Id, companyId = Model.CompanyId, version = Model.Version }, new { @class = "btn-blue" })
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@RenderBody()
+@section Scripts
+{
+    <script src="~/lib/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            initCreateOrUpdateEventPage();
+        });
+    </script>
+}

@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Areas\Org\Views\Event\_CreateOrUpdateEvent.SettingFields.cshtml" />
+    <None Include="Areas\Org\Views\Event\CreateOrUpdateEvent.SettingFields.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +60,10 @@
     <Content Update="Views\Home\_EventGridItem.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Org\Views\Shared\" />
   </ItemGroup>
 
 </Project>

@@ -17,8 +17,10 @@ using Microsoft.AspNetCore.Mvc;
 using SharpFuncExt;
 using System.Linq;
 using BeeFee.WebApplication.Infrastructure.Middleware;
+using BeeFee.WebApplication.Infrastructure.Services;
 using BeeFee.WebApplication.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace BeeFee.WebApplication.Areas.Org.Controllers
 {
@@ -29,7 +31,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         private readonly BeeFeeWebAppSettings _settings;
         private readonly ImagesService _imagesService;
 
-        public EventController(EventService service, CategoryService categoryService, BeeFeeWebAppSettings settings) : base(service, categoryService)
+        public EventController(EventService service, CategoryService categoryService, BeeFeeWebAppSettings settings, ViewRenderService viewRenderService) : base(service, categoryService)
         {
             _settings = settings;
             _imagesService = new ImagesService(_settings.ImagesUrl);
@@ -41,197 +43,214 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             return View(Service.GetMyEvents(id));
         }
 
-		[HttpGet]
-		public IActionResult Add(string companyId)
-			=> View("Create", new CreateEventModel(
-				Service.GetCompany<CompanyProjection>(companyId)
-					.Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host)),
-				CategoryService.GetAllCategories<BaseCategoryProjection>())
-			{
-				StartDateTime = DateTime.Now,
-				FinishDateTime = DateTime.Now.AddDays(1),
-			});
+        [HttpGet]
+        public IActionResult Add(string companyId)
+            => View("CreateOrUpdateEvent.General", new CreateOrUpdateEventGeneralStepModel(Service.GetCompany<CompanyProjection>(companyId)
+                    .Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host)).Id, CategoryService.GetAllCategories<BaseCategoryProjection>())
+            {
+                StartDateTime = DateTime.Now,
+                FinishDateTime = DateTime.Now.AddDays(1),
+            }
+            );
 
-		[HttpPost]
-		public async Task<IActionResult> Add(CreateEventModel model)
-		{
-			if (ModelState.IsValid)
-			{
-				model.Url = model.Url.IfNull(model.Name, CommonHelper.UriTransliterate)
-					.ThrowIf("/".ContainsExt,
-						x => new InvalidOperationException("url contains \"/\"")); // <- не обращать внимания на эту строчку
-
-				var eventId = model.Try(m =>
-						Service.AddEvent(m.CompanyId,
-							m.CategoryId,
-							m.Name,
-							m.Label,
-							m.Url,
-							m.Email,
-							new EventDateTime(m.StartDateTime, m.FinishDateTime),
-							new Address(m.City, m.Address),
-							new[] {new TicketPrice("ticket", null, 0, 10)},
-							m.Html,
-							model.File != null && model.File.Length > 0 ? Path.GetFileName(model.File.FileName) : null))
-					.Catch<EntityAccessException<Company>>((e, m) => ModelState.AddModelError("error", $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
-					.Catch<ArgumentNullException>((e, m) => ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
-					.Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
-					.Use();
-
-				ModelState[nameof(model.Url)].RawValue = model.Url; // hack
-				if (eventId != null) // ошибок нет, событие сохранено
-				{
-					var company = Service.GetCompany<CompanyJoinProjection>(model.CompanyId);
-					var r = await _imagesService.RegisterEvent(company.Url, model.Url, Request.Host.Host);
-					if (model.File != null && model.File.Length > 0)
-						await _imagesService.AddEventCover(company.Url, model.Url, Path.GetFileName(model.File.FileName),
-							model.File.OpenReadStream());
-					return RedirectToActionPermanent("Edit", new {id = eventId, companyId = company.Id, preview=true});
-				}
-			}
-			return View("Create", model.Init(Service.GetCompany<CompanyJoinProjection>(model.CompanyId), CategoryService.GetAllCategories<BaseCategoryProjection>()));
-		}
-
-		[HttpGet]
-        public IActionResult Edit(string id, string companyId, bool preview = false)
+        [HttpGet]
+        public IActionResult Edit(string id, string companyId)
         {
             var @event = Service.GetEvent(id, companyId);
             if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
                 return NotFound();
             _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.Host.Host);
-			var model = new UpdateEventModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>());
-			if (preview)
-				model.SetPreviewWithStep(Service.GetPreviewEvent(id, companyId));
-			else
-				model.SetPreviewWithoutStep(Service.GetPreviewEvent(id, companyId));
-			return View(model);
+            return View("CreateOrUpdateEvent.General", new CreateOrUpdateEventGeneralStepModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>()));
         }
 
-		[HttpPost]
-		//public IActionResult Edit(UpdateEventModel model)
-		//{
-		//	if (ModelState.IsValid)
-		//	{
-		//		if (model.Try(m => Service.UpdateEvent(
-		//				m.Id,
-		//				m.CompanyId,
-		//				m.Version,
-		//				m.Name,
-		//				m.Label,
-		//				m.Url,
-		//				m.Cover,
-		//				m.Email,
-		//				new EventDateTime(m.StartDateTime, m.FinishDateTime),
-		//				new Address(m.City, m.Address),
-		//				m.CategoryId,
-		//				//new[] { new TicketPrice() { Price = new Price(model.Price) } },
-		//				null,
-		//				m.Html))
-		//			.Catch<EntityAccessException<Company>>((e, m) => ModelState.AddModelError("error",
-		//				$"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
-		//			.Catch<ArgumentNullException>((e, m) =>
-		//				ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
-		//			.Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
-		//			.Catch<EventStateException>((e, m) =>
-		//				ModelState.AddModelError("error", $"Cобытие со статусом {e.State} нельзя изменить"))
-		//			.Use())
-		//		{
-		//			ModelState[nameof(model.Version)].RawValue = model.Saved().Version; // hack
-		//			model.SetPreviewWithStep(Service.GetPreviewEvent(model.Id, model.CompanyId));
-		//		}
-		//	}
-		//	model.Init(Service.GetCompany<CompanyJoinProjection>(model.CompanyId),
-		//		CategoryService.GetAllCategories<BaseCategoryProjection>());
-		//	return View(model);
-		//}
 
-		public IActionResult Edit(UpdateEventModel model)
-		=> ModelStateIsValid(model, m1 => m1.If(m2 => m2.Try(m => Service.UpdateEvent(
-						m.Id,
-						m.CompanyId,
-						m.Version,
-						m.Name,
-						m.Label,
-						m.Url,
-						m.Cover,
-						m.Email,
-						new EventDateTime(m.StartDateTime, m.FinishDateTime),
-						new Address(m.City, m.Address),
-						m.CategoryId,
-						//new[] { new TicketPrice() { Price = new Price(model.Price) } },
-						null,
-						m.Html))
-					.Catch<EntityAccessException<Company>>((e, m) => ModelState.AddModelError("error",
-						$"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
-					.Catch<ArgumentNullException>((e, m) =>
-						ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
-					.Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
-					.Catch<EventStateException>((e, m) =>
-						ModelState.AddModelError("error", $"Cобытие со статусом {e.State} нельзя изменить"))
-					.Use(), m =>
-					{
-						ModelState[nameof(m.Version)].RawValue = m.Saved().Version; // hack
-						m.SetPreviewWithStep(Service.GetPreviewEvent(m.Id, m.CompanyId));
-					}),
-			m => View(m.Init(Service.GetCompany<CompanyJoinProjection>(model.CompanyId),
-				CategoryService.GetAllCategories<BaseCategoryProjection>())));
-			
+        [HttpPost]
+        public async Task<IActionResult> EventGeneralSettingsStep(CreateOrUpdateEventGeneralStepModel model)
+        {
+            if (model.StartDateTime > model.FinishDateTime)
+            {
+                ModelState.AddModelError(nameof(model.StartDateTime),
+                    $"Дата начала позднее даты окончания");
+            }
+            if (ModelState.IsValid)
+            {
+                var allOk = false;
+                if (model.IsNew)//если модель для нового события то создаём его
+                {
+                    model.Url = model.Url.IfNull(model.Name, CommonHelper.UriTransliterate)
+                        .ThrowIf("/".ContainsExt,
+                            x => new InvalidOperationException(
+                                "url contains \"/\"")); // <- не обращать внимания на эту строчку
 
-		public IActionResult Preview(string id, string companyId)
+                    var eventId = model.Try(m =>
+                            Service.AddEvent(m.CompanyId,
+                                m.CategoryId,
+                                m.Name,
+                                m.Label,
+                                m.Url,
+                                m.Email,
+                                new EventDateTime(m.StartDateTime, m.FinishDateTime),
+                                new Address(m.City, m.Address),
+                                new[] { new TicketPrice("ticket", null, 0, 10) },
+                                "",
+                                model.File != null && model.File.Length > 0
+                                    ? Path.GetFileName(model.File.FileName)
+                                    : null))
+                        .Catch<EntityAccessException<Company>>((e, m) => ModelState.AddModelError("error",
+                            $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
+                        .Catch<ArgumentNullException>((e, m) =>
+                            ModelState.AddModelError("error",
+                                $"Не указан или не найден аргумент \"{e.ParamName}\""))
+                        .Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
+                        .Use();
+
+                    if (eventId != null) // ошибок нет, событие сохранено
+                    {
+                        var company = Service.GetCompany<CompanyJoinProjection>(model.CompanyId);
+                        var r = await _imagesService.RegisterEvent(company.Url, model.Url, Request.Host.Host);
+                        if (model.File != null && model.File.Length > 0)
+                            await _imagesService.AddEventCover(company.Url, model.Url,
+                                Path.GetFileName(model.File.FileName),
+                                model.File.OpenReadStream());
+                        model.Id = eventId;
+                        allOk = true;
+                    }
+                }
+                else//значит мы должны обновить существующее событие
+                {
+                    if (model.Try(m => Service.UpdateEvent(
+                                    m.Id,
+                                    m.CompanyId,
+                                    m.Version,
+                                    m.Name,
+                                    m.Label,
+                                    m.Url,
+                                    m.Cover,
+                                    m.Email,
+                                    new EventDateTime(m.StartDateTime, m.FinishDateTime),
+                                    new Address(m.City, m.Address),
+                                    m.CategoryId,
+                                    //new[] { new TicketPrice() { Price = new Price(model.Price) } },
+                                    null))
+                                .Catch<EntityAccessException<Company>>((e, m) => ModelState.AddModelError("error",
+                                    $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
+                                .Catch<ArgumentNullException>((e, m) =>
+                                    ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
+                                .Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
+                                .Catch<EventStateException>((e, m) =>
+                                    ModelState.AddModelError("error", $"Cобытие со статусом {e.State} нельзя изменить"))
+                                .Use())
+                    {
+                        allOk = true;
+                    }
+                }
+                if (allOk)
+                    return RedirectToActionPermanent("EditDescriptionStep",
+                        new { id = model.Id, companyId = model.CompanyId });
+            }
+            return View("CreateOrUpdateEvent.General", model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
+        }
+
+        [HttpGet]
+        public IActionResult EditDescriptionStep(string id, string companyId)
+        {
+            var @event = Service.GetEvent(id, companyId);
+            if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
+                return NotFound();
+            _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.Host.Host);
+            return View("CreateOrUpdateEvent.Description", new CreateOrUpdateEventDescriptionStepModel(@event));
+        }
+
+        [HttpPost]
+        public IActionResult EditDescriptionStep(CreateOrUpdateEventDescriptionStepModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (model.Try(m => Service.UpdateEvent(
+                        m.Id,
+                        m.CompanyId,
+                        m.Version,
+                        m.Html))
+                    .Catch<EntityAccessException<Company>>((e, m) => ModelState.AddModelError("error",
+                        $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
+                    .Catch<ArgumentNullException>((e, m) =>
+                        ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
+                    .Catch<ExistsUrlException<Event>>((e, m) => ModelState.AddModelError("Url", e.Message))
+                    .Catch<EventStateException>((e, m) =>
+                        ModelState.AddModelError("error", $"Cобытие со статусом {e.State} нельзя изменить"))
+                    .Use())
+                {
+                    return RedirectToActionPermanent("PreviewStep",
+                        new { id = model.Id, companyId = model.CompanyId });
+                }
+            }
+            return View("CreateOrUpdateEvent.Description", model);
+        }
+
+        [HttpGet]
+        public IActionResult PreviewStep(string id, string companyId)
+        {
+            var @event = Service.GetEvent(id, companyId);
+            if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
+                return NotFound();
+            return View("CreateOrUpdateEvent.Preview", new CreateOrUpdateEventPreviewStepModel(Service.GetPreviewEvent(id, companyId), @event.Version));
+        }
+        
+        public IActionResult Preview(string id, string companyId)
             => Service.GetPreviewEvent(id, companyId).If(IsAjax, PartialView, x => (IActionResult)View(x));
 
         public IActionResult Remove(string id, string companyId, int version)
         {
-			// TODO: добавить обработку ошибок
-	        //try
-	        //{
-		        Service.RemoveEvent(id, companyId, version);
-	        //}
-	        //catch (RemoveEntityException)
-	        //{
-		       // return View("Error", new ErrorViewModel() {Message = "Произошла ошибка при удалении мероприятия"});
-	        //}
-	        //catch
-	        //{
-		       // return View("Error", new ErrorViewModel() {Message = "Произошла неизвестная ошибка"});
-	        //}
-	        return RedirectToAction("Index", new { id = companyId });
+            // TODO: добавить обработку ошибок
+            //try
+            //{
+            Service.RemoveEvent(id, companyId, version);
+            //}
+            //catch (RemoveEntityException)
+            //{
+            // return View("Error", new ErrorViewModel() {Message = "Произошла ошибка при удалении мероприятия"});
+            //}
+            //catch
+            //{
+            // return View("Error", new ErrorViewModel() {Message = "Произошла неизвестная ошибка"});
+            //}
+            return RedirectToAction("Index", new { id = companyId });
         }
 
-		public IActionResult Close(string id, string companyId, int version)
-		{
-			// TODO: добавить обработку ошибок
-			//try
-			//{
-				Service.CloseEvent(id, companyId, version);
-			//}
-			//catch
-			//{
-				//return View("Error", new ErrorViewModel() { Message = "Произошла неизвестная ошибка" });
-			//}
-			return RedirectToAction("Index", new { id = companyId });
-		}
-
-		public IActionResult ToModerate(string id, string companyId, int version)
+        public IActionResult Close(string id, string companyId, int version)
         {
-			// TODO: добавить обработку ошибок
-	        //try
-	        //{
-		        Service.ToModerate(id, companyId, version);
-	  //      }
-	  //      catch (EntityAccessException<Company>)
-	  //      {
-		 //       return View("Error", new ErrorViewModel() {Message = "Произошла ошибка доступа"});
-	  //      }
-	  //      catch (ArgumentNullException)
-	  //      {
-		 //       return View("Error", new ErrorViewModel {Message = "Внутренняя ошибка сервера"});
-	  //      }
-	  //      catch
-	  //      {
-			//	return View("Error", new ErrorViewModel() { Message = "Произошла неизвестная ошибка" });
-			//}
-			return RedirectToActionPermanent("Index", new { id = companyId });
+            // TODO: добавить обработку ошибок
+            //try
+            //{
+            Service.CloseEvent(id, companyId, version);
+            //}
+            //catch
+            //{
+            //return View("Error", new ErrorViewModel() { Message = "Произошла неизвестная ошибка" });
+            //}
+            return RedirectToAction("Index", new { id = companyId });
+        }
+
+        public IActionResult ToModerate(string id, string companyId, int version)
+        {
+            // TODO: добавить обработку ошибок
+            //try
+            //{
+            Service.ToModerate(id, companyId, version);
+            //      }
+            //      catch (EntityAccessException<Company>)
+            //      {
+            //       return View("Error", new ErrorViewModel() {Message = "Произошла ошибка доступа"});
+            //      }
+            //      catch (ArgumentNullException)
+            //      {
+            //       return View("Error", new ErrorViewModel {Message = "Внутренняя ошибка сервера"});
+            //      }
+            //      catch
+            //      {
+            //	return View("Error", new ErrorViewModel() { Message = "Произошла неизвестная ошибка" });
+            //}
+            return RedirectToActionPermanent("Index", new { id = companyId });
         }
     }
 }

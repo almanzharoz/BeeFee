@@ -1,0 +1,21 @@
+@using BeeFee.WebApplication.Infrastructure
+@using SharpFuncExt
+@{
+    Layout = "~/Areas/Org/Views/Event/CreateOrUpdateEventLayout.cshtml";
+}
+
+@model BeeFee.WebApplication.Areas.Org.Models.CreateOrUpdateEventDescriptionStepModel
+@section descriptionsection
+    {
+    <form asp-action="EditDescriptionStep" asp-controller="Event" asp-route-companyId="@Model.CompanyId" method="post" class="form-horizontal" id="event-form">
+        @Html.ValidationSummary(false)
+        @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(m => m.CompanyId)
+        @Html.HiddenFor(m => m.Version)
+        @Html.ValidationMessageFor(m => m.Html, null, new { @class = "text-danger" })
+        <div class="create--editor">
+            @Html.TextAreaFor(m => m.Html, new { @class = "html-editor", style="display:none;" })
+            @*<textarea class="form-control" rows="10" placeholder="HTML here" asp-for="Html" id="html"></textarea>*@
+        </div>
+    </form>
+}

@@ -29,7 +29,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 		public BaseUserProjection Owner { get; private set; }
 
 		internal EventProjection Change(string name, string label, string url, string cover, string email, EventDateTime dateTime, Address address, 
-			BaseCategoryProjection category, TicketPrice[] prices, string html)
+			BaseCategoryProjection category, TicketPrice[] prices)
 		{
 			if (State != EEventState.Created && State != EEventState.NotModerated)
 				throw new EventStateException(State, ExceptionResources.ChangeEventStateException);
@@ -40,11 +40,19 @@ namespace BeeFee.OrganizerApp.Projections.Event
 			Email = email;
 			Category = category.HasNotNullArg(nameof(category));
 			Prices = prices ?? Prices;
-			Page = Page.SetHtml(html).Change(name, label, category.Name, cover, dateTime, address);
+			Page = Page.Change(name, label, category.Name, cover, dateTime, address);
 			return this;
 		}
 
-		internal EventProjection ToModerate()
+	    internal EventProjection ChangeHtml(string html)
+	    {
+	        if (State != EEventState.Created && State != EEventState.NotModerated)
+	            throw new EventStateException(State, ExceptionResources.ChangeEventStateException);
+	        Page = Page.SetHtml(html);
+	        return this;
+	    }
+
+        internal EventProjection ToModerate()
 		{
 			if (State != EEventState.Created && State != EEventState.NotModerated)
 				throw new EventStateException(State, ExceptionResources.ToModerateEventStateException);

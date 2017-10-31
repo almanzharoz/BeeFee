@@ -1,0 +1,28 @@
+@using BeeFee.Model.Interfaces
+@using BeeFee.WebApplication.Infrastructure
+@using SharpFuncExt
+@{
+    Layout = "~/Areas/Org/Views/Event/CreateOrUpdateEventLayout.cshtml";
+}
+@model BeeFee.WebApplication.Areas.Org.Models.CreateOrUpdateEventPreviewStepModel
+@*<div id="preview">
+        @if (Model.Preview != null)
+        {
+            @Html.Partial("_EventPage", Tuple.Create<IEventPageProjection, object>(Model.Preview, null))
+        }
+    </div>*@
+
+
+@section previewsection
+    {
+    <div id="preview">
+        @if (Model.Preview != null)
+        {
+            @Html.Partial("_EventPage", Tuple.Create<IEventPageProjection, object>(Model.Preview, null))
+        }
+    </div>
+    @*<div class="create--links">
+        <div class="create--link">@Html.ActionLink("Предварительный просмотр", "Preview")</div>
+        @*<div class="create--link"><a href="#">Предпросмотр</a></div>*@
+    @*</div>*@
+}
