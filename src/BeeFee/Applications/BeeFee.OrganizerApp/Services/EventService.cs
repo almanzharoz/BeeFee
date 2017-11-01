@@ -100,5 +100,10 @@ namespace BeeFee.OrganizerApp.Services
         /// <exception cref="ArgumentNullException"></exception>
         public bool ToModerate(string id, string company, int version)
             => UpdateById<EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version, x => x.ToModerate(), true);
-    }
+
+		public IReadOnlyCollection<EventTicketTransaction> GetRegisteredUsers(string id, string companyId, int page, int take)
+			=> FilterNested<EventTransaction, TicketTransaction, EventTransactionProjection, EventTicketTransaction>(q => q.Term(p => p.Event, id.HasNotNullArg(nameof(id))) && 
+			q.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId))),
+				x => x.Transactions, x => x.Descending(p => p.Transactions.First().Date), page, take);
+	}
 }

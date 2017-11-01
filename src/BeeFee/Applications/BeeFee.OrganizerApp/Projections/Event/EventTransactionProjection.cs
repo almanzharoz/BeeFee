@@ -27,7 +27,7 @@ namespace BeeFee.OrganizerApp.Projections.Event
 		}
 	}
 
-	internal class EventTicketTransaction
+	public class EventTicketTransaction
 	{
 		public Guid Id { get; }
 		public Guid PriceId { get; }
