@@ -19,5 +19,12 @@ namespace BeeFee.Model.Models
         public string Salt { get; set; }
         [Keyword]
         public EUserRole[] Roles { get; set; }
+
+        [Keyword]
+		public string VerifyEmail { get; set; }
+		[Keyword]
+		public string VerifyPhone { get; set; }
+		[Keyword]
+		public string Phone { get; set; }
 	}
 }

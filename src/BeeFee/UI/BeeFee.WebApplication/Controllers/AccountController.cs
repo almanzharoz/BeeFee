@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using BeeFee.LoginApp.Projections.User;
 using BeeFee.LoginApp.Services;
 using BeeFee.Model.Embed;
+using BeeFee.Model.Exceptions;
 using BeeFee.Model.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using BeeFee.WebApplication.Models.Account;
 using Microsoft.AspNetCore.Authorization;
+using SharpFuncExt;
 
 namespace BeeFee.WebApplication.Controllers
 {
@@ -131,12 +133,35 @@ namespace BeeFee.WebApplication.Controllers
             return View(model);
         }
 
+		[HttpGet]
+		public IActionResult Recover()
+			=> TryAjaxView("Recover", new RecoverEditModel());
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public IActionResult Recover(RecoverEditModel model)
+			=> ModelStateIsValid(model, m => Service.Recover(m.Email), 
+				m => TryAjaxView("RecoverDone", m),
+				m => TryAjaxView("Recover", m));
+
+		[HttpGet]
+		public IActionResult SetPassword(string id)
+			=> View(new SetPasswordEditModel(id.Fluent(x => Service
+				.VerifyEmailForRecover(x.HasNotNullArg("ссылка для восстановления пароля"))
+				.ThrowIfNull<UserProjection, NotFoundException>())));
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public IActionResult SetPassword(SetPasswordEditModel model)
+			=> ModelStateIsValid(model,
+				m => Service.Recover(model.VerifyEmail, model.Password),
+				m => View("SetPasswordSuccess"), View);
+
 		[Authorize]
 		[HttpGet]
 		public IActionResult Profile()
-		{
-			return View(new ProfileEditModel(Service.GetUser<UserProjection>()));
-		}
+			=>  View(new ProfileEditModel(Service.GetUser<UserProjection>()));
+
 		[Authorize]
 		[HttpPost]
         [ValidateAntiForgeryToken]

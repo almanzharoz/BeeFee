@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Org\Views\Shared\**" />
     <Compile Remove="Views\Shared\Components\**" />
+    <Content Remove="Areas\Org\Views\Shared\**" />
     <Content Remove="Views\Shared\Components\**" />
+    <EmbeddedResource Remove="Areas\Org\Views\Shared\**" />
     <EmbeddedResource Remove="Views\Shared\Components\**" />
+    <None Remove="Areas\Org\Views\Shared\**" />
     <None Remove="Views\Shared\Components\**" />
   </ItemGroup>
 
@@ -32,8 +36,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Rewrite" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,10 +68,6 @@
     <Content Update="Views\Home\_EventGridItem.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\Org\Views\Shared\" />
   </ItemGroup>
 
 </Project>

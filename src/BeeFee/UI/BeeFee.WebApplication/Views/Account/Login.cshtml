@@ -2,7 +2,7 @@
 @model BeeFee.WebApplication.Models.Account.LoginViewModel
 
 <div class="container">
-<div class="event-text">
+<div class="event-text" id="ajax-container">
 	<h2>Вход</h2>
 	<form id="loginForm" asp-action="Login" asp-controller="Account" asp-area="" method="post">
 		@Html.HiddenFor(x => x.ReturnUrl)
@@ -27,6 +27,7 @@
 		<div>@Html.ValidationMessage("error")</div>
 		<div class="modals--submit">
 			<button class="btn is-block" type="submit">Вход</button>
+			<a asp-action="Recover" asp-controller="Account" asp-area="" class="ajax-link">восстановить пароль</a>
 		</div>
 		<div class="modals--socials">
 			<div class="modals--socials-t">Войти через социальную сеть</div>

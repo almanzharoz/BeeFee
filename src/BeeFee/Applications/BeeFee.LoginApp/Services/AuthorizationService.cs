@@ -5,6 +5,7 @@ using BeeFee.LoginApp.Projections.User;
 using BeeFee.Model;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Helpers;
+using BeeFee.Model.Jobs.Data;
 using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
 using Core.ElasticSearch.Domain;
@@ -56,12 +57,30 @@ namespace BeeFee.LoginApp.Services
 	    public bool ChangePassword(string email, string oldPassword, string newPassword)
 		    => TryLogin(email, oldPassword)
 			    .NotNullOrDefault(
-				    user => UpdateById<UserUpdateProjection>(user.Id, x => x.ChangePassword(/*oldPassword, */newPassword), true));
+				    user => UpdateById<UserUpdateProjection>(user.Id, x => x.ChangePassword(newPassword), true));
 
 		public T GetUser<T>() where T : BaseEntity, IProjection<User>, IGetProjection
 			=> GetById<T>(User.Id);
 
 		public bool UpdateUser(string name)
 			=> UpdateById<UserUpdateProjection>(User.Id, x => x.Change(name), true);
+
+		public bool Recover(string email)
+			=> Filter<Model.Models.User, UserUpdateProjection>(
+					q => q.Term(p => p.Email, email.HasNotNullArg(nameof(email))), null, 0, 1).FirstOrDefault()
+				.NotNullOrDefault(u => Update(u, f => f.Recover(), false)
+					.IfTrue(() => AddJob(new SendMail(null, email,
+						"<a href='http://localhost:55793/Account/SetPassword/" + u.VerifyEmail + "'></a>",
+						"Восстановлене пароля", null), DateTime.UtcNow)));
+
+		public UserProjection VerifyEmailForRecover(string verifyEmail)
+			=> Filter<User, UserProjection>(
+					q => q.Term(p => p.VerifyEmail, verifyEmail.HasNotNullArg(nameof(verifyEmail)).Trim()), null, 0, 1)
+				.FirstOrDefault();
+
+		public bool Recover(string verifyEmail, string newPassword)
+			=> UpdateWithFilter<UserUpdateProjection>(
+				q => q.Term(p => p.VerifyEmail, verifyEmail.HasNotNullArg(nameof(verifyEmail)).Trim()), null,
+				u => u.ChangePassword(newPassword), true);
 	}
 }

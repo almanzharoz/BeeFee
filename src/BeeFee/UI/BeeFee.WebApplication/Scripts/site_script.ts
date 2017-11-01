@@ -1,4 +1,20 @@
-﻿function initLoginDialog() {
+﻿$(function() {
+	$(this).on("submit", ".ajax-form", function () {
+		var $t = $(this);
+		if ($t.validate().valid())
+			$.post($t.attr("action"), $t.serialize(), data => {
+				$($t.parents("#ajax-container, .modals--body")).html(data);
+			});
+		return false;
+	});
+
+	$(this).on("click", ".ajax-link", function () {
+		$($(this).parents("#ajax-container, .modals--body")).load($(this).attr("href"));
+		return false;
+	});
+});
+
+function initLoginDialog() {
 	$(this.document).on("submit", "#loginForm", function () {
 		var $t = $(this);
 		if ($t.validate().valid())
