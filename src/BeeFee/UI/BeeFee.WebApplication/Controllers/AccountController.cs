@@ -159,6 +159,16 @@ namespace BeeFee.WebApplication.Controllers
 
 		[Authorize]
 		[HttpGet]
+		public IActionResult ChangePassword() => View(new ChangePasswordEditModel());
+
+		[Authorize]
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public IActionResult ChangePassword(ChangePasswordEditModel model)
+			=> ModelStateIsValid(model, m => Service.ChangePassword(m.OldPassword, m.Password), m => View("ChangePasswordSuccess"), View);
+
+		[Authorize]
+		[HttpGet]
 		public IActionResult Profile()
 			=>  View(new ProfileEditModel(Service.GetUser<UserProjection>()));
 
