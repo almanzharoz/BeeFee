@@ -46,7 +46,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         [HttpGet]
         public IActionResult Add(string companyId)
             => View("CreateOrUpdateEvent.General", new CreateOrUpdateEventGeneralStepModel(Service.GetCompany<CompanyProjection>(companyId)
-                    .Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host)).Id, CategoryService.GetAllCategories<BaseCategoryProjection>())
+                    .Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.HttpContext.Connection.RemoteIpAddress.ToString())).Id, CategoryService.GetAllCategories<BaseCategoryProjection>())
             {
                 StartDateTime = DateTime.Now,
                 FinishDateTime = DateTime.Now.AddDays(1),
@@ -59,7 +59,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             var @event = Service.GetEvent(id, companyId);
             if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
                 return NotFound();
-            _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.Host.Host);
+            _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.HttpContext.Connection.RemoteIpAddress.ToString());
             return View("CreateOrUpdateEvent.General", new CreateOrUpdateEventGeneralStepModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>()));
         }
 
@@ -68,11 +68,9 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         public async Task<IActionResult> EventGeneralSettingsStep(CreateOrUpdateEventGeneralStepModel model)
         {
             if (model.StartDateTime > model.FinishDateTime)
-            {
-                ModelState.AddModelError(nameof(model.StartDateTime),
-                    $"Дата начала позднее даты окончания");
-            }
-            if (ModelState.IsValid)
+                ModelState.AddModelError(nameof(model.StartDateTime), "Дата начала позднее даты окончания");
+
+			if (ModelState.IsValid)
             {
                 var allOk = false;
                 if (model.IsNew)//если модель для нового события то создаём его
@@ -107,7 +105,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
                     if (eventId != null) // ошибок нет, событие сохранено
                     {
                         var company = Service.GetCompany<CompanyJoinProjection>(model.CompanyId);
-                        var r = await _imagesService.RegisterEvent(company.Url, model.Url, Request.Host.Host);
+                        var r = await _imagesService.RegisterEvent(company.Url, model.Url, Request.HttpContext.Connection.RemoteIpAddress.ToString());
                         if (model.File != null && model.File.Length > 0)
                             await _imagesService.AddEventCover(company.Url, model.Url,
                                 Path.GetFileName(model.File.FileName),
@@ -157,7 +155,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             var @event = Service.GetEvent(id, companyId);
             if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
                 return NotFound();
-            _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.Host.Host);
+            _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.HttpContext.Connection.RemoteIpAddress.ToString());
             return View("CreateOrUpdateEvent.Description", new CreateOrUpdateEventDescriptionStepModel(@event));
         }
 
