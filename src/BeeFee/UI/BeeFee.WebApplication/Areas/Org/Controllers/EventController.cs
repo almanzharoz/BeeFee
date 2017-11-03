@@ -46,7 +46,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         [HttpGet]
         public IActionResult Add(string companyId)
             => View("~/Areas/Org/Views/Event/CreateOrUpdateEvent/General.cshtml", new CreateOrUpdateEventGeneralStepModel(Service.GetCompany<CompanyProjection>(companyId)
-                    .Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host)).Id, CategoryService.GetAllCategories<BaseCategoryProjection>())
+                    .Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.HttpContext.Connection.RemoteIpAddress.ToString())).Id, CategoryService.GetAllCategories<BaseCategoryProjection>())
             {
                 StartDateTime = DateTime.Now,
                 FinishDateTime = DateTime.Now.AddDays(1),
@@ -59,7 +59,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             var @event = Service.GetEvent(id, companyId);
             if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
                 return NotFound();
-            _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.Host.Host);
+            _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.HttpContext.Connection.RemoteIpAddress.ToString());
             return View("~/Areas/Org/Views/Event/CreateOrUpdateEvent/General.cshtml", new CreateOrUpdateEventGeneralStepModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>()));
         }
 
@@ -111,7 +111,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
                     if (eventId != null) // ошибок нет, событие сохранено
                     {
                         var company = Service.GetCompany<CompanyJoinProjection>(model.CompanyId);
-                        var r = await _imagesService.RegisterEvent(company.Url, model.Url, Request.Host.Host);
+                        var r = await _imagesService.RegisterEvent(company.Url, model.Url, Request.HttpContext.Connection.RemoteIpAddress.ToString());
                         if (model.File != null && model.File.Length > 0)
                             await _imagesService.AddEventCover(company.Url, model.Url,
                                 Path.GetFileName(model.File.FileName),
@@ -161,7 +161,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             var @event = Service.GetEvent(id, companyId);
             if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
                 return NotFound();
-            _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.Host.Host);
+            _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.HttpContext.Connection.RemoteIpAddress.ToString());
             return View("~/Areas/Org/Views/Event/CreateOrUpdateEvent/Description.cshtml", new CreateOrUpdateEventDescriptionStepModel(@event));
         }
 
@@ -206,55 +206,25 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         public IActionResult Remove(string id, string companyId, int version)
         {
             // TODO: добавить обработку ошибок
-            //try
-            //{
             Service.RemoveEvent(id, companyId, version);
-            //}
-            //catch (RemoveEntityException)
-            //{
-            // return View("Error", new ErrorViewModel() {Message = "Произошла ошибка при удалении мероприятия"});
-            //}
-            //catch
-            //{
-            // return View("Error", new ErrorViewModel() {Message = "Произошла неизвестная ошибка"});
-            //}
             return RedirectToAction("Index", new { id = companyId });
         }
 
         public IActionResult Close(string id, string companyId, int version)
         {
             // TODO: добавить обработку ошибок
-            //try
-            //{
             Service.CloseEvent(id, companyId, version);
-            //}
-            //catch
-            //{
-            //return View("Error", new ErrorViewModel() { Message = "Произошла неизвестная ошибка" });
-            //}
             return RedirectToAction("Index", new { id = companyId });
         }
 
         public IActionResult ToModerate(string id, string companyId, int version)
         {
             // TODO: добавить обработку ошибок
-            //try
-            //{
             Service.ToModerate(id, companyId, version);
-            //      }
-            //      catch (EntityAccessException<Company>)
-            //      {
-            //       return View("Error", new ErrorViewModel() {Message = "Произошла ошибка доступа"});
-            //      }
-            //      catch (ArgumentNullException)
-            //      {
-            //       return View("Error", new ErrorViewModel {Message = "Внутренняя ошибка сервера"});
-            //      }
-            //      catch
-            //      {
-            //	return View("Error", new ErrorViewModel() { Message = "Произошла неизвестная ошибка" });
-            //}
             return RedirectToActionPermanent("Index", new { id = companyId });
         }
-    }
+
+		public IActionResult Registered(string id, string companyId, int page=0, int limit = 10)
+			=> View(Service.GetRegisteredUsers(id, companyId, page, limit));
+	}
 }

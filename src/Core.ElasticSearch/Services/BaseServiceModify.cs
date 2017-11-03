@@ -206,7 +206,23 @@ namespace Core.ElasticSearch
 		#region UpdateByQuery
 
 		// TODO: Добавить обновление с TPartial
-		protected T UpdateWithFilter<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query,
+		protected bool UpdateWithFilter<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query,
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort, Func<T, T> update, bool refresh)
+			where T : BaseEntity, ISearchProjection, IProjection, IUpdateProjection
+			=> Filter<T>(query, sort, 0, 1)
+				.FirstOrDefault()
+				.NotNullOrDefault(entity =>
+					Try(c => c.Update(
+							DocumentPath<T>.Id(entity.Id), d => d
+								.Index(_mapping.GetIndexName<T>())
+								.Type(_mapping.GetTypeName<T>())
+								.Doc(update(entity))
+								.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
+						r => r.Result == Result.Updated,
+						RepositoryLoggingEvents.ES_UPDATE,
+						$"Update (Id: {entity.Id})"));
+
+		protected T UpdateWithFilterAndVersion<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query,
 			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort, Func<T, T> update, bool refresh)
 			where T : BaseEntityWithVersion, ISearchProjection, IProjection, IUpdateProjection
 			=> Filter<T>(query, sort, 0, 1)

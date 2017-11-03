@@ -201,6 +201,12 @@ namespace SharpFuncExt
 			return arg;
 		}
 
+		public static T ConsoleLog<T>(this T arg, Func<T, string> func)
+		{
+			Console.WriteLine(func(arg));
+			return arg;
+		}
+
 		public static TResult Try<T, TResult>(this T arg, Func<T, TResult> func, Action<T, Exception> @catch,
 			Func<T, TResult, TResult> @finally)
 		{

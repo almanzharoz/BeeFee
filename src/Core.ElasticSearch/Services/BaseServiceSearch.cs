@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Core.ElasticSearch.Domain;
 using Nest;
@@ -30,23 +31,48 @@ namespace Core.ElasticSearch
 						r => r.Documents.If(load, Load),
 						RepositoryLoggingEvents.ES_SEARCH));
 
-		//public IReadOnlyCollection<TProjection> FilterNested<T, TProjection>(
-		//	Func<QueryContainerDescriptor<T>, QueryContainer> query, Expression<Func<T, object>> path,
-		//	Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 0, bool load = true)
-		//	where TProjection : class
-		//	where T : class, IModel
-		//	=> Try(
-		//				c => c.Search<T>(
-		//					x => x
-		//						.Index(_mapping.GetIndexName<T>())
-		//						.Type(_mapping.GetTypeName<T>())
-		//						//.Source(s => s.Includes(f => f.Fields(projection.Fields)))
-		//						.Query(q => q.Nested(n => n.Path(path).Query(nq => nq.Bool(b => b.Filter(query))).InnerHits()))
-		//						.IfNotNull(sort, y => y.Sort(sort))
-		//						.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())
-		//						.IfNotNull(take, y => y.Take(take).Skip(page * take))),
-		//				r => r.Hits.SelectMany(s => s.InnerHits.Values.SelectMany(h => h.Documents<TProjection>())).ToArray().If(load, Load),
-		//				RepositoryLoggingEvents.ES_SEARCH);
+		public IReadOnlyCollection<TInnerProjection> FilterNested<T, TNested, TProjection, TInnerProjection>(
+			Func<QueryContainerDescriptor<T>, QueryContainer> query,
+			Expression<Func<T, TNested[]>> path,
+			Func<QueryContainerDescriptor<T>, QueryContainer> innerQquery,
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null,
+			int page = 0, int take = 0, bool load = true)
+			where TProjection : class, ISearchProjection, IProjection<T>
+			where T : class, IModel
+			where TInnerProjection : class
+			=> Try(
+				c => c.Search<T, TProjection>(
+					x => x
+						.Index(_mapping.GetIndexName<T>())
+						.Type(_mapping.GetTypeName<T>())
+						//.Source(s => s.Includes(f => f.Fields(projection.Fields)))
+						.Query(q => query(q) && q.Nested(n => n.Path(path).Query(nq => nq.Bool(b => b.Filter(innerQquery)))
+						.InnerHits(h => h.IfNotNull(sort, y => y.Sort(sort)).IfNotNull(take, y => y.Size(take).From(page * take)))))
+						.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())),
+				r => r.Hits.SelectMany(s => s.InnerHits.Values.SelectMany(h => h.Documents<TInnerProjection>())).ToArray()
+					.If(load, Load),
+				RepositoryLoggingEvents.ES_SEARCH);
+
+		public IReadOnlyCollection<TInnerProjection> FilterNested<T, TNested, TProjection, TInnerProjection>(
+			Func<QueryContainerDescriptor<T>, QueryContainer> query,
+			Expression<Func<T, TNested[]>> path,
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null,
+			int page = 0, int take = 0, bool load = true)
+			where TProjection : class, ISearchProjection, IProjection<T>
+			where T : class, IModel
+			where TInnerProjection : class
+			=> Try(
+				c => c.Search<T, TProjection>(
+					x => x
+						.Index(_mapping.GetIndexName<T>())
+						.Type(_mapping.GetTypeName<T>())
+						//.Source(s => s.Includes(f => f.Fields(projection.Fields)))
+						.Query(q => query(q) && q.Nested(n => n.Path(path).Query(iq => iq.MatchAll())
+										.InnerHits(h => h.Name("innerhits").IfNotNull(sort, y => y.Sort(sort)).IfNotNull(take, y => y.Size(take).From(page * take)))))
+						.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())),
+				r => r.Hits.SelectMany(s => s.InnerHits.Values.SelectMany(h => h.Documents<TInnerProjection>())).ToArray()
+					.If(load, Load),
+				RepositoryLoggingEvents.ES_SEARCH);
 
 		protected IReadOnlyCollection<TProjection> Search<T, TProjection>(
 			Func<QueryContainerDescriptor<T>, QueryContainer> query,

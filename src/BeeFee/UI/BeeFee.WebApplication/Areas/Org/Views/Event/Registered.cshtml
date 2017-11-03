@@ -1,0 +1,18 @@
+﻿@model System.Collections.Generic.IReadOnlyCollection<BeeFee.OrganizerApp.Projections.Event.EventTicketTransaction>
+@{
+	ViewBag.Title = "Зарегистированные посетители";
+}
+<table width="100%">
+	@foreach (var t in Model)
+	{
+		<tr>
+			<td>@t.Date</td>
+			<td>@t.State</td>
+			<td>@t.Type</td>
+			<td>@t.Sum</td>
+			<td>@t.Contact.Name</td>
+			<td>@t.Contact.Email</td>
+			<td>@t.Contact.Phone</td>
+		</tr>
+	}
+</table>

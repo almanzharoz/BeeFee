@@ -29,6 +29,9 @@ namespace BeeFee.ImagesWebApplication
 	        services.Configure<PathHandlingSettings>(Configuration.GetSection("PathHandlingSettings"));
 	        services.AddSingleton(cfg => cfg.GetService<IOptions<PathHandlingSettings>>().Value);
 
+			services.Configure<ImagesWebServerSettings>(Configuration.GetSection("ImagesWebServerSettings"));
+			services.AddSingleton(cfg => cfg.GetService<IOptions<ImagesWebServerSettings>>().Value);
+
 			services.AddMvc();
             services.AddMemoryCache();
             services.AddCors();

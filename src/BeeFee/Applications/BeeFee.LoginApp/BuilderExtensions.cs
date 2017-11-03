@@ -16,6 +16,7 @@ namespace BeeFee.LoginApp
 		public static IElasticProjections<BeefeeElasticConnection> UseBeefeeLoginApp(this IElasticProjections<BeefeeElasticConnection> services)
 			=> services
 				.AddProjection<UserProjection, User>()
+				.AddProjection<UserUpdateProjection, User>()
 				.AddProjection<RegisterUserProjection, User>();
 	}
 }

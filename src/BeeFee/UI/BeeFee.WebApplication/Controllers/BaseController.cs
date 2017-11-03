@@ -42,11 +42,18 @@ namespace BeeFee.WebApplication.Controllers
 			return funcIfFalse(model);
 		}
 
-		public TResult ModelStateIsValid<T, TResult>(T model, Func<T, T> funcIfTrue, Func<T, TResult> next) where TResult : IActionResult
+		public TResult ModelStateIsValid<T, TResult, TResultInner>(T model, Func<T, TResultInner> funcIfTrue, Func<T, TResult> next) where TResult : IActionResult
 		{
 			if (ModelState.IsValid)
 				funcIfTrue(model);
 			return next(model);
+		}
+
+		public TResult ModelStateIsValid<T, TResult>(T model, Func<T, bool> func, Func<T, TResult> funcIfTrue, Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		{
+			if (ModelState.IsValid && func(model))
+				return funcIfTrue(model);
+			return funcIfFalse(model);
 		}
 	}
 

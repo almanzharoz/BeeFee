@@ -21,17 +21,18 @@ namespace BeeFee.ImagesWebApplication.Controllers
     public class HomeController : Controller
     {
 	    private readonly ImageService _service;
-		private readonly string _registratorHost = "localhost";
+		private readonly string _registratorHost;
 
-		public HomeController(ImageService service)
+		public HomeController(ImageService service, ImagesWebServerSettings settings)
 	    {
 		    _service = service;
-	    }
+			_registratorHost = settings.RegistratorHost;
+		}
 
 		[HttpPost]
 		[RequestSizeLimit(10000000)]
 		public async Task<JsonResult> Post(Model model)
-			=> Json(await model.File.OpenReadStream()
+			=> Json(await model.ConsoleLog(x => $"POST: Host: \"{Request.HttpContext.Connection.RemoteIpAddress.ToString()}\", Company: \"{x.CompanyName}\", Event: \"{x.EventName}\", File: \"{x.Filename ?? x.File.FileName}\", Setting: \"{x.Setting}\"").File.OpenReadStream()
 				.Using(stream => String.IsNullOrWhiteSpace(model.EventName)
 					? _service.AddCompanyLogo(stream, model.CompanyName, GetHost())
 					: _service.AddEventImage(stream, model.CompanyName, model.EventName, model.Filename ?? model.File.FileName,
@@ -40,7 +41,8 @@ namespace BeeFee.ImagesWebApplication.Controllers
 		[HttpGet("{companyName}")]
 		public void Get(string companyName, string host)
 		{
-			if (_registratorHost != Request.Host.Host)
+			Console.WriteLine($"Host: \"{Request.HttpContext.Connection.RemoteIpAddress.ToString()}\". Get access for host: \"{host}\", Company: \"{companyName}\"");
+			if (_registratorHost != Request.HttpContext.Connection.RemoteIpAddress.ToString())
 				throw new AccessDeniedException();
 			_service.GetAccessToFolder(host, companyName, false);
 		}
@@ -48,7 +50,8 @@ namespace BeeFee.ImagesWebApplication.Controllers
 		[HttpGet("{companyName}/{eventName}")]
 		public void Get(string companyName, string eventName, string host)
 		{
-			if (_registratorHost != Request.Host.Host)
+			Console.WriteLine($"Host: \"{Request.HttpContext.Connection.RemoteIpAddress.ToString()}\". Get access for host: \"{host}\", Company: \"{companyName}\", Event: \"{eventName}\"");
+			if (_registratorHost != Request.HttpContext.Connection.RemoteIpAddress.ToString())
 				throw new AccessDeniedException();
 			_service.GetAccessToFolder(host, companyName, eventName);
 		}
@@ -56,9 +59,7 @@ namespace BeeFee.ImagesWebApplication.Controllers
 		[HttpPut("{companyName}/{eventName}")]
         public bool Put(string companyName, string eventName, string host)
 		{
-			Console.WriteLine("Host: "+host);
-			Console.WriteLine("Server: "+ Request.Host.Host);
-			if (_registratorHost != Request.Host.Host)
+			if (_registratorHost != Request.HttpContext.Connection.RemoteIpAddress.ToString())
 				throw new AccessDeniedException();
 			_service.GetAccessToFolder(host, companyName, eventName);
 			return _service.RegisterEvent(companyName, eventName, "server");
@@ -69,6 +70,6 @@ namespace BeeFee.ImagesWebApplication.Controllers
 			=> _service.RemoveEventImage(companyName, eventName, filename, GetHost());
 
 		private string GetHost()
-			=> _registratorHost == Request.Host.Host ? "server" : Request.Host.Host;
+			=> _registratorHost == Request.HttpContext.Connection.RemoteIpAddress.ToString() ? "server" : Request.HttpContext.Connection.RemoteIpAddress.ToString();
 	}
 }
