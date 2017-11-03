@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Areas\Org\Views\Event\CreateOrUpdateEvent.SettingFields.cshtml" />
+    <None Include="Areas\Org\Views\Event\CreateOrUpdateEvent\SettingFields.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

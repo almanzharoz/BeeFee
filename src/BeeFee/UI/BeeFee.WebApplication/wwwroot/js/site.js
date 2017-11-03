@@ -43,6 +43,10 @@ function initCreateOrUpdateEventPage() {
     $('[data-step-nav="next"]').on('click', function (e) {
         e.preventDefault();
         var current = $('.create--step.is-shown');
+        
+        var validator = current.find("form").data('validator');
+        validator.settings.ignore = "";
+
         current.find("form").submit();
     });
 
@@ -50,7 +54,6 @@ function initCreateOrUpdateEventPage() {
         CKEDITOR.replace($(".html-editor")[0]);
         $(".html-editor").fadeIn("slow");
     }
-
     $("#File").change(function () {
         var $this = $(this);
         var fd = new FormData;

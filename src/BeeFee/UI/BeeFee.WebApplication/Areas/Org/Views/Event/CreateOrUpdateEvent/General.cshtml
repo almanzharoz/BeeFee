@@ -3,7 +3,7 @@
 @using SharpFuncExt
 @model BeeFee.WebApplication.Areas.Org.Models.CreateOrUpdateEventGeneralStepModel
 @{
-    Layout = "~/Areas/Org/Views/Event/CreateOrUpdateEventLayout.cshtml";
+    Layout = "~/Areas/Org/Views/Event/CreateOrUpdateEvent/Layout.cshtml";
 }
 @section generalsection
     {
@@ -26,18 +26,19 @@
         </div>
         @Html.ValidationMessageFor(m => m.Cover, null, new { @class = "text-danger" })
         <div class="create--file">
-            @if (!String.IsNullOrEmpty(Model.Cover))
-            {
-                <img style="display: block; margin-bottom: 15px;" src="@Url.GetImageUrl(Model.CompanyUrl, Model.Url, Model.Cover, 368, 190)" />
-            }
-            @Html.HiddenFor(m => m.Cover)
+            @Html.ValidationMessage("File")
             @if (Model.IsNew)
             {
-                <input class="create--file-i" type="file" name="File" />
-                @Html.ValidationMessage("File")
+                <input class="create--file-i" type="file" name="File" data-val-required="Image is required" data-val="true" />
             }
             else
             {
+                if (!String.IsNullOrEmpty(Model.Cover))
+                {
+                    <img style="display: block; margin-bottom: 15px;" src="@Url.GetImageUrl(Model.CompanyUrl, Model.Url, Model.Cover, 368, 190)" />
+                }
+                @*<input type="hidden" value="@Html.ValueFor(m=>m.Cover)" name="@Html.NameFor(m=>m.Cover)" id="@Html.IdFor(m=>m.Cover)" data-val-required=" Image is required" data-val="true" />*@
+                @Html.HiddenFor(m => m.Cover)
                 <input class="create--file-i" type="file" id="File" data-eventurl="@Model.Url" data-companyurl="@Model.CompanyUrl" data-imageserverurl="@(BeeFeeWebAppSettings.Instance.ImagesUrl)" />
             }
             <div class="create--file-b">Загрузить изображение</div>
@@ -72,6 +73,7 @@
         <div class="create--field with-icon">
             <i class="icon-type"></i>
             <div class="select is-simple">
+
                 @Html.HiddenFor(m => m.CategoryId, new { @class = "select_hidden" })
                 <div class="select_in">
                     <div class="select_title">@Html.Raw(Model.Categories.Any(x => x.Selected) ? Model.Categories.Where(x => x.Selected).Select(x => x.Text).FirstOrDefault() : "<span class=\"select_placeholder\">Категория</span>")</div>

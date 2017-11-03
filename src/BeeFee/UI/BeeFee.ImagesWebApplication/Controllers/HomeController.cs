@@ -21,7 +21,7 @@ namespace BeeFee.ImagesWebApplication.Controllers
     public class HomeController : Controller
     {
 	    private readonly ImageService _service;
-		private readonly string _registratorHost = "92.63.110.223";
+		private readonly string _registratorHost = "localhost";
 
 		public HomeController(ImageService service)
 	    {

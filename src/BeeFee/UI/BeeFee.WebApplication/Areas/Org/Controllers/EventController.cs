@@ -45,7 +45,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 
         [HttpGet]
         public IActionResult Add(string companyId)
-            => View("CreateOrUpdateEvent.General", new CreateOrUpdateEventGeneralStepModel(Service.GetCompany<CompanyProjection>(companyId)
+            => View("~/Areas/Org/Views/Event/CreateOrUpdateEvent/General.cshtml", new CreateOrUpdateEventGeneralStepModel(Service.GetCompany<CompanyProjection>(companyId)
                     .Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host)).Id, CategoryService.GetAllCategories<BaseCategoryProjection>())
             {
                 StartDateTime = DateTime.Now,
@@ -60,7 +60,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
                 return NotFound();
             _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.Host.Host);
-            return View("CreateOrUpdateEvent.General", new CreateOrUpdateEventGeneralStepModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>()));
+            return View("~/Areas/Org/Views/Event/CreateOrUpdateEvent/General.cshtml", new CreateOrUpdateEventGeneralStepModel(@event, CategoryService.GetAllCategories<BaseCategoryProjection>()));
         }
 
 
@@ -72,6 +72,11 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
                 ModelState.AddModelError(nameof(model.StartDateTime),
                     $"Дата начала позднее даты окончания");
             }
+            if (model.IsNew && model.File == null || !model.IsNew && string.IsNullOrEmpty(model.Cover))
+            {
+                ModelState.AddModelError(nameof(model.File),
+                    $"Необходимо выбрать изображение");
+            }
             if (ModelState.IsValid)
             {
                 var allOk = false;
@@ -81,7 +86,6 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
                         .ThrowIf("/".ContainsExt,
                             x => new InvalidOperationException(
                                 "url contains \"/\"")); // <- не обращать внимания на эту строчку
-
                     var eventId = model.Try(m =>
                             Service.AddEvent(m.CompanyId,
                                 m.CategoryId,
@@ -148,7 +152,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
                     return RedirectToActionPermanent("EditDescriptionStep",
                         new { id = model.Id, companyId = model.CompanyId });
             }
-            return View("CreateOrUpdateEvent.General", model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
+            return View("~/Areas/Org/Views/Event/CreateOrUpdateEvent/General.cshtml", model.Init(CategoryService.GetAllCategories<BaseCategoryProjection>()));
         }
 
         [HttpGet]
@@ -158,7 +162,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
                 return NotFound();
             _imagesService.GetAccessToFolder(@event.Parent.Url, @event.Url, Request.Host.Host);
-            return View("CreateOrUpdateEvent.Description", new CreateOrUpdateEventDescriptionStepModel(@event));
+            return View("~/Areas/Org/Views/Event/CreateOrUpdateEvent/Description.cshtml", new CreateOrUpdateEventDescriptionStepModel(@event));
         }
 
         [HttpPost]
@@ -184,7 +188,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
                         new { id = model.Id, companyId = model.CompanyId });
                 }
             }
-            return View("CreateOrUpdateEvent.Description", model);
+            return View("~/Areas/Org/Views/Event/CreateOrUpdateEvent/Description.cshtml", model);
         }
 
         [HttpGet]
@@ -193,9 +197,9 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             var @event = Service.GetEvent(id, companyId);
             if (@event == null || @event.State != EEventState.Created && @event.State != EEventState.NotModerated)
                 return NotFound();
-            return View("CreateOrUpdateEvent.Preview", new CreateOrUpdateEventPreviewStepModel(Service.GetPreviewEvent(id, companyId), @event.Version));
+            return View("~/Areas/Org/Views/Event/CreateOrUpdateEvent/Preview.cshtml", new CreateOrUpdateEventPreviewStepModel(Service.GetPreviewEvent(id, companyId), @event.Version));
         }
-        
+
         public IActionResult Preview(string id, string companyId)
             => Service.GetPreviewEvent(id, companyId).If(IsAjax, PartialView, x => (IActionResult)View(x));
 
