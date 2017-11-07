@@ -8,9 +8,14 @@
 			{
 				<li class="header--item"><a asp-area="Admin" asp-controller="Category" asp-action="Index">Категории</a></li>
 			}
-			@if (User.IsInRole(RoleNames.Organizer))
+			@if (User.IsInRole(RoleNames.MultiOrganizer))
 			{
 				<li class="header--item"><a asp-area="Org" asp-controller="Company" asp-action="Index">Мои компании</a></li>
+			}
+			else if (User.IsInRole(RoleNames.Organizer))
+			{
+				<li class="header--item"><a asp-area="Org" asp-controller="Event" asp-action="Index">Мои события</a></li>
+				<li class="header--item"><a asp-area="Org" asp-controller="Company" asp-action="EditOne">Профиль орг-ра</a></li>
 			}
 			@if (User.IsInRole(RoleNames.EventModerator))
 			{

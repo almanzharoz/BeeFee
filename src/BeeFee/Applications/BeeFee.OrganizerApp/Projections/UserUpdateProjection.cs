@@ -18,10 +18,9 @@ namespace BeeFee.OrganizerApp.Projections
 
 		public UserUpdateProjection StartOrg()
 		{
-			if (Roles.Contains(EUserRole.Organizer))
-				//throw  new Exception("Organizer role already exists");
+			if (Roles.Contains(EUserRole.MultiOrganizer))
 				return this;
-			Roles = Roles.Add(EUserRole.Organizer);
+			Roles = Roles.Add(Roles.Contains(EUserRole.Organizer) ? EUserRole.MultiOrganizer : EUserRole.Organizer);
 			return this;
 		}
 	}

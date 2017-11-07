@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BeeFee.Model;
+using BeeFee.Model.Embed;
 using BeeFee.Model.Exceptions;
 using BeeFee.Model.Helpers;
 using BeeFee.Model.Models;
@@ -44,5 +45,8 @@ namespace BeeFee.OrganizerApp.Services
 
 		public bool RemoveCompany(string id, int version)
 			=> Remove<CompanyProjection>(id.ThrowIfNullFluent(GetCompany, x => new EntityAccessException<Company>(User, x)), version, true);
+
+		public CompanyProjection GetOnlyOneCompany()
+			=> Filter<CompanyProjection>(f => f.Term(p => p.Users.First().User, User.Id) && f.Term(p => p.Users.First().Role, ECompanyUserRole.Owner)).FirstOrDefault();
 	}
 }

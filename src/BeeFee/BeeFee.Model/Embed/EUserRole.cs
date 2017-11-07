@@ -9,6 +9,7 @@ namespace BeeFee.Model.Embed
 		public const string Anonym = "anonym";
 		public const string Admin = "admin";
 		public const string Organizer = "organizer";
+		public const string MultiOrganizer = "multiorganizer";
 		public const string User = "user";
 		public const string EventModerator = "eventmoderator";
 		public const string OrganizerGroup = "organizergroup";
@@ -28,6 +29,8 @@ namespace BeeFee.Model.Embed
 		[EnumMember(Value = RoleNames.EventModerator)]
 		EventModerator,
 		[EnumMember(Value = RoleNames.OrganizerGroup)]
-		OrganizerGroup
+		OrganizerGroup,
+		[EnumMember(Value = RoleNames.MultiOrganizer)]
+		MultiOrganizer
 	}
 }

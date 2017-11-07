@@ -15,12 +15,6 @@ using BeeFee.WebApplication.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharpFuncExt;
-using System.Linq;
-using BeeFee.WebApplication.Infrastructure.Middleware;
-using BeeFee.WebApplication.Infrastructure.Services;
-using BeeFee.WebApplication.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace BeeFee.WebApplication.Areas.Org.Controllers
 {
@@ -43,15 +37,17 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             return View(Service.GetMyEvents(id));
         }
 
-        [HttpGet]
-        public IActionResult Add(string companyId)
-            => View("~/Areas/Org/Views/Event/CreateOrUpdateEvent/General.cshtml", new CreateOrUpdateEventGeneralStepModel(Service.GetCompany<CompanyProjection>(companyId)
-                    .Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.HttpContext.Connection.RemoteIpAddress.ToString())).Id, CategoryService.GetAllCategories<BaseCategoryProjection>())
-            {
-                StartDateTime = DateTime.Now,
-                FinishDateTime = DateTime.Now.AddDays(1),
-            }
-            );
+		[HttpGet]
+		public IActionResult Add(string companyId)
+			=> View("~/Areas/Org/Views/Event/CreateOrUpdateEvent/General.cshtml", new CreateOrUpdateEventGeneralStepModel(Service
+					.GetCompany<CompanyProjection>(companyId)
+					.Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.HttpContext.Connection.RemoteIpAddress.ToString()))
+					.Id, CategoryService.GetAllCategories<BaseCategoryProjection>())
+				{
+					StartDateTime = DateTime.Now,
+					FinishDateTime = DateTime.Now.AddDays(1),
+				}
+			);
 
         [HttpGet]
         public IActionResult Edit(string id, string companyId)
