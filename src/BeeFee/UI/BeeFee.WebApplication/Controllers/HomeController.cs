@@ -47,7 +47,7 @@ namespace BeeFee.WebApplication.Controllers
 						return View(new ErrorViewModel("Ошибка доступа"));
 					case EntityAlreadyExistsException _:
 						return View(new ErrorViewModel("Объект уже существует"));
-					case ExistsUrlException<IWithUrl> _: //Не работает с интерфейсами, видимо нужно обрабатывать каждую сущность отдельно, либо откзааться от дженерика
+					case IExistsUrlException _: //Не работает с интерфейсами, видимо нужно обрабатывать каждую сущность отдельно, либо откзааться от дженерика
 						return View(new ErrorViewModel("URL уже существует"));
 					case RemoveEntityException _:
 						return View(new ErrorViewModel("Ошибка при удалении элемента"));

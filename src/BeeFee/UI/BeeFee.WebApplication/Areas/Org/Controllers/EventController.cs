@@ -32,7 +32,9 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         }
 
         public IActionResult Index(string id)
-        {
+		{
+			if (String.IsNullOrEmpty(id))
+				id = Service.GetCompany<CompanyProjection>(id).Id;
             ViewBag.CompanyId = id;
             return View(Service.GetMyEvents(id));
         }

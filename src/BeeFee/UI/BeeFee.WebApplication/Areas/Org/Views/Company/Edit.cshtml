@@ -15,11 +15,11 @@
 		
 		<div class="create--file">
 			<input class="create--file-i" placeholder="Logo" type="file" id="file"/>
-			<div class="create--file-b">Загрузить логотип</div>
 			@if (!String.IsNullOrEmpty(Model.Logo))
 			{
-				<img style="display: block;" src="@Url.GetImageUrl(Model.Url, Model.Logo)"/>
+				<img style="display: block;" src="@Url.GetImageUrl(Model.Url, Model.Logo)" />
 			}
+			<div class="create--file-b">Загрузить логотип</div>
 			<input type="hidden" class="form-control" placeholder="Logo" asp-for="Logo"/>
 		</div>
 
@@ -38,6 +38,7 @@
 		</div>
 		<div class="create--btn">
 			<button class="btn-blue" type="submit">Сохранить</button>
+			<a asp-action="Add">добавить еще организацию</a>
 		</div>
 	</form>
 </div>
@@ -65,7 +66,7 @@
 							return;
 						}
 						$this.next("img").remove();
-						$this.after("<img src='@(BeeFeeWebAppSettings.Instance.ImagesUrl)/public/companies/@(Model.Url)/company.jpg' />");
+						$this.after("<img src='@(BeeFeeWebAppSettings.Instance.ImagesUrl)/public/companies/@(Model.Url)/company.jpg?ver=" + new Date().getTime()+"' />");
 						$("#Logo").val("company.jpg");
 					}
 				});

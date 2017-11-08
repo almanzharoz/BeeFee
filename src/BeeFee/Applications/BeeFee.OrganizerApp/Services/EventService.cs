@@ -25,8 +25,11 @@ namespace BeeFee.OrganizerApp.Services
         {
         }
 
-        public T GetCompany<T>(string id) where T : BaseEntityWithVersion, IGetProjection, IProjection<Company>
-            => GetWithVersionByIdAndQuery<Company, T>(id.HasNotNullArg("companyId"), f => Query<Company>.Term(p => p.Users.First().User, User.HasNotNullArg(x => x.Id, "user").Id));
+		public T GetCompany<T>(string id)
+			where T : BaseEntityWithVersion, ISearchProjection, IGetProjection, IProjection<Company>
+			=> id.IfNotNull(
+				c => GetWithVersionByIdAndQuery<Company, T>(c, f => Query<Company>.Term(p => p.Users.First().User, User.HasNotNullArg(x => x.Id, "user").Id)),
+				() => Filter<Company, T>(f => Query<Company>.Term(p => p.Users.First().User, User.HasNotNullArg(x => x.Id, "user").Id)).FirstOrDefault());
 
         public EventProjection GetEvent(string id, string company)
             => GetWithVersionByIdAndQuery<Event, EventProjection, CompanyJoinProjection>(id, company.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)).Id, q => UserQuery<EventProjection>());
