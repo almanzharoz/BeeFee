@@ -14,7 +14,7 @@
     "ScrollToFixed": "1.0.8",
     "jquery.maskedinput": "jquery-maskedinput#1.4.1",
     "blueimp-file-upload": "jquery-file-upload#v9.19.1",
-    "jquery-ui-min": "v1.11.4"
+    "jquery-ui": "1.12.1"
   },
   "resolutions": {
     "jquery-validation": "1.17.0",

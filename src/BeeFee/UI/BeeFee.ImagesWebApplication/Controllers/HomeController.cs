@@ -29,15 +29,14 @@ namespace BeeFee.ImagesWebApplication.Controllers
             _registratorHost = settings.RegistratorHost;
         }
 
-        [HttpPost]
-        [RequestSizeLimit(10000000)]
-        public async Task<JsonResult> Post(Model model) => Json(await (model.ConsoleLog(x =>
-                                                                           $"POST: Host: \"{Request.HttpContext.Connection.RemoteIpAddress.ToString()}\", Company: \"{x.CompanyName}\", Event: \"{x.EventName}\", File: \"{x.Filename ?? (model.File ?? Request.Form.Files[0]).FileName}\", Setting: \"{x.Setting}\"").File ?? Request.Form.Files[0]).OpenReadStream()
-            .Using(stream => String.IsNullOrWhiteSpace(model.EventName)
-                ? _service.AddCompanyLogo(stream, model.CompanyName, GetHost())
-                : _service.AddEventImage(stream, model.CompanyName, model.EventName,
-                    model.Filename ?? (model.File ?? Request.Form.Files[0]).FileName,
-                    model.Setting, GetHost())));
+		[HttpPost]
+		[RequestSizeLimit(5000000)]
+		public async Task<JsonResult> Post(Model model)
+			=> Json(await (model.ConsoleLog(x => $"POST: Host: \"{Request.HttpContext.Connection.RemoteIpAddress.ToString()}\", Company: \"{x.CompanyName}\", Event: \"{x.EventName}\", File: \"{x.Filename ?? (model.File ?? Request.Form.Files[0]).FileName}\", Setting: \"{x.Setting}\"").File ?? Request.Form.Files[0]).OpenReadStream()
+				.Using(stream => String.IsNullOrWhiteSpace(model.EventName)
+					? _service.AddCompanyLogo(stream, model.CompanyName, GetHost())
+					: _service.AddEventImage(stream, model.CompanyName, model.EventName, model.Filename ?? (model.File ?? Request.Form.Files[0]).FileName,
+						model.Setting, GetHost())));
 
         [HttpGet("{companyName}")]
         public void Get(string companyName, string host)

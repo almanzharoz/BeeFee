@@ -35,9 +35,9 @@ namespace BeeFee.ImagesWebApplication
 
             services.AddMvc();
             services.AddMemoryCache();
-            services.AddCors();
-            services.AddImageApp();
-        }
+            services.AddCors(x => x.AddPolicy("cors", z => z.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build()));
+			services.AddImageApp();
+		}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -57,7 +57,7 @@ namespace BeeFee.ImagesWebApplication
                 EnableDirectoryBrowsing = false
             });
 
-            app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+			app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build());
             app.UseMvc();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -8,19 +9,25 @@ using BeeFee.LoginApp.Services;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Exceptions;
 using BeeFee.Model.Services;
+using BeeFee.WebApplication.Infrastructure;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using BeeFee.WebApplication.Models.Account;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.WebUtilities;
 using SharpFuncExt;
 
 namespace BeeFee.WebApplication.Controllers
 {
     public class AccountController : BaseController<AuthorizationService>
-    {
-	    public AccountController(AuthorizationService service, CategoryService categoryService) : base(service, categoryService)
-	    {
-	    }
+	{
+		private readonly BeeFeeWebAppSettings _settings;
+
+		public AccountController(AuthorizationService service, CategoryService categoryService, BeeFeeWebAppSettings settings) : base(service, categoryService)
+		{
+			_settings = settings;
+		}
 
 		[HttpGet]
         public IActionResult Login(string returnUrl = null)
@@ -140,14 +147,13 @@ namespace BeeFee.WebApplication.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public IActionResult Recover(RecoverEditModel model)
-			=> ModelStateIsValid(model, m => Service.Recover(m.Email), 
+			=> ModelStateIsValid(model, m => Service.RecoverLink(m.Email, _settings.WebAppUrl), 
 				m => TryAjaxView("RecoverDone", m),
 				m => TryAjaxView("Recover", m));
 
 		[HttpGet]
 		public IActionResult SetPassword(string id)
-			=> View(new SetPasswordEditModel(id.Fluent(x => Service
-				.VerifyEmailForRecover(x.HasNotNullArg("ссылка для восстановления пароля"))
+			=> View(new SetPasswordEditModel(id.Fluent(x => Service.VerifyEmailForRecover(x)
 				.ThrowIfNull<UserProjection, NotFoundException>())));
 
 		[HttpPost]
@@ -155,7 +161,7 @@ namespace BeeFee.WebApplication.Controllers
 		public IActionResult SetPassword(SetPasswordEditModel model)
 			=> ModelStateIsValid(model,
 				m => Service.Recover(model.VerifyEmail, model.Password),
-				m => View("SetPasswordSuccess"), View);
+				m => View("SetPasswordSuccess"), m => View(m.Fluent(x => ModelState.AddModelError("error", "Новый пароль должен отличатся от текущего"))));
 
 		[Authorize]
 		[HttpGet]
@@ -165,7 +171,7 @@ namespace BeeFee.WebApplication.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public IActionResult ChangePassword(ChangePasswordEditModel model)
-			=> ModelStateIsValid(model, m => Service.ChangePassword(m.OldPassword, m.Password), m => View("ChangePasswordSuccess"), View);
+			=> ModelStateIsValid(model, m => Service.ChangePassword(m.OldPassword, m.Password), m => View("ChangePasswordSuccess"), m => View(m.Fluent(x => ModelState.AddModelError("error", "Новый пароль должен отличатся от текущего"))));
 
 		[Authorize]
 		[HttpGet]

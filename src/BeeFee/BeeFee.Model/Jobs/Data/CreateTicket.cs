@@ -8,8 +8,9 @@
 		public string Date { get; }
 		public string Email { get; }
 		public string Cover { get; }
+		public string Caption { get; }
 
-		public CreateTicket(string @event, string name, string date, string email, string cover, string filename)
+		public CreateTicket(string @event, string name, string date, string email, string cover, string caption, string filename)
 		{
 			Event = @event;
 			Name = name;
@@ -17,6 +18,7 @@
 			Email = email;
 			Filename = filename;
 			Cover = cover;
+			Caption = caption;
 		}
 	}
 }

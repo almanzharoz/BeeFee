@@ -21,22 +21,23 @@ namespace BeeFee.JobsApp.Services
 		}
 
 		protected TJob GetNextJob()
-			=> UpdateWithFilter<TJob>(
+			=> UpdateWithFilterAndVersion<TJob>(
 				q => q.Term(p => p.State, EJobState.New) && q.DateRange(d => d.Field(p => p.Start).LessThanOrEquals(DateMath.Now)),
 				s => s.Ascending(p => p.Start), j => j.Fluent(j.Starting), true);
 
 		protected Task<bool> JobExecute(TJob job, Func<TData, Task> action)
 			=> Task.FromResult(job.IfNotNull(
-				x => UpdateWithVersion(x, j => j.Fluent(f => {
+				x => UpdateWithVersion(x, j => j.Fluent(f =>
+				{
 					try
 					{
 						f.Execute(d => action.HasNotNullArg(nameof(action))(d));
-					}catch(Exception e)
+					}
+					catch (Exception e)
 					{
 						Console.WriteLine(e.Message);
 					}
-				}),
-					false), () => false));
+				}), false), () => false));
 
 	}
 }

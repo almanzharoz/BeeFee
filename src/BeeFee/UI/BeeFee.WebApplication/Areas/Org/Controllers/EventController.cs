@@ -32,7 +32,9 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
         }
 
         public IActionResult Index(string id)
-        {
+		{
+			if (String.IsNullOrEmpty(id))
+				id = Service.GetCompany<CompanyProjection>(id).Id;
             ViewBag.CompanyId = id;
             return View(Service.GetMyEvents(id));
         }
@@ -61,6 +63,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 
 
         [HttpPost]
+		[RequestSizeLimit(5000000)]
         public async Task<IActionResult> EventGeneralSettingsStep(CreateOrUpdateEventGeneralStepModel model)
         {
             if (model.StartDateTime > model.FinishDateTime)

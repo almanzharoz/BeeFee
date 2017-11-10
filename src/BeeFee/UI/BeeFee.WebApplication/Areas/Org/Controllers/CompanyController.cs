@@ -24,6 +24,10 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
             _imagesService = new ImagesService(BeeFeeWebAppSettings.Instance.ImagesUrl);
 		}
 
+		[Authorize(Roles = RoleNames.MultiOrganizer)]
+		public IActionResult Index()
+			=> View(Service.GetMyCompanies());
+
 		[HttpGet]
 		public IActionResult Add()
 			=> View(new AddCompanyEditModel());
@@ -31,7 +35,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 		[HttpPost]
 		public IActionResult Add(AddCompanyEditModel model)
 			=> ModelStateIsValid(model, 
-				m => Service.AddCompany(m.Name, m.Url, m.Email, m.File != null && m.File.Length > 0 ? m.File.FileName : null)
+				m => Service.AddCompany(m.Name, m.Url, m.Email, "company.jpg" /*m.File != null && m.File.Length > 0 ? m.File.FileName : null*/)
 					.IfNotNull<CompanyProjection, IActionResult>(x =>
 					{
 						if (m.File != null && m.File.Length > 0)
@@ -41,20 +45,31 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 								new {area = "", returnUrl = "/Org/Event/Add?companyId=" + x.Id});
 						return RedirectToActionPermanent("Index");
 					}, () => View("SaveError")),
-				View);
+				m => (IActionResult)View(m));
 
 		[Authorize(Roles = RoleNames.Organizer)]
 		[HttpGet]
 		public IActionResult Edit(string id)
-			=> View(new CompanyEditModel(Service.GetOnlyOneCompany().Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host))));
+			=> View(new CompanyEditModel(Service.GetCompany(id).Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.HttpContext.Connection.RemoteIpAddress.ToString()))));
 
 		[Authorize(Roles = RoleNames.Organizer)]
 		[HttpPost]
 		public IActionResult Edit(CompanyEditModel model)
 			=> ModelState.IsValid.If(
 				() => Service.EditCompany(model.Id, model.Version, model.Name, model.Url, model.Email, model.Logo)
-					.If<IActionResult>(() => RedirectToActionPermanent("Index"), () => View("SaveError")),
+					.If<IActionResult>(
+						() => User.IsInRole(RoleNames.MultiOrganizer)
+							? RedirectToActionPermanent("Index")
+							: RedirectToActionPermanent("Index", "Event", new {area = "Org", model.Id}), 
+						() => View("SaveError")),
 				() => View(model));
+
+		[Authorize(Roles = RoleNames.MultiOrganizer)]
+		public IActionResult Remove(string id, int version)
+		{
+			Service.RemoveCompany(id, version);
+			return RedirectToActionPermanent("Index");
+		}
 
 	}
 }

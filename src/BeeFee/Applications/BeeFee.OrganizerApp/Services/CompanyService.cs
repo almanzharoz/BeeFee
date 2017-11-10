@@ -36,7 +36,11 @@ namespace BeeFee.OrganizerApp.Services
 					.Should(s => s.HasChild<Event>(c => c.Query(q => q.MatchAll()).ScoreMode(ChildScoreMode.Sum)))));
 
 		public CompanyProjection GetCompany(string id)
-			=> GetWithVersionByIdAndQuery<Company, CompanyProjection>(id, f => f.Term(p => p.Users.First().User, User.Id));
+			=> id.IfNotNull(
+				x => GetWithVersionByIdAndQuery<Company, CompanyProjection>(x, f => f.Term(p => p.Users.First().User, User.Id)),
+				() => Filter<CompanyProjection>(f =>
+						f.Term(p => p.Users.First().User, User.Id) && f.Term(p => p.Users.First().Role, ECompanyUserRole.Owner))
+					.FirstOrDefault());
 
 		public bool EditCompany(string id, int version, string name, string url, string email, string logo)
 			=> UpdateByIdAndQuery<CompanyProjection, EntityAccessException<Company>>(id, version,
@@ -46,7 +50,5 @@ namespace BeeFee.OrganizerApp.Services
 		public bool RemoveCompany(string id, int version)
 			=> Remove<CompanyProjection>(id.ThrowIfNullFluent(GetCompany, x => new EntityAccessException<Company>(User, x)), version, true);
 
-		public CompanyProjection GetOnlyOneCompany()
-			=> Filter<CompanyProjection>(f => f.Term(p => p.Users.First().User, User.Id) && f.Term(p => p.Users.First().Role, ECompanyUserRole.Owner)).FirstOrDefault();
 	}
 }

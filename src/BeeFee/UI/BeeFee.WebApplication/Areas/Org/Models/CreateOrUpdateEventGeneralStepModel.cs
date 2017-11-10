@@ -47,6 +47,7 @@ namespace BeeFee.WebApplication.Areas.Org.Models
         [Required(ErrorMessage = "Email is required"), EmailAddress]
         public string Email { get; set; }
 
+        //[Required] это с какой целью добавлено?
         public IFormFile File { get; set; }
 
         public string Cover { get; set; }

@@ -79,7 +79,7 @@ namespace BeeFee.ClientApp.Services
         }
 
 
-		public bool RegisterToEvent(string id, string companyId, string email, string name, string phoneNumber, Guid ticketId)
+		public bool RegisterToEvent(string id, string companyId, string email, string name, string phoneNumber, Guid ticketId, string imagesUrl)
 			=> (Update<RegisterToEventProjection>(f => f
 				.Term(p => p.Event, id.HasNotNullArg(nameof(id))) && f.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId))) &&
 					f.Nested(n => n.Path(p => p.Prices).Query(q => q.Term(t => t.Prices.First().Id, ticketId) && q.Range(r => r.Field(p => p.Prices.First().Left).GreaterThan(0.0)))),
@@ -88,7 +88,7 @@ namespace BeeFee.ClientApp.Services
 					.IncNested(p => p.Prices, p => p.Left, ticketId, -1)
 					.Add(p => p.Transactions, new RegisterToEventTransaction(ticketId, DateTime.Now, new Contact(name, email, phoneNumber), 0, ETransactionType.Registrition))
 				, true) > 0).IfTrue(() => AddJob(
-					base.GetById<EventProjection, BaseCompanyProjection>(id, companyId).Convert(x => new CreateTicket(x.Name, name, x.Page.Date, email, x.Page.Cover, Guid.NewGuid().ToString()))
+					base.GetById<EventProjection, BaseCompanyProjection>(id, companyId).Convert(x => new CreateTicket(x.Name, name, x.Page.Date, email, imagesUrl+x.Page.Cover, x.Page.Label, Guid.NewGuid().ToString()))
 					, DateTime.UtcNow));
 
 
