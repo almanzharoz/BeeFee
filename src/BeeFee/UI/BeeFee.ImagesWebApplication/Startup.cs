@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using BeeFee.ImageApp;
 using BeeFee.ImageApp.Embed;
 using Microsoft.AspNetCore.Builder;
@@ -23,20 +24,20 @@ namespace BeeFee.ImagesWebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-	        services.Configure<ImagesAppStartSettings>(Configuration.GetSection("ImageAppSettings"));
-	        services.AddSingleton(cfg => cfg.GetService<IOptions<ImagesAppStartSettings>>().Value);
+            services.Configure<ImagesAppStartSettings>(Configuration.GetSection("ImageAppSettings"));
+            services.AddSingleton(cfg => cfg.GetService<IOptions<ImagesAppStartSettings>>().Value);
 
-	        services.Configure<PathHandlingSettings>(Configuration.GetSection("PathHandlingSettings"));
-	        services.AddSingleton(cfg => cfg.GetService<IOptions<PathHandlingSettings>>().Value);
+            services.Configure<PathHandlingSettings>(Configuration.GetSection("PathHandlingSettings"));
+            services.AddSingleton(cfg => cfg.GetService<IOptions<PathHandlingSettings>>().Value);
 
-			services.Configure<ImagesWebServerSettings>(Configuration.GetSection("ImagesWebServerSettings"));
-			services.AddSingleton(cfg => cfg.GetService<IOptions<ImagesWebServerSettings>>().Value);
+            services.Configure<ImagesWebServerSettings>(Configuration.GetSection("ImagesWebServerSettings"));
+            services.AddSingleton(cfg => cfg.GetService<IOptions<ImagesWebServerSettings>>().Value);
 
-			services.AddMvc();
+            services.AddMvc();
             services.AddMemoryCache();
             services.AddCors();
-			services.AddImageApp();
-		}
+            services.AddImageApp();
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -46,17 +47,17 @@ namespace BeeFee.ImagesWebApplication
                 app.UseDeveloperExceptionPage();
             }
 
-	        //app.UseFileServer(app.ApplicationServices.GetService<IOptions<ImagesWebSettings>>().Value.PublicImagesFolder);
+            //app.UseFileServer(app.ApplicationServices.GetService<IOptions<ImagesWebSettings>>().Value.PublicImagesFolder);
 
-	        app.UseFileServer(new FileServerOptions()
-	        {
-		        FileProvider = new PhysicalFileProvider(
-			        Path.Combine(Directory.GetCurrentDirectory(), @"images")),
-		        RequestPath = new PathString(""),
-		        EnableDirectoryBrowsing = false
-	        });
+            app.UseFileServer(new FileServerOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), @"images")),
+                RequestPath = new PathString(""),
+                EnableDirectoryBrowsing = false
+            });
 
-			app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyHeader());
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseMvc();
         }
     }

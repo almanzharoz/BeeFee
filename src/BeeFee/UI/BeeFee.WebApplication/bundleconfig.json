@@ -38,12 +38,13 @@
 	},
 	{
 		"outputFileName": "wwwroot/js/jquery.min.js",
-		"inputFiles": [
-			"wwwroot/lib/jquery/dist/jquery.js",
-			"wwwroot/lib/jquery-validation/dist/jquery.validate.js",
-			"wwwroot/lib/jquery.maskedinput/dist/jquery.maskedinput.js",
-			"wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"
-		],
+    "inputFiles": [
+      "wwwroot/lib/jquery/dist/jquery.js",
+      "wwwroot/lib/jquery-ui-min/jquery-ui.min.js",
+      "wwwroot/lib/jquery-validation/dist/jquery.validate.js",
+      "wwwroot/lib/jquery.maskedinput/dist/jquery.maskedinput.js",
+      "wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"
+    ],
 		// Optionally specify minification options
 		"minify": {
 			"enabled": true,

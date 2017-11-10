@@ -579,7 +579,3 @@ body .container {
     min-width: initial;
     min-height: 15px;
 }
-
-.trumbowyg-button-pane button {
-    vertical-align: inherit !important;
-}

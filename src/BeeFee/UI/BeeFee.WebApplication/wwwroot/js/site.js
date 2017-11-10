@@ -43,7 +43,7 @@ function initCreateOrUpdateEventPage() {
     $('[data-step-nav="next"]').on('click', function (e) {
         e.preventDefault();
         var current = $('.create--step.is-shown');
-        
+
         var validator = current.find("form").data('validator');
         validator.settings.ignore = "";
 
@@ -54,32 +54,26 @@ function initCreateOrUpdateEventPage() {
         CKEDITOR.replace($(".html-editor")[0]);
         $(".html-editor").fadeIn("slow");
     }
-    $("#File").change(function () {
-        var $this = $(this);
-        var fd = new FormData;
-        fd.append('file', $this.prop('files')[0]);
-        fd.append('setting', 'event');
-        fd.append('companyName', $this.data("companyurl"));
-        fd.append('eventName', $this.data("eventurl"));
-        $.ajax({
-            url: $this.data("imageserverurl") + '/api/home',
-            contentType: false,
-            processData: false,
-            dataType: 'json',
-            method: "POST",
-            data: fd,
-            success: function (data) {
-                $('#errorUploadImage').remove();
-                if (data.error != null) {
-                    $this.parent().before("<span id='#errorUploadImage' class=error>" + data.error + "</span>");
-                    return;
-                }
-                $this.prev().prev().remove();
-                $this.parent().prepend("<img src='" + $this.data("imageserverurl") + "/min/" + $this.data("companyurl") + "/" + $this.data("eventurl") + "/368x190/" + data.path + "' />");
-                $("#Cover").val(data.path);
+    var $file = $('#File');
+    $file.fileupload({
+        url: $file.data("imageserverurl") + '/api/home',
+        dataType: 'json',
+        type: "POST",
+        formData: { setting: 'event', companyName: $file.data("companyurl"), eventName: $file.data("eventurl") },
+        done: function (e, data) {
+            var $inp = $('#File');
+            $('#errorUploadImage').remove();
+            if (data.result.error != null) {
+                $inp.parent().before("<span id='#errorUploadImage' class=error>" + data.result.error + "</span>");
+                return;
             }
-        });
-    });
+            $inp.prev().prev().remove();
+            $inp.parent().prepend("<img src='" + $file.data("imageserverurl") + "/min/" + $file.data("companyurl") + "/" + $file.data("eventurl") + "/368x190/" + data.result.path + "' />");
+            $("#Cover").val(data.result.path);
+        },
+    }).prop('disabled', !$.support.fileInput)
+        .parent().find(".create--file-b").addClass($.support.fileInput ? undefined : 'disabled');
+
 
     $('[data-range="start"]').datetimepicker({
         onChangeDateTime: function (dp, $input) {
