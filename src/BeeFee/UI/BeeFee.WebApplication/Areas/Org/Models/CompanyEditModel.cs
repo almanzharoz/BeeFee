@@ -13,7 +13,8 @@ namespace BeeFee.WebApplication.Areas.Org.Models
 		[Required(ErrorMessage = "Name is required")]
 		public string Name { get; set; }
 		[RegularExpression(@"[a-zA-Z-_\d]{1,}")]
-		public string Url { get; set; }
+		[Required(ErrorMessage = "Url is required")]
+        public string Url { get; set; }
 		[EmailAddress]
 		public string Email { get; set; }
 		public string Logo { get; set; }
