@@ -34,7 +34,7 @@ namespace BeeFee.ImagesWebApplication
 
 			services.AddMvc();
             services.AddMemoryCache();
-            services.AddCors();
+            services.AddCors(x => x.AddPolicy("cors", z => z.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build()));
 			services.AddImageApp();
 		}
 
@@ -56,7 +56,7 @@ namespace BeeFee.ImagesWebApplication
 		        EnableDirectoryBrowsing = false
 	        });
 
-			app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyHeader());
+			app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build());
             app.UseMvc();
         }
     }

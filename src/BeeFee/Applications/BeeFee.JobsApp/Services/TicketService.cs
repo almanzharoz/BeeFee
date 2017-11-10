@@ -34,7 +34,7 @@ namespace BeeFee.JobsApp.Services
 					{
 						Recipe = Recipe.PhantomPdf,
 						Engine = Engine.Handlebars,
-						Content = "<html><head><meta content=\"text/html; charset=utf-8\" http-equiv=\"Content-Type\"></head><body><h2>Билет на {{event}}</h2><table><tr><td>Имя: {{name}}</td></tr><tr><td>Даты: {{date}}</td></tr></table></body></html>"
+						Content = File.ReadAllText("ticket.html")
 					},
 					Data = data
 				});

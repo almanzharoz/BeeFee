@@ -35,7 +35,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 		[HttpPost]
 		public IActionResult Add(AddCompanyEditModel model)
 			=> ModelStateIsValid(model, 
-				m => Service.AddCompany(m.Name, m.Url, m.Email, m.File != null && m.File.Length > 0 ? m.File.FileName : null)
+				m => Service.AddCompany(m.Name, m.Url, m.Email, "company.jpg" /*m.File != null && m.File.Length > 0 ? m.File.FileName : null*/)
 					.IfNotNull<CompanyProjection, IActionResult>(x =>
 					{
 						if (m.File != null && m.File.Length > 0)
@@ -50,7 +50,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 		[Authorize(Roles = RoleNames.Organizer)]
 		[HttpGet]
 		public IActionResult Edit(string id)
-			=> View(new CompanyEditModel(Service.GetCompany(id).Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.Host.Host))));
+			=> View(new CompanyEditModel(Service.GetCompany(id).Fluent(x => _imagesService.GetAccessToFolder(x.Url, Request.HttpContext.Connection.RemoteIpAddress.ToString()))));
 
 		[Authorize(Roles = RoleNames.Organizer)]
 		[HttpPost]

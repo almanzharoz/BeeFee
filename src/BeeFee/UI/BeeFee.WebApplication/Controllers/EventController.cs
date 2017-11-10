@@ -9,6 +9,7 @@ using BeeFee.Model.Exceptions;
 using BeeFee.Model.Interfaces;
 using BeeFee.Model.Models;
 using BeeFee.Model.Services;
+using BeeFee.WebApplication.Infrastructure;
 using BeeFee.WebApplication.Infrastructure.Services;
 using BeeFee.WebApplication.Models.Event;
 using Core.ElasticSearch.Domain;
@@ -21,8 +22,11 @@ namespace BeeFee.WebApplication.Controllers
     public class EventController : BaseController<EventService>
     {
         private readonly EventUIService _eventUIService;
-        public EventController(EventService service, CategoryService categoryService, EventUIService eventUiService) : base(service, categoryService)
-        {
+		private readonly BeeFeeWebAppSettings _settings;
+
+		public EventController(EventService service, CategoryService categoryService, BeeFeeWebAppSettings settings, EventUIService eventUiService) : base(service, categoryService)
+		{
+			_settings = settings;
             _eventUIService = eventUiService;
         }
 
@@ -66,7 +70,7 @@ namespace BeeFee.WebApplication.Controllers
 			if (ModelState.IsValid)
             {
                 if (Service.RegisterToEvent(@event.Id, @event.Parent.Id, model.Email, model.Name, model.Phone,
-                    @event.Prices.First().Id))
+                    @event.Prices.First().Id, String.Concat(_settings.ImagesUrl, "/min/", @event.Parent.Url, "/", @event.Url, "/1162x600/")))
                 {
                     return RedirectToAction("Event", new { id = @event.Url, cid = @event.Parent.Url, r = 0 });
                 }

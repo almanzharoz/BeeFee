@@ -63,6 +63,7 @@ namespace BeeFee.WebApplication.Areas.Org.Controllers
 
 
         [HttpPost]
+		[RequestSizeLimit(5000000)]
         public async Task<IActionResult> EventGeneralSettingsStep(CreateOrUpdateEventGeneralStepModel model)
         {
             if (model.StartDateTime > model.FinishDateTime)

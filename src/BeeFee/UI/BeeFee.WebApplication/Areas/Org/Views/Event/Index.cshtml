@@ -40,6 +40,7 @@
 					{
 						<a asp-action="Preview" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-view"></a>
 						<a class="e-item--btn is-lock" asp-action="Close" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" onclick="return confirm('Закрыть регистрацию?')"></a>
+						<a asp-action="Registered" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id">список</a>
 					}
 					else if (e.State == EEventState.Close)
 					{

@@ -68,12 +68,12 @@ namespace BeeFee.LoginApp.Services
 		public bool UpdateUser(string name)
 			=> UpdateById<UserUpdateProjection>(User.Id, x => x.Change(name), true);
 
-		public bool Recover(string email)
+		public bool RecoverLink(string email, string host)
 			=> Filter<Model.Models.User, UserUpdateProjection>(
 					q => q.Term(p => p.Email, email.HasNotNullArg(nameof(email))), null, 0, 1).FirstOrDefault()
 				.NotNullOrDefault(u => Update(u, f => f.Recover(), false)
 					.IfTrue(() => AddJob(new SendMail(null, email,
-						"<a href='http://localhost:55793/Account/SetPassword/" + u.VerifyEmail + "'></a>",
+						"<a href='"+host+"/Account/SetPassword/" + u.VerifyEmail + "'>ссылка для восстановления пароля</a>",
 						"Восстановлене пароля", null), DateTime.UtcNow)));
 
 		public UserProjection VerifyEmailForRecover(string verifyEmail)

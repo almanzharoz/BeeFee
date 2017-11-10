@@ -30,7 +30,7 @@ namespace BeeFee.ImagesWebApplication.Controllers
 		}
 
 		[HttpPost]
-		[RequestSizeLimit(10000000)]
+		[RequestSizeLimit(5000000)]
 		public async Task<JsonResult> Post(Model model)
 			=> Json(await model.ConsoleLog(x => $"POST: Host: \"{Request.HttpContext.Connection.RemoteIpAddress.ToString()}\", Company: \"{x.CompanyName}\", Event: \"{x.EventName}\", File: \"{x.Filename ?? x.File.FileName}\", Setting: \"{x.Setting}\"").File.OpenReadStream()
 				.Using(stream => String.IsNullOrWhiteSpace(model.EventName)

@@ -53,7 +53,8 @@ function initCreateOrUpdateEventPage() {
     if ($(".html-editor").length > 0) {
         CKEDITOR.replace($(".html-editor")[0]);
         $(".html-editor").fadeIn("slow");
-    }
+	}
+
     $("#File").change(function () {
         var $this = $(this);
         var fd = new FormData;
@@ -65,8 +66,8 @@ function initCreateOrUpdateEventPage() {
             url: $this.data("imageserverurl") + '/api/home',
             contentType: false,
             processData: false,
-            dataType: 'json',
-            method: "POST",
+			crossDomain: true,
+			method: "POST",
             data: fd,
             success: function (data) {
                 $('#errorUploadImage').remove();
