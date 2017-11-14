@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.ElasticSearch;
 using BeeFee.LoginApp.Projections.User;
 using BeeFee.Model;
 using BeeFee.Model.Embed;
+using BeeFee.Model.Exceptions;
 using BeeFee.Model.Helpers;
 using BeeFee.Model.Jobs.Data;
 using BeeFee.Model.Models;
@@ -25,6 +27,10 @@ namespace BeeFee.LoginApp.Services
 	    public UserProjection TryLogin(string email, string password)
 		    => Filter<User, UserProjection>(q => q.Term(x => x.Email, email), null, 0,1)
 			    .FirstOrDefault(x => x.CheckPassword(password));
+
+		public async Task<UserProjection> TryLoginAsync(string email, string password)
+			=> (await FilterAsync<User, UserProjection>(q => q.Term(x => x.Email, email), null, 0, 1))
+				.FirstOrDefault(x => x.CheckPassword(password));
 
 		public UserProjection TryLogin(UserName userName, string password)
 			=> GetById<UserProjection>(userName.Id).HasNotNullArg("user").If(u => u.CheckPassword(password), u => u, u => null);
@@ -57,7 +63,16 @@ namespace BeeFee.LoginApp.Services
 		        : UserRegistrationResult.UnknownError, result);
         }
 
-	    public bool ChangePassword(string oldPassword, string newPassword)
+		public Task<bool> RegisterAsync(string email, string name, string password)
+			=> InsertAsync(new RegisterUserProjection(
+				email.ThrowIf(e => FilterCount<UserProjection>(q => q.Term(x => x.Email, e.ToLowerInvariant())) > 0,
+					e => new EntityAlreadyExistsException()), name, password,
+				email == "admin@dk.ru"
+					? new[] {EUserRole.Admin}
+					: new[] {EUserRole.User}), true);
+
+
+		public bool ChangePassword(string oldPassword, string newPassword)
 		    => TryLogin(User, oldPassword)
 			    .NotNullOrDefault(
 				    user => UpdateById<UserUpdateProjection>(user.Id, x => x.ChangePassword(newPassword), true));

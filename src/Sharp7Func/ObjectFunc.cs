@@ -143,6 +143,13 @@ namespace SharpFuncExt
 		public static T As<T>(this object arg) where T : class => arg as T;
 		public static TResult As<T, TResult>(this T arg) where TResult : class, T => arg as TResult;
 
+		public static TArg As<TArg, T>(this TArg arg, Action<T> action) where T : class where TArg : class
+		{
+			var a = arg as T;
+			if (a != null) action(a);
+			return arg;
+		}
+
 		public static ValueTuple<T, T1> Extend<T, T1>(this T arg, Func<T, T1> func) => new ValueTuple<T, T1>(arg, func(arg));
 
 		public static ValueTuple<T1, T2, T3> Extend<T1, T2, T3>(this ValueTuple<T1, T2> arg, Func<T1, T2, T3> func) => new ValueTuple<T1, T2, T3>(arg.Item1, arg.Item2, func(arg.Item1, arg.Item2));

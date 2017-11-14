@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using BeeFee.ImageApp;
 using BeeFee.ImageApp.Embed;
 using Microsoft.AspNetCore.Builder;
@@ -56,6 +58,13 @@ namespace BeeFee.ImagesWebApplication
                 RequestPath = new PathString(""),
                 EnableDirectoryBrowsing = false
             });
+
+			app.Use((x, n) =>
+			{
+				Console.WriteLine(
+					$"Request host: {x.Connection.RemoteIpAddress}, method: {x.Request.Method}, url: {x.Request.Path}");
+				return n();
+			});
 
 			app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build());
             app.UseMvc();

@@ -101,10 +101,10 @@ namespace BeeFee.ImageApp.Services
 		/// <exception cref="FileNotFoundException"></exception>
 		public void RemoveEventImage(string companyName, string eventName, string fileName, string key)
 		{
-			if(!IsKeyValid(key, companyName, eventName) || 
+			if (!IsKeyValid(key, companyName, eventName) ||
 				_pathHandler.IsFileLivesLessThan(_timeToDelete, _pathHandler.FindPathToOriginalEventImage(companyName, eventName, fileName)))
 				throw new AccessDeniedException();
-			if(!_pathHandler.IsEventImageExists(companyName, eventName, fileName)) throw new FileNotFoundException();
+			if (!_pathHandler.IsEventImageExists(companyName, eventName, fileName)) throw new FileNotFoundException();
 
 			_pathHandler.GetAllSizePathToEventImage(companyName, eventName, fileName)
 				.Each(ImageHandlingHelper.DeleteImage);
@@ -184,10 +184,11 @@ namespace BeeFee.ImageApp.Services
 					_cacheManager.Set(k, new MemoryCacheKeyObject(EKeyType.User, Path.Combine(companyName, eventName), true), _cacheTime));
 
 		public void GetAdminAccess(string key)
-		{
-			if (!_cacheManager.IsSet(key))
-				_cacheManager.Set(key, new MemoryCacheKeyObject(EKeyType.Admin, null, true), _cacheTime);
-		}
+			//{
+			//	if (!_cacheManager.IsSet(key))
+			//		_cacheManager.Set(key, new MemoryCacheKeyObject(EKeyType.Admin, null, true), _cacheTime);
+			//}
+			=> _cacheManager.If(x => x.IsSet(key), x => x.SetWithInfiniteAbsoluteExpiration(key, new MemoryCacheKeyObject(EKeyType.Admin, null, true)));
 
 		//public bool RegisterEvent(string companyName, string eventName, string key)
 		//{
@@ -217,6 +218,5 @@ namespace BeeFee.ImageApp.Services
 					(s, settings) => settings.Set(setting.Sizes, setting.KeepPublicOriginalSize, setting.CanChangeName));
 			SerializeSettings();
 		}
-
 	}
 }

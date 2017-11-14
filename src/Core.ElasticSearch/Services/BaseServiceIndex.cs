@@ -129,6 +129,17 @@ namespace Core.ElasticSearch
 				r => r.Created ? GetWithVersionById<T>(entity.Id) : null,
 				RepositoryLoggingEvents.ES_INSERT);
 
+		protected Task<T> InsertWithVersionAsync<TNew, T>(TNew entity) where TNew : BaseNewEntity, IProjection
+			where T : BaseEntityWithVersion, IProjection, IGetProjection
+			=> TryAsync(
+				c => c.IndexAsync(entity.HasNotNullArg(nameof(entity)), s => s
+						.Index(_mapping.GetIndexName<T>())
+						.Type(_mapping.GetTypeName<T>())
+						.Refresh(Refresh.True))
+					.Fluent(x => entity.Id = x.Id),
+				r => r.Created ? GetWithVersionById<T>(entity.Id) : null,
+				RepositoryLoggingEvents.ES_INSERT);
+
 		/// <summary>
 		/// Для тестов.
 		/// </summary>

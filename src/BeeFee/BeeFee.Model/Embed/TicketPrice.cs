@@ -21,8 +21,9 @@ namespace BeeFee.Model.Embed
 		/// Осталось билетов
 		/// </summary>
 		public int Left { get; }
+		public string TicketTemplate { get; }
 
-		public TicketPrice(string name, string description, decimal price, int count)
+		public TicketPrice(string name, string description, string tickettemplate, decimal price, int count)
 		{
 			Id = Guid.NewGuid();
 			Name = name;
@@ -30,10 +31,11 @@ namespace BeeFee.Model.Embed
 			Price = price;
 			Count = count;
 			Left = count;
+			TicketTemplate = tickettemplate;
 		}
 
 		[DeserializeConstructor]
-		public TicketPrice(Guid id, string name, string description, decimal price, int count, int left)
+		public TicketPrice(Guid id, string name, string description, string tickettemplate, decimal price, int count, int left)
 		{
 			Id = id.IfNull(Guid.NewGuid);
 			Name = name;
@@ -41,6 +43,7 @@ namespace BeeFee.Model.Embed
 			Price = price;
 			Count = count;
 			Left = left;
+			TicketTemplate = tickettemplate;
 		}
 
 	}

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BeeFee.Model;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Exceptions;
@@ -27,13 +28,23 @@ namespace BeeFee.OrganizerApp.Services
 				x => InsertWithVersion<NewCompany, CompanyProjection>(new NewCompany(GetById<BaseUserProjection>(User.Id), name, x, email, logo)), 
 				x => null);
 
+		public Task<CompanyProjection> AddCompanyAsync(string name, string url, string email, string logo)
+			=> url.IfNull(name, CommonHelper.UriTransliterate).IfNot(ExistsByUrl<CompanyProjection>,
+				x => InsertWithVersionAsync<NewCompany, CompanyProjection>(new NewCompany(GetById<BaseUserProjection>(User.Id), name, x, email, logo)),
+				x => new Task<CompanyProjection>(() => null));
+
 		public bool StartOrg()
 			=> UpdateById<UserUpdateProjection>(User.Id, u => u.StartOrg(), true);
 
 		public IReadOnlyCollection<KeyValuePair<CompanyProjection, int>> GetMyCompanies()
 			=> SearchWithScore<Company, CompanyProjection>(f =>
 				f.Bool(b => b.Must(m => m.Term(p => p.Users.First().User, User.Id, 0.0))
-					.Should(s => s.HasChild<Event>(c => c.Query(q => q.MatchAll()).ScoreMode(ChildScoreMode.Sum)))));
+					.Should(s => s.HasChild<Event>(c => c.Query(q => q.MatchAll()).ScoreMode(ChildScoreMode.Sum)))), x => x.Ascending(p => p.Name));
+
+		public Task<KeyValuePair<CompanyProjection, int>[]> GetMyCompaniesAsync(int page, int take)
+			=> SearchWithScoreAsync<Company, CompanyProjection>(f =>
+				f.Bool(b => b.Must(m => m.Term(p => p.Users.First().User, User.Id, 0.0))
+					.Should(s => s.HasChild<Event>(c => c.Query(q => q.MatchAll()).ScoreMode(ChildScoreMode.Sum)))), x => x.Ascending(p=>p.Name), page, take);
 
 		public CompanyProjection GetCompany(string id)
 			=> id.IfNotNull(
