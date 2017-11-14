@@ -87,6 +87,12 @@ namespace BeeFee.ImageApp.Caching
             }
         }
 
+	    public void SetWithInfiniteAbsoluteExpiration(string key, object data)
+	    {
+		    if (data != null)
+			    _cache.Set(AddKey(key), data);
+	    }
+
         public bool IsSet(string key)
         {
             return _cache.TryGetValue(key, out object _);
