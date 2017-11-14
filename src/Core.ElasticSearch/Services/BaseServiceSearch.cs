@@ -31,6 +31,26 @@ namespace Core.ElasticSearch
 						r => r.Documents.If(load, Load),
 						RepositoryLoggingEvents.ES_SEARCH));
 
+		protected Task<IReadOnlyCollection<TProjection>> FilterAsync<T, TProjection>(
+			Func<QueryContainerDescriptor<T>, QueryContainer> query,
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 100, bool load = true)
+			where TProjection : class, IProjection<T>, ISearchProjection
+			where T : class, IModel
+			=> _mapping.GetProjectionItem<TProjection>()
+				.Convert(
+					projection => TryAsync(
+						c => c.SearchAsync<T, TProjection>(
+							x => x
+								.Index(projection.MappingItem.IndexName)
+								.Type(projection.MappingItem.TypeName)
+								.Source(s => s.Includes(f => f.Fields(projection.Fields)))
+								.Query(q => q.Bool(b => b.Filter(query)))
+								.IfNotNull(sort, y => y.Sort(sort))
+								.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())
+								.IfNotNull(take, y => y.Take(take).Skip(page * take))),
+						r => r.Documents.If(load, Load),
+						RepositoryLoggingEvents.ES_SEARCH));
+
 		public IReadOnlyCollection<TInnerProjection> FilterNested<T, TNested, TProjection, TInnerProjection>(
 			Func<QueryContainerDescriptor<T>, QueryContainer> query,
 			Expression<Func<T, TNested[]>> path,

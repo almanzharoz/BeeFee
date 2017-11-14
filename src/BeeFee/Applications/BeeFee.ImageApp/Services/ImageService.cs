@@ -11,7 +11,6 @@ using BeeFee.ImageApp.Helpers;
 using Microsoft.Extensions.Logging;
 using SharpFuncExt;
 using SixLabors.ImageSharp;
-using Sharp7Func;
 
 namespace BeeFee.ImageApp.Services
 {
@@ -186,7 +185,7 @@ namespace BeeFee.ImageApp.Services
 		public void GetAdminAccess(string key)
 		{
 			if (!_cacheManager.IsSet(key))
-				_cacheManager.Set(key, new MemoryCacheKeyObject(EKeyType.Admin, null, true), _cacheTime);
+				_cacheManager.Set(key, new MemoryCacheKeyObject(EKeyType.Admin, null, true), _cacheTime); // TODO BUG: Здесь падает регистрация нового мероприятия через 20 мин.
 		}
 
 		//public bool RegisterEvent(string companyName, string eventName, string key)
