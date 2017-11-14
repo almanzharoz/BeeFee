@@ -131,29 +131,6 @@ function initCreateOrUpdateEventPage() {
 
 }
 
-function getDoc(frame) {
-    var doc = null;
-
-    // IE8 cascading access check
-    try {
-        if (frame.contentWindow) {
-            doc = frame.contentWindow.document;
-        }
-    } catch (err) {
-    }
-
-    if (doc) { // successful getting content
-        return doc;
-    }
-
-    try { // simply checking may throw in ie8 under ssl or mismatched protocol
-        doc = frame.contentDocument ? frame.contentDocument : frame.document;
-    } catch (err) {
-        // last attempt
-        doc = frame.document;
-    }
-    return doc;
-}
 //function eventsPageInit(filters, listcontainerselector) {
 //    if (typeof filters == "undefined" || filters == null || filters.length === 0)
 //        return;
@@ -448,16 +425,16 @@ $(document).ready(function () {
 
     // ----------
 
-    $('.select_in').on('click', function () {
-        var self = $(this), select = self.closest('.select'), option_list = select.find('.select_list');
+    $('.select_in, .select_in_checkbox').on('click', function () {
+        var self = $(this), select = self.closest('.select'), option_list = select.find('.select_list, .select_list_checkbox');
 
         if (option_list.is(':visible')) {
             option_list.slideUp(200);
             select.removeClass('is-opened');
             self.find('.select_arrow').removeClass('is-active');
         } else {
-            if ($('.select .select_list:visible').length) {
-                $('.select .select_list:visible').hide();
+            if ($('.select .select_list:visible, .select .select_list_checkbox:visible').length) {
+                $('.select .select_list:visible, .select .select_list_checkbox:visible').hide();
                 $('.select .select_arrow').removeClass('is-active');
             }
 
@@ -480,9 +457,9 @@ $(document).ready(function () {
     });
 
     $(document).on('click', function (e) {
-        if ($('.select .select_list:visible').length && !$(e.target).closest('.select').length) {
+        if ($('.select .select_list:visible, .select .select_list_checkbox:visible').length && !$(e.target).closest('.select').length) {
             $('.select').removeClass('is-opened');
-            $('.select .select_list').slideUp(200);
+            $('.select .select_list, .select .select_list_checkbox').slideUp(200);
             $('.select .select_arrow').removeClass('is-active');
         }
     });
@@ -490,7 +467,7 @@ $(document).ready(function () {
     $(document).keyup(function (e) {
         if (e.keyCode == 27) {
             $('.select').removeClass('is-opened');
-            $('.select .select_list').slideUp(200);
+            $('.select .select_list, .select .select_list_checkbox').slideUp(200);
         }
     });
 
@@ -510,18 +487,18 @@ $(document).ready(function () {
     // --------
 
     $('[data-checkboxes="total"]').on('change', function () {
-        $(this).closest('.input-field--c, .vertical-field--c').find('input').prop('checked', $(this).prop('checked'));
+        $(this).closest('.input-field--c, .vertical-field--c, .vertical-field').find('input').prop('checked', $(this).prop('checked'));
+        updateTitle($(this).closest(".select"));
     });
 
-    $('.input-field--c input, .vertical-field--c input').on('change', function () {
+    $('.input-field--c input, .vertical-field--c input, .vertical-field input[type="checkbox"]').on('change', function () {
         var checked = true;
-        var parent = $(this).closest('.input-field--c, .vertical-field--c');
+        var parent = $(this).closest('.input-field--c, .vertical-field--c, .vertical-field');
         var total = parent.find('[data-checkboxes="total"]');
 
-        parent.find('input').not(total).each(function () {
+        parent.find('input[type="checkbox"]').not(total).each(function () {
             if ($(this).prop('checked') == false) {
                 checked = false;
-
                 return;
             }
         });
@@ -529,4 +506,27 @@ $(document).ready(function () {
         total.prop('checked', checked);
     });
 
+    function updateTitle($select) {
+        var ar = [];
+        $.each($select.find('.select_list_checkbox input[type="checkbox"]:checked'), function (i, chk) {
+            var d = $(chk).data("checkboxes");
+            if (d == undefined || d != "total")
+                ar.push($(chk).next().text().trim());
+        });
+        if (ar.length > 0) {
+            $select.find(".select_title div").text(ar.join(", "));
+            $select.find(".select_placeholder").hide();
+        } else {
+            $select.find(".select_title div").text("");
+            $select.find(".select_placeholder").show();
+        }
+    }
+
+    $('.select_list_checkbox input[type="checkbox"]').on('change', function (event) {
+        updateTitle($(this).closest(".select"));
+    });
+
+    $.each($('.select_list_checkbox'), function (i, list) {
+        updateTitle($(list).closest(".select"));
+    });
 });

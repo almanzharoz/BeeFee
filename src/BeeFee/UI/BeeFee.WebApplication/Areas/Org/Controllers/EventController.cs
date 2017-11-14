@@ -12,6 +12,7 @@ using BeeFee.OrganizerApp.Services;
 using BeeFee.WebApplication.Areas.Org.Models;
 using BeeFee.WebApplication.Controllers;
 using BeeFee.WebApplication.Infrastructure;
+using BeeFee.WebApplication.Infrastructure.ViewRendering;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharpFuncExt;
