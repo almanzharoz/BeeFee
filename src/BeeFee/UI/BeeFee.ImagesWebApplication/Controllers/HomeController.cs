@@ -44,7 +44,7 @@ namespace BeeFee.ImagesWebApplication.Controllers
             Console.WriteLine($"Host: \"{Request.HttpContext.Connection.RemoteIpAddress.ToString()}\". Get access for host: \"{host}\", Company: \"{companyName}\"");
             if (_registratorHost != Request.HttpContext.Connection.RemoteIpAddress.ToString())
                 throw new AccessDeniedException();
-            _service.GetAccessToFolder(host, companyName, false);
+             _service.GetAccessToFolder(host, companyName, false);
         }
 
         [HttpGet("{companyName}/{eventName}")]
@@ -61,6 +61,9 @@ namespace BeeFee.ImagesWebApplication.Controllers
         {
             if (_registratorHost != Request.HttpContext.Connection.RemoteIpAddress.ToString())
                 throw new AccessDeniedException();
+            //получаем доступ к серверу для хоста, но потом проверяем доступ для "server". так и должно быть? возможно тут ошибка. по крайней мере существует иксепшн, 
+            //когда мы не можем добавить картинку с сервера, "дергая" данный метод. причина - пока жив
+            //в кеше объект с кодом "server", проблем нет, но через заданное время после запуска сервера данный объект умирает, и добавить изображение использу. данный метод становится невозможно. не знаю, какая логика должна быть, поэтому ошибка не исправлена
             _service.GetAccessToFolder(host, companyName, eventName);
             return _service.RegisterEvent(companyName, eventName, "server");
         }
