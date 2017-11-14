@@ -34,8 +34,6 @@
 }
 function initEventPage(nameselector, phoneselector, emailselector) {
     $(phoneselector).mask("+7 (999) 999-9999", { placeholder: "+7 (___) ___-____" });
-    $(nameselector).trigger("change");
-    $(emailselector).trigger("change");
 }
 
 function initCreateOrUpdateEventPage() {
@@ -397,6 +395,11 @@ $(document).ready(function () {
             else
                 field.removeClass('with-value');
         });
+
+    $.each($('.input-field input[type="text"]'), function(i, inp) {
+        if ($(inp).val().length > 0)
+            $(inp).trigger("change");
+    });
 
     $('.vertical-field').each(function () {
         var field = $(this);
