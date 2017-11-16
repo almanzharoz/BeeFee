@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BeeFee.ModeratorApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication3.Areas.Moderator.Models;
 using WebApplication3.Controllers;
 
 namespace WebApplication3.Areas.Moderator.Controllers
 {
-    public class EventController : BaseController<EventIdModel>
+    public class EventController : BaseController<EventModeratorService, EventIdModel>
     {
-		public EventController(EventIdModel model) : base(model)
+		public EventController(EventModeratorService service, EventIdModel model) : base(service, model)
 		{
 		}
 
@@ -49,5 +46,6 @@ namespace WebApplication3.Areas.Moderator.Controllers
 			return View();
 		}
 		#endregion
+
 	}
 }

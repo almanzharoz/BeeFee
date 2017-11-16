@@ -53,8 +53,19 @@ namespace BeeFee.OrganizerApp.Services
 						f.Term(p => p.Users.First().User, User.Id) && f.Term(p => p.Users.First().Role, ECompanyUserRole.Owner))
 					.FirstOrDefault());
 
+		public Task<CompanyProjection> GetCompanyAsync(string id)
+			=> id.IfNotNull(
+				x => GetWithVersionByIdAndQueryAsync<Company, CompanyProjection>(x, f => f.Term(p => p.Users.First().User, User.Id)),
+				() => FilterFirstAsync<CompanyProjection>(f =>
+						f.Term(p => p.Users.First().User, User.Id) && f.Term(p => p.Users.First().Role, ECompanyUserRole.Owner)));
+
 		public bool EditCompany(string id, int version, string name, string url, string email, string logo)
 			=> UpdateByIdAndQuery<CompanyProjection, EntityAccessException<Company>>(id, version,
+				f => f.Term(p => p.Users.First().User, User.Id), () => new EntityAccessException<Company>(User, id),
+				x => x.Update(name, url, email, logo), true);
+
+		public Task<bool> EditCompanyAsync(string id, int version, string name, string url, string email, string logo)
+			=> UpdateByIdAndQueryAsync<CompanyProjection, EntityAccessException<Company>>(id, version,
 				f => f.Term(p => p.Users.First().User, User.Id), () => new EntityAccessException<Company>(User, id),
 				x => x.Update(name, url, email, logo), true);
 

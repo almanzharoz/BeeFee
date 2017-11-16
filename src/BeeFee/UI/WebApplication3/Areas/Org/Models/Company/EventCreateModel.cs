@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using BeeFee.Model.Projections;
-using BeeFee.OrganizerApp.Projections.Event;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace WebApplication3.Areas.Org.Models.Event
+namespace WebApplication3.Areas.Org.Models.Company
 {
-	public class EventEditModel
+	public class EventCreateModel
 	{
 		[Required(ErrorMessage = "Name is required")]
 		public string Name { get; set; }
@@ -42,31 +41,24 @@ namespace WebApplication3.Areas.Org.Models.Event
 		[Required(ErrorMessage = "Email is required"), EmailAddress]
 		public string Email { get; set; }
 
+		[Required]
+		public IFormFile File { get; set; }
+
 		public string Cover { get; set; }
 
 		public string CompanyUrl { get; set; }
 
 		public IList<SelectListItem> Categories { get; private set; }
 
-		public EventEditModel() { }
-
-		public EventEditModel(EventProjection @event, IReadOnlyCollection<BaseCategoryProjection> categories)
+		public EventCreateModel()
 		{
-			CompanyUrl = @event.Parent.Url;
-			Name = @event.Name;
-			Label = @event.Page.Label;
-			Url = @event.Url;
-			CategoryId = @event.Category.Id;
-			StartDateTime = @event.DateTime.Start;
-			FinishDateTime = @event.DateTime.Finish;
-			City = @event.Address.City;
-			Address = @event.Address.AddressString;
-			Cover = @event.Page.Cover;
-			Email = @event.Email;
-			Init(categories);
+			StartDateTime = DateTime.Now;
+			FinishDateTime = DateTime.Now.AddDays(1);
 		}
 
-		public EventEditModel Init(IReadOnlyCollection<BaseCategoryProjection> categories)
+		public EventCreateModel(IReadOnlyCollection<BaseCategoryProjection> categories) : this() => Init(categories);
+
+		public EventCreateModel Init(IReadOnlyCollection<BaseCategoryProjection> categories)
 		{
 			Categories = categories.Select(x => new SelectListItem { Text = x.Name, Value = x.Id, Selected = x.Id == CategoryId }).ToList();
 			return this;

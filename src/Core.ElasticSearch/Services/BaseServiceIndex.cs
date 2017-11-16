@@ -61,6 +61,19 @@ namespace Core.ElasticSearch
 				r => r.Created,
 				RepositoryLoggingEvents.ES_INSERT);
 
+		protected Task<bool> InsertAsync<T, TParent>(T entity, bool refresh)
+			where T : BaseNewEntityWithParent<TParent>
+			where TParent : IProjection, IJoinProjection
+			=> TryAsync(
+				c => c.IndexAsync(entity.HasNotNullArg(nameof(entity)), s => s
+						.Index(_mapping.GetIndexName<T>())
+						.Type(_mapping.GetTypeName<T>())
+						.Parent(entity.Parent.Id)
+						.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True)))
+					.Fluent(x => entity.Id = x.Id),
+				r => r.Created,
+				RepositoryLoggingEvents.ES_INSERT);
+
 		protected bool InsertWithId<T, TParent>(T entity, bool refresh)
 			where T : BaseNewEntityWithIdAndParent<TParent>
 			where TParent : IProjection, IJoinProjection

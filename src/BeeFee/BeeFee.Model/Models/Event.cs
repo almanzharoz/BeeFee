@@ -30,9 +30,6 @@ namespace BeeFee.Model.Models
 		/// </summary>
 		public EventPage Page { get; set; }
 
-		[Nested]
-		public TicketPrice[] Prices { get; set; }
-
 		public bool Hidden { get; set; }
 
 		[Keyword(Index = false)]

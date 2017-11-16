@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BeeFee.Model;
 using Microsoft.AspNetCore.Mvc;
+using Sharp7Func;
 using SharpFuncExt;
 using WebApplication3.Models.Interfaces;
 
@@ -22,6 +24,8 @@ namespace WebApplication3.Controllers
 
 		protected bool IsJson => Request.Headers.ContainsKey("AcceptTypes") &&
 								Request.Headers["AcceptTypes"].Any(x => x.ToLower().IndexOf("json", StringComparison.Ordinal) != -1);
+
+		protected string UserHost => Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
 		[NonAction]
 		public override ViewResult View(string viewName, object model)
@@ -63,10 +67,65 @@ namespace WebApplication3.Controllers
 			return funcIfFalse(model);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="TResult"></typeparam>
+		/// <param name="model">Модель</param>
+		/// <param name="func">Функция сервиса</param>
+		/// <param name="funcIfTrue">Результат при успехе</param>
+		/// <param name="funcIfFalse">Результат при ошибке</param>
+		/// <returns></returns>
 		public async Task<TResult> ModelStateIsValid<T, TResult>(T model, Func<T, Task<bool>> func, Func<T, TResult> funcIfTrue, Func<T, TResult> funcIfFalse) where TResult : IActionResult
 		{
 			if (ModelState.IsValid && await func(model))
 				return funcIfTrue(model);
+			return funcIfFalse(model);
+		}
+
+		public async Task<TResult> ModelStateIsValid<T, TResult, TResultModel>(T model, 
+			Func<T, Task<KeyValuePair<bool, TResultModel>>> func,
+			Func<T, TResultModel, TResult> funcIfTrue, 
+			Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		{
+			KeyValuePair<bool, TResultModel> r;
+			if (ModelState.IsValid && (r = await func(model)).Key)
+				return funcIfTrue(model, r.Value);
+			return funcIfFalse(model);
+		}
+
+		public async Task<TResult> ModelStateIsValid<T, TResult>(T model,
+			Func<T, Task<bool>> func,
+			Func<T, TResult> funcIfTrue,
+			Func<T, CatchCollection<T, Task<bool>>, CatchCollection<T, Task<bool>>> cathesFunc,
+			Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		{
+			if (ModelState.IsValid && await cathesFunc(model, model.Try(func)).Use())
+				return funcIfTrue(model);
+			return funcIfFalse(model);
+		}
+
+		public async Task<TResult> ModelStateIsValid<T, TResult, TResultModel>(T model,
+			Func<T, Task<KeyValuePair<bool, TResultModel>>> func,
+			Func<T, TResultModel, Task<TResult>> funcIfTrue,
+			Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		{
+			KeyValuePair<bool, TResultModel> r;
+			if (ModelState.IsValid && (r = await func(model)).Key)
+				return await funcIfTrue(model, r.Value);
+			return funcIfFalse(model);
+		}
+
+		public async Task<TResult> ModelStateIsValid<T, TResult, TResultModel>(T model,
+			Func<T, Task<KeyValuePair<bool, TResultModel>>> func,
+			Func<T, TResultModel, Task<TResult>> funcIfTrue,
+			Func<T, CatchCollection<T, Task<KeyValuePair<bool, TResultModel>>>, CatchCollection<T, Task<KeyValuePair<bool, TResultModel>>>> cathesFunc, 
+			Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		{
+			KeyValuePair<bool, TResultModel> r;
+			if (ModelState.IsValid && (r = await cathesFunc(model, model.Try(func)).Use()).Key)
+				return await funcIfTrue(model, r.Value);
 			return funcIfFalse(model);
 		}
 
@@ -84,6 +143,22 @@ namespace WebApplication3.Controllers
 			Model = model;
 			Model.As<TModel, IIdModel>(m => m.Id.HasNotNullArg("Id"));
 			Model.As<TModel, IParentModel>(m => m.ParentId.HasNotNullArg("ParentId"));
+		}
+
+		protected IActionResult View<TProjection, TViewModel>(string viewName, Func<TModel, TProjection> getFunc, Func<TProjection, TViewModel> createModel)
+		{
+			var p = getFunc(Model);
+			if (p.IsNull())
+				return NotFound();
+			return View(viewName, createModel(p));
+		}
+
+		protected async Task<IActionResult> View<TProjection, TViewModel>(string viewName, Func<TModel, Task<TProjection>> getFunc, Func<TProjection, TViewModel> createModel)
+		{
+			var p = await getFunc(Model);
+			if (p.IsNull())
+				return NotFound();
+			return View(viewName, createModel(p));
 		}
 	}
 

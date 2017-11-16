@@ -131,6 +131,24 @@ namespace Core.ElasticSearch
 						RepositoryLoggingEvents.ES_UPDATE,
 						$"Update (Id: {id}, Version: {version})"));
 
+		protected Task<bool> UpdateByIdAsync<T, TParent>(string id, string parent, int version, Func<T, T> setter, bool refresh)
+			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IGetProjection, IUpdateProjection
+			where TParent : class, IProjection, IJoinProjection
+			=> GetById<T, TParent>(id, parent, version)
+				.Convert(entity =>
+					TryAsync(c => c.UpdateAsync(
+								DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity)).Id), d => d
+									.Index(_mapping.GetIndexName<T>())
+									.Type(_mapping.GetTypeName<T>())
+									.Version(entity.Version)
+									.Parent(parent.HasNotNullArg(nameof(parent)))
+									.Doc(setter(entity))
+									.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True)))
+							.Fluent(r => entity.Version = (int)r.Version),
+						r => r.Result == Result.Updated,
+						RepositoryLoggingEvents.ES_UPDATE,
+						$"Update (Id: {id}, Version: {version})"));
+
 		protected bool UpdateById<T>(string id, Func<T> setter, bool refresh)
 			where T : BaseEntity, IProjection, IUpdateProjection
 			=> Try(c => c.Update(
@@ -180,6 +198,26 @@ namespace Core.ElasticSearch
 						RepositoryLoggingEvents.ES_UPDATE,
 						$"Update (Id: {id}, Version: {version})"));
 
+		protected Task<bool> UpdateByIdAndQueryAsync<T, TAccessException>(string id, int version,
+			Func<QueryContainerDescriptor<T>, QueryContainer> query, Func<TAccessException> getException, Func<T, T> setter,
+			bool refresh)
+			where T : BaseEntityWithVersion, IProjection, IGetProjection, IUpdateProjection
+			where TAccessException : Exception
+			=> GetByIdAndQuery(id, version, query, false)
+				.ThrowIfNull(getException)
+				.Convert(entity =>
+					TryAsync(c => c.UpdateAsync(
+								DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity)).Id), d => d
+									.Index(_mapping.GetIndexName<T>())
+									.Type(_mapping.GetTypeName<T>())
+									.Version(entity.Version)
+									.Doc(setter(entity))
+									.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True)))
+							.Fluent(r => entity.Version = (int)r.Version),
+						r => r.Result == Result.Updated,
+						RepositoryLoggingEvents.ES_UPDATE,
+						$"Update (Id: {id}, Version: {version})"));
+
 		protected bool UpdateByIdAndQuery<T, TParent, TAccessException>(string id, string parent, int version,
 			Func<QueryContainerDescriptor<T>, QueryContainer> query, Func<TAccessException> getException, Func<T, T> setter,
 			bool refresh)
@@ -213,6 +251,21 @@ namespace Core.ElasticSearch
 				.FirstOrDefault()
 				.NotNullOrDefault(entity =>
 					Try(c => c.Update(
+							DocumentPath<T>.Id(entity.Id), d => d
+								.Index(_mapping.GetIndexName<T>())
+								.Type(_mapping.GetTypeName<T>())
+								.Doc(update(entity))
+								.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
+						r => r.Result == Result.Updated,
+						RepositoryLoggingEvents.ES_UPDATE,
+						$"Update (Id: {entity.Id})"));
+
+		protected async Task<bool> UpdateWithFilterAsync<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query,
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort, Func<T, T> update, bool refresh)
+			where T : BaseEntity, ISearchProjection, IProjection, IUpdateProjection
+			=> await (await FilterFirstAsync<T>(query, sort))
+				.NotNullOrDefault(entity =>
+					TryAsync(c => c.UpdateAsync(
 							DocumentPath<T>.Id(entity.Id), d => d
 								.Index(_mapping.GetIndexName<T>())
 								.Type(_mapping.GetTypeName<T>())

@@ -1,4 +1,10 @@
-﻿using BeeFee.Model.Embed;
+﻿using System;
+using System.Threading.Tasks;
+using BeeFee.Model.Embed;
+using BeeFee.Model.Exceptions;
+using BeeFee.Model.Models;
+using BeeFee.Model.Projections;
+using BeeFee.Model.Services;
 using BeeFee.OrganizerApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,13 +18,19 @@ namespace WebApplication3.Areas.Org.Controllers
 	[Authorize(Roles = RoleNames.Organizer)]
 	public class EventController : BaseController<EventService, EventIdModel>
 	{
-		public EventController(EventService service, EventIdModel model) : base(service, model)
+		private readonly ImagesService _imagesService;
+		private readonly CategoryService _categoryService;
+
+		public EventController(EventService service, CategoryService categoryService, ImagesService imagesService, EventIdModel model) : base(service, model)
 		{
+			_imagesService = imagesService;
+			_categoryService = categoryService;
 		}
 
 		#region Remove
 		public ActionResult Remove()
 		{
+			Service.RemoveEvent(Model.Id, Model.ParentId, Model.Version);
 			return View();
 		}
 		#endregion
@@ -26,67 +38,84 @@ namespace WebApplication3.Areas.Org.Controllers
 		#region Close
 		public ActionResult Close()
 		{
+			Service.CloseEvent(Model.Id, Model.ParentId, Model.Version);
 			return View();
 		}
 		#endregion
 
 		#region Edit
 		[HttpGet]
-		public ActionResult Edit()
-		{
-			return View();
-		}
+		public Task<IActionResult> Edit()
+			=> View("Edit",
+				m => Service.GetEventAsync(m.Id, m.ParentId),
+				c => new EventEditModel(c.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost)), _categoryService.GetAllCategories<BaseCategoryProjection>()));
 
 		[HttpPost]
-		public ActionResult Edit(EventEditModel model)
-		{
-			return View();
-		}
+		public Task<IActionResult> Edit(EventEditModel model)
+			=> ModelStateIsValid(model,
+				m => Service.UpdateEventAsync(Model.Id, Model.ParentId, Model.Version, m.Name, m.Label, m.Url, m.Cover, m.Email,
+					new EventDateTime(m.StartDateTime, m.FinishDateTime), new Address(m.City, m.Address), m.CategoryId),
+				m => RedirectToActionPermanent("EditDescription", "Event", new {area = "Org", Model.Id, Model.ParentId, version=Model.Version+1}),
+				(m, c) => c
+					.Catch<EntityAccessException<Company>>((e, r) =>
+						ModelState.AddModelError("error", $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
+					.Catch<ArgumentNullException>((e, r) =>
+						ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
+					.Catch<ExistsUrlException<Event>>((e, r) =>
+						ModelState.AddModelError("Url", e.Message)),
+				m => (IActionResult) View(m));
 
 		[HttpGet]
-		public ActionResult EditDescription()
-		{
-			return View();
-		}
+		public Task<IActionResult> EditDescription()
+			=> View("Edit",
+				m => Service.GetEventAsync(m.Id, m.ParentId),
+				c => new EventDescriptionModel(c.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost))));
 
 		[HttpPost]
-		public ActionResult EditDescription(EventDescriptionModel model)
-		{
-			return View();
-		}
+		public Task<IActionResult> EditDescription(EventDescriptionModel model)
+			=> ModelStateIsValid(model,
+				m => Service.UpdateEventDescriptionAsync(Model.Id, Model.ParentId, Model.Version, model.Html),
+				m => RedirectToActionPermanent("Prices", "Event", new {area="Org", Model.Id, Model.ParentId, version=Model.Version+1}),
+				m => (IActionResult)View(m));
+
+		#endregion
+
+		#region Prices
+
+		public async Task<IActionResult> Prices()
+			=> View((await Service.GetEventTransactionByIdAsync(Model.Id, Model.ParentId)).Prices);
 
 		[HttpGet]
-		public ActionResult EditTicket(string tid)
-		{
-			return View();
-		}
+		public IActionResult AddPrice()
+			=> View(new TicketPriceCreateModel());
 
 		[HttpPost]
-		public ActionResult EditTicket(EventTicketModel model)
-		{
-			return View();
-		}
+		public Task<IActionResult> AddPrice(TicketPriceCreateModel model)
+			=> ModelStateIsValid(model,
+				m => Service.AddEventTicketPriceAsync(Model.Id, Model.ParentId, m.Name, m.Description, m.Price, m.Count, m.Template),
+				m => RedirectToActionPermanent("Prices", "Event", new { area = "Org", Model.Id, Model.ParentId }),
+				m => (IActionResult)View(m));
+
 		#endregion
 
 		#region Preview
-		public ActionResult Preview()
-		{
-			return View();
-		}
+
+		public async Task<IActionResult> Preview()
+			=> View(await Service.GetEventAsync(Model.Id, Model.ParentId));
+		
 		#endregion
 
 		#region Publicate
 		public ActionResult Publicate()
 		{
+			Service.ToModerate(Model.Id, Model.ParentId, Model.Version);
 			return View();
 		}
 		#endregion
 
 		#region Registered
 		public ActionResult Registered(RegisteredFilter model)
-		{
-			return View();
-		}
+			=> View(Service.GetRegisteredUsers(Model.Id, Model.ParentId, model.Page, model.Size));
 		#endregion
 
 	}

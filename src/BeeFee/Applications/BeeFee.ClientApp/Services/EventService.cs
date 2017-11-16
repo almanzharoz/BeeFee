@@ -66,12 +66,14 @@ namespace BeeFee.ClientApp.Services
             {
                 qf.Add(Query<Event>.DateRange(m => m.Field(x => x.DateTime.Finish).LessThanOrEquals(endDateTime.Value)));
             }
-            List<QueryContainer> notqf = new List<QueryContainer>();
-            if (maxPrice.HasValue)
-            {
-                qf.Add(Query<Event>.Range(m => m.Field(x => x.Prices.First().Price).LessThanOrEquals((double)maxPrice.Value)) || !Query<Event>.Exists(x => x.Field(p => p.Prices.First().Price)));
-                //qf.Add(!Query<Event>.Exists(x => x.Field(p => p.Prices)));
-            }
+
+			// TODO: Поиск по цене не доступен из-за измененной модели данных
+            //List<QueryContainer> notqf = new List<QueryContainer>();
+            //if (maxPrice.HasValue)
+            //{
+            //    qf.Add(Query<Event>.Range(m => m.Field(x => x.Prices.First().Price).LessThanOrEquals((double)maxPrice.Value)) || !Query<Event>.Exists(x => x.Field(p => p.Prices.First().Price)));
+            //    //qf.Add(!Query<Event>.Exists(x => x.Field(p => p.Prices)));
+            //}
             return SearchPagerAsync<Event, EventGridItem>(q => q
                 .Bool(b => b
                     .Must(qc.ToArray())
