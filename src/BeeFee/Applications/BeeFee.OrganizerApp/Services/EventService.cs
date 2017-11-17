@@ -47,6 +47,9 @@ namespace BeeFee.OrganizerApp.Services
 		public EventPreviewProjection GetPreviewEvent(string id, string company)
             => GetByIdAndQuery<Event, EventPreviewProjection, BaseCompanyProjection>(id, company.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)).Id, q => UserQuery<EventProjection>());
 
+		public Task<EventPreviewProjection> GetPreviewEventAsync(string id, string company)
+			=> GetByIdAndQueryAsync<Event, EventPreviewProjection, BaseCompanyProjection>(id, company.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)).Id, q => UserQuery<EventProjection>());
+
 		public Task<TicketPrice> GetEventTicketAsync(string id, string companyId, string ticketId)
 			=> FilterNestedFirstAsync<EventTransaction, TicketPrice, EventTransactionProjection, TicketPrice>(
 				q => q.Term(p => p.Event, id.HasNotNullArg(nameof(id))) &&
@@ -86,8 +89,8 @@ namespace BeeFee.OrganizerApp.Services
 			var newEvent = new NewEvent(
 				companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)),
 				GetById<BaseUserProjection>(User.Id).HasNotNullEntity("user"),
-				GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), name, label, url,
-				dateTime, address, email, cover);
+				GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"),
+				name, label, url, dateTime, address, email, cover);
 
 			var result = (await InsertAsync<NewEvent, CompanyJoinProjection>(newEvent, true)).ThrowIfNot<AddEntityException<Event>>();
 
@@ -162,8 +165,11 @@ namespace BeeFee.OrganizerApp.Services
 		public IReadOnlyCollection<EventProjection> GetMyEvents(string companyId)
             => Filter<Event, EventProjection>(q => UserQuery<EventProjection>(x => x.HasParent<Company>(p => p.Query(pq => pq.Ids(id => id.Values(companyId.HasNotNullArg("company")))))));
 
-		public Task<IReadOnlyCollection<EventProjection>> GetMyEventsAsync(string companyId, int page, int limit)
-			=> FilterAsync<Event, EventProjection>(q => UserQuery<EventProjection>(x => x.HasParent<Company>(p => p.Query(pq => pq.Ids(id => id.Values(companyId.HasNotNullArg("company")))))), s => s.Descending(x => x.DateTime.Start), page, limit);
+		public Task<Pager<EventProjection>> GetMyEventsAsync(string companyId, int page, int limit)
+			=> FilterPagerAsync<Event, EventProjection>(
+				q => UserQuery<EventProjection>(x =>
+					x.HasParent<Company>(p => p.Query(pq => pq.Ids(id => id.Values(companyId.HasNotNullArg("company")))))),
+				page, limit, s => s.Descending(x => x.DateTime.Start));
 
 		/// <summary>
 		/// Отправить мероприятие на модерацию
@@ -178,5 +184,13 @@ namespace BeeFee.OrganizerApp.Services
 			=> FilterNested<EventTransaction, TicketTransaction, EventTransactionProjection, EventTicketTransaction>(q => q.Term(p => p.Event, id.HasNotNullArg(nameof(id))) && 
 			q.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId))),
 				x => x.Transactions, x => x.Descending(p => p.Transactions.First().Date), page, take);
+
+		public Task<Pager<EventTicketTransaction>> GetRegisteredUsersAsync(string id, string companyId,
+			int page, int take)
+			=> FilterNestedAsync<EventTransaction, TicketTransaction, EventTransactionProjection, EventTicketTransaction>(q =>
+					q.Term(p => p.Event, id.HasNotNullArg(nameof(id))) &&
+					q.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId))),
+				x => x.Transactions, x => x.Descending(p => p.Transactions.First().Date), page, take);
+
 	}
 }

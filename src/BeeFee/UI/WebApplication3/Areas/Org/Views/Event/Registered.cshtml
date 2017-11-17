@@ -1,0 +1,20 @@
+﻿@model WebApplication3.Areas.Org.Models.Event.RegisteredFilter
+@{
+	ViewBag.Title = "Зарегистированные посетители";
+}
+<table width="100%">
+	@foreach (var t in Model.Items)
+	{
+		<tr>
+			<td>@t.Date</td>
+			<td>@t.State</td>
+			<td>@t.Type</td>
+			<td>@t.Sum</td>
+			<td>@t.Contact.Name</td>
+			<td>@t.Contact.Email</td>
+			<td>@t.Contact.Phone</td>
+		</tr>
+	}
+</table>
+
+@Html.Partial("_Pager", Model.Items)

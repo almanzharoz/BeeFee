@@ -1,0 +1,12 @@
+@model Core.ElasticSearch.Pager<BeeFee.ClientApp.Projections.Event.EventGridItem>
+@if (Model.Any())
+{
+	foreach (var item in Model)
+	{
+		Html.RenderPartial("_EventGridItem", item);
+	}
+}
+else
+{
+    <div class="col-xs-12 col-md-12 not--found--events--message">Событий не найдено</div>
+}

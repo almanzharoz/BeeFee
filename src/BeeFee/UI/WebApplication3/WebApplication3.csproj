@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Moderator\Views\" />
-    <Folder Include="Areas\Org\Views\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +25,16 @@
     <ProjectReference Include="..\..\Applications\BeeFee.ModeratorApp\BeeFee.ModeratorApp.csproj" />
     <ProjectReference Include="..\..\Applications\BeeFee.OrganizerApp\BeeFee.OrganizerApp.csproj" />
     <ProjectReference Include="..\..\BeeFee.Model\BeeFee.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\site_script.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Shared\_Layout.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

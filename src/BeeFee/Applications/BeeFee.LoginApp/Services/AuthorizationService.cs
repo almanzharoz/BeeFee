@@ -100,5 +100,11 @@ namespace BeeFee.LoginApp.Services
 			=> UpdateWithFilter<UserUpdateProjection>(
 				q => q.Term(p => p.VerifyEmail, verifyEmail.HasNotNullArg(nameof(verifyEmail)).Trim()), null,
 				u => u.ChangePassword(newPassword), true);
+
+		public Task<bool> RecoverAsync(string verifyEmail, string newPassword)
+			=> UpdateWithFilterAsync<UserUpdateProjection>(
+				q => q.Term(p => p.VerifyEmail, verifyEmail.HasNotNullArg(nameof(verifyEmail)).Trim()), null,
+				u => u.ChangePassword(newPassword), true);
+
 	}
 }

@@ -24,7 +24,7 @@ namespace WebApplication3.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public IActionResult Edit(ProfileModel model)
-			=> ModelStateIsValid(model, m => Service.UpdateUser(m.Name), m => View("EditError"), m => View(m));
+			=> ModelStateIsValid(model, m => Service.UpdateUser(m.Name), m => View("EditError"), View);
 
 		#endregion
 

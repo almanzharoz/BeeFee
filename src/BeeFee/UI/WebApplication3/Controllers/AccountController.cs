@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using BeeFee.LoginApp.Projections.User;
 using BeeFee.LoginApp.Services;
 using BeeFee.Model.Embed;
+using BeeFee.Model.Exceptions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SharpFuncExt;
 using WebApplication3.Models.Account;
 
 namespace WebApplication3.Controllers
@@ -25,7 +27,7 @@ namespace WebApplication3.Controllers
 		#region Login
 		[HttpGet]
 		public IActionResult Login(string returnUrl = null)
-			=> View(new LoginModel() { ReturnUrl = returnUrl });
+			=> View(new LoginModel { ReturnUrl = returnUrl });
 
 		[HttpPost]
 		public async Task<IActionResult> Login(LoginModel model)
@@ -73,9 +75,23 @@ namespace WebApplication3.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public IActionResult Recover(RecoverModel model)
-			=> ModelStateIsValid(model, m => Service.RecoverLink(m.Email, _settings.WebAppUrl),
+			=> ModelStateIsValid(model, 
+				m => Service.RecoverLink(m.Email, _settings.WebAppUrl),
 				m => TryAjaxView("RecoverDone", m),
 				m => TryAjaxView("Recover", m));
+
+		[HttpGet]
+		public IActionResult SetPassword(string id)
+			=> View(new SetPasswordModel(id.Fluent(x => Service.VerifyEmailForRecover(x)
+				.ThrowIfNull<UserProjection, NotFoundException>())));
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public Task<IActionResult> SetPassword(SetPasswordModel model)
+			=> ModelStateIsValid(model,
+				m => Service.RecoverAsync(model.VerifyEmail, model.Password),
+				m => (IActionResult)View("SetPasswordSuccess"), 
+				m => View(m.Fluent(x => ModelState.AddModelError("error", "Новый пароль должен отличатся от текущего"))));
 		#endregion
 
 		#region Register
@@ -88,8 +104,8 @@ namespace WebApplication3.Controllers
 		public Task<IActionResult> Register(RegisterModel model)
 			=> ModelStateIsValid(model, 
 				m => Service.RegisterAsync(m.Email, m.Name, m.Password),
-				m => (IActionResult) View("RegisterError"),
-				m => View(m));
+				m => (IActionResult) View("RegisterDone"),
+				View);
 		#endregion
 
 		[Authorize]

@@ -12,20 +12,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharpFuncExt;
 using WebApplication3.Areas.Org.Models.Company;
-using WebApplication3.Areas.Org.Models.Event;
 using WebApplication3.Controllers;
 
 namespace WebApplication3.Areas.Org.Controllers
 {
 	[Area("Org")]
 	[Authorize(Roles = RoleNames.Organizer)]
-    public class CompanyController : BaseController<CompanyService, CompanyIdModel>
+    public class CompanyController : BaseController<CompanyService, CompanyRequestModel>
     {
 		private readonly ImagesService _imagesService;
 		private readonly EventService _eventService;
 		private readonly CategoryService _categoryService;
 
-		public CompanyController(CompanyService service, EventService eventService, CategoryService categoryService, ImagesService imagesService, CompanyIdModel model) : base(service, model)
+		public CompanyController(CompanyService service, EventService eventService, CategoryService categoryService, ImagesService imagesService, CompanyRequestModel model) : base(service, model)
 		{
 			_imagesService = imagesService;
 			_eventService = eventService;
@@ -61,7 +60,7 @@ namespace WebApplication3.Areas.Org.Controllers
 
 		#region Events
 		public async Task<IActionResult> Events(EventsFilter model)
-			=> View(await _eventService.GetMyEventsAsync(Model.Id, model.Page, model.Size));
+			=> View(model.Load(await _eventService.GetMyEventsAsync(Model.Id, model.Page, model.Size)));
 		#endregion
 
 		#region Create Event

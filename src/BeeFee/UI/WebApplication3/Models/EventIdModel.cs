@@ -2,7 +2,7 @@
 
 namespace WebApplication3.Models
 {
-    public class EventIdModel : IIdModel, IParentModel
+    public class EventRequestModel : IRequestModelWithId, IRequestModelWithParent
     {
 		public string Id { get; set; }
 		public string ParentId { get; set; }

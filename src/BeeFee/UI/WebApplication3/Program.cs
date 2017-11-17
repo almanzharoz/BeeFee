@@ -19,7 +19,8 @@ namespace WebApplication3
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
+				.UseConfiguration(new ConfigurationBuilder().AddCommandLine(args).Build())
+				.UseStartup<Startup>()
                 .Build();
     }
 }

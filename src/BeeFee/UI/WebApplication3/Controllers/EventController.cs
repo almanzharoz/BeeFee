@@ -10,15 +10,16 @@ using WebApplication3.Models.Event;
 
 namespace WebApplication3.Controllers
 {
-    public class EventController : BaseController<EventService, EventIdModel>
+    public class EventController : BaseController<EventService, EventRequestModel>
     {
 		private readonly BeeFeeWebAppSettings _settings;
 
-		public EventController(EventService service, BeeFeeWebAppSettings settings, EventIdModel model) : base(service, model)
+		public EventController(EventService service, BeeFeeWebAppSettings settings, EventRequestModel model) : base(service, model)
 		{
 			_settings = settings;
 		}
 
+		[HttpGet]
 		public async Task<IActionResult> Index()
 			=> (await Service.GetEventByUrl(Model.ParentId, Model.Id)).IfNotNull(e =>
 					View(new EventPageModel(e, /* TODO: Доставать юзера из БД */ User.Identity.Name,

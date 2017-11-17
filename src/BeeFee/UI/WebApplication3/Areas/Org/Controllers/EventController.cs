@@ -16,12 +16,12 @@ namespace WebApplication3.Areas.Org.Controllers
 {
 	[Area("Org")]
 	[Authorize(Roles = RoleNames.Organizer)]
-	public class EventController : BaseController<EventService, EventIdModel>
+	public class EventController : BaseController<EventService, EventRequestModel>
 	{
 		private readonly ImagesService _imagesService;
 		private readonly CategoryService _categoryService;
 
-		public EventController(EventService service, CategoryService categoryService, ImagesService imagesService, EventIdModel model) : base(service, model)
+		public EventController(EventService service, CategoryService categoryService, ImagesService imagesService, EventRequestModel model) : base(service, model)
 		{
 			_imagesService = imagesService;
 			_categoryService = categoryService;
@@ -31,7 +31,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		public ActionResult Remove()
 		{
 			Service.RemoveEvent(Model.Id, Model.ParentId, Model.Version);
-			return View();
+			return RedirectToActionPermanent("Events", "Company");
 		}
 		#endregion
 
@@ -39,7 +39,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		public ActionResult Close()
 		{
 			Service.CloseEvent(Model.Id, Model.ParentId, Model.Version);
-			return View();
+			return RedirectToActionPermanent("Events", "Company");
 		}
 		#endregion
 
@@ -101,7 +101,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		#region Preview
 
 		public async Task<IActionResult> Preview()
-			=> View(await Service.GetEventAsync(Model.Id, Model.ParentId));
+			=> View(await Service.GetPreviewEventAsync(Model.Id, Model.ParentId));
 		
 		#endregion
 
@@ -114,8 +114,8 @@ namespace WebApplication3.Areas.Org.Controllers
 		#endregion
 
 		#region Registered
-		public ActionResult Registered(RegisteredFilter model)
-			=> View(Service.GetRegisteredUsers(Model.Id, Model.ParentId, model.Page, model.Size));
+		public async Task<IActionResult> Registered(RegisteredFilter model)
+			=> View(model.Load(await Service.GetRegisteredUsersAsync(Model.Id, Model.ParentId, model.Page, model.Size)));
 		#endregion
 
 	}

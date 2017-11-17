@@ -41,10 +41,10 @@ namespace BeeFee.OrganizerApp.Services
 				f.Bool(b => b.Must(m => m.Term(p => p.Users.First().User, User.Id, 0.0))
 					.Should(s => s.HasChild<Event>(c => c.Query(q => q.MatchAll()).ScoreMode(ChildScoreMode.Sum)))), x => x.Ascending(p => p.Name));
 
-		public Task<KeyValuePair<CompanyProjection, int>[]> GetMyCompaniesAsync(int page, int take)
+		public Task<KeyValuePair<CompanyProjection, int>[]> GetMyCompaniesAsync()
 			=> SearchWithScoreAsync<Company, CompanyProjection>(f =>
 				f.Bool(b => b.Must(m => m.Term(p => p.Users.First().User, User.Id, 0.0))
-					.Should(s => s.HasChild<Event>(c => c.Query(q => q.MatchAll()).ScoreMode(ChildScoreMode.Sum)))), x => x.Ascending(p=>p.Name), page, take);
+					.Should(s => s.HasChild<Event>(c => c.Query(q => q.MatchAll()).ScoreMode(ChildScoreMode.Sum)))), x => x.Ascending(p=>p.Name));
 
 		public CompanyProjection GetCompany(string id)
 			=> id.IfNotNull(

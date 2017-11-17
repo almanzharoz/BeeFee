@@ -289,6 +289,24 @@ namespace Core.ElasticSearch
 						RepositoryLoggingEvents.ES_GETWITHQUERY,
 						$"Get with query (Id: {id}, Parent: {parent})"));
 
+		protected Task<TProjection> GetByIdAndQueryAsync<T, TProjection, TParent>(string id, string parent, Func<QueryContainerDescriptor<T>, QueryContainer> query, bool load = true)
+			where TProjection : BaseEntityWithParent<TParent>, IProjection<T>, IGetProjection
+			where TParent : class, IProjection, IJoinProjection
+			where T : class, IModel
+			=> _mapping.GetProjectionItem<TProjection>()
+				.Convert(
+					projection => TryAsync(
+						c => c.SearchAsync<TProjection>(x => x
+							.Index(projection.MappingItem.IndexName)
+							.Type(projection.MappingItem.TypeName)
+							.Query(q => q.Bool(b => b.Filter(Query<T>.Ids(i => i.Values(id.HasNotNullArg("id"))) &&
+															Query<T>.ParentId(p => p.Id(parent.HasNotNullArg("parent"))) && query(new QueryContainerDescriptor<T>()))))
+							.Take(1)
+							.Source(s => s.Includes(f => f.Fields(projection.Fields)))),
+						r => r.Documents.FirstOrDefault().If(load, Load),
+						RepositoryLoggingEvents.ES_GETWITHQUERY,
+						$"Get with query (Id: {id}, Parent: {parent})"));
+
 		protected TProjection GetByIdAndQuery<T, TProjection, TParent>(string id, string parent, int version, Func<QueryContainerDescriptor<T>, QueryContainer> query, bool load = true)
 			where TProjection : BaseEntityWithParentAndVersion<TParent>, IProjection<T>, IGetProjection
 			where TParent : class, IProjection, IJoinProjection

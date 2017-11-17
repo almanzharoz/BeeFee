@@ -6,9 +6,9 @@ using WebApplication3.Controllers;
 
 namespace WebApplication3.Areas.Org.Controllers
 {
-	public class TicketPriceController : BaseController<EventService, TicketPriceIdModel>
+	public class TicketPriceController : BaseController<EventService, TicketPriceRequestModel>
 	{
-		public TicketPriceController(EventService service, TicketPriceIdModel model) : base(service, model)
+		public TicketPriceController(EventService service, TicketPriceRequestModel model) : base(service, model)
 		{
 		}
 

@@ -141,8 +141,9 @@ namespace WebApplication3.Controllers
 		protected BaseController(TService service, TModel model) : base(service)
 		{
 			Model = model;
-			Model.As<TModel, IIdModel>(m => m.Id.HasNotNullArg("Id"));
-			Model.As<TModel, IParentModel>(m => m.ParentId.HasNotNullArg("ParentId"));
+			Model.As<TModel, IRequestModelWithId>(m => m.Id.HasNotNullArg("Id"));
+			Model.As<TModel, IRequestModelWithParent>(m => m.ParentId.HasNotNullArg("ParentId"));
+			ViewBag.RequestModel = Model; // TODO: Приколь было бы, если эта модель попадала во вьюшку типизированной
 		}
 
 		protected IActionResult View<TProjection, TViewModel>(string viewName, Func<TModel, TProjection> getFunc, Func<TProjection, TViewModel> createModel)

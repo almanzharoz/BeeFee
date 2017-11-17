@@ -5,9 +5,9 @@ using WebApplication3.Controllers;
 
 namespace WebApplication3.Areas.Moderator.Controllers
 {
-    public class EventController : BaseController<EventModeratorService, EventIdModel>
+    public class EventController : BaseController<EventModeratorService, EventRequestModel>
     {
-		public EventController(EventModeratorService service, EventIdModel model) : base(service, model)
+		public EventController(EventModeratorService service, EventRequestModel model) : base(service, model)
 		{
 		}
 

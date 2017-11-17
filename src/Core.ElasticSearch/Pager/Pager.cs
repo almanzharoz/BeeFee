@@ -5,7 +5,7 @@ using Core.ElasticSearch.Domain;
 namespace Core.ElasticSearch
 {
     public class Pager<T> : IPager, IReadOnlyCollection<T>
-		where T : IProjection
+		where T : class
     {
 	    private readonly IReadOnlyCollection<T> _items;
 		public int Page { get; }
@@ -23,7 +23,7 @@ namespace Core.ElasticSearch
 		    _items = items;
 	    }
 
-	    public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
+		public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
 
 	    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 

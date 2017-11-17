@@ -24,7 +24,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		#region List
 		[Authorize(Roles = RoleNames.MultiOrganizer)]
 		public async Task<IActionResult> Index(CompaniesFilter model)
-			=> View(await Service.GetMyCompaniesAsync(model.Page, model.Size));
+			=> View(model.Load(await Service.GetMyCompaniesAsync()));
 		#endregion
 
 		#region Create
@@ -46,7 +46,7 @@ namespace WebApplication3.Areas.Org.Controllers
 							return RedirectToActionPermanent("Relogin", "Account",
 								new {area = "", returnUrl = "/Org/Company/Create/" + x.Id});
 						return RedirectToActionPermanent("Index");
-					}, () => Task.FromResult((IActionResult) View("SaveError"))),
+					}, () => Task.FromResult((IActionResult) View("CreateError"))),
 				m => Task.FromResult((IActionResult) View(m)));
 
 		#endregion

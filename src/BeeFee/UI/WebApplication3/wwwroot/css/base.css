@@ -1,0 +1,837 @@
+﻿@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,400italic,500,700,900&amp;subset=cyrillic);
+@import "../fonts/icomoon/style.css";
+
+html,
+body,
+body div,
+span,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+address,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+samp,
+small,
+strong,
+sub,
+sup,
+var,
+b,
+i,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section,
+time,
+mark,
+audio,
+video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+
+article,
+aside,
+figure,
+footer,
+header,
+hgroup,
+nav,
+section {
+	display: block;
+}
+
+header,
+section,
+footer {
+	clear: both;
+}
+/* Всегда показывать полосу прокрутки (чтобы сайт не прыгал, когда на других страницах нет данной полосы)
+   force a vertical scrollbar to prevent a jumpy page */
+html {
+	overflow-y: scroll;
+}
+/* Добавляем буллеты к UL и цифры к OL, т.к. в контенте могут использоваться стандартные списки
+  we can use default ULs & OLs with bullets */
+ul {
+	list-style: outside disc;
+	margin: 15px 0 15px 30px;
+}
+
+ol {
+	list-style: outside decimal;
+	margin: 15px 0 15px 30px;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+td,
+td img {
+	vertical-align: top;
+}
+/* Сбрасываем отступы у элементов форм
+  Webkit browsers add a 2px margin outside the chrome of form elements */
+button,
+input,
+select,
+textarea {
+	margin: 0;
+	outline: none;
+}
+
+	input::-moz-focus-inner,
+	button::-moz-focus-inner {
+		padding: 0;
+		border: 0;
+	}
+
+input,
+select {
+	vertical-align: middle;
+}
+
+	input[type=radio],
+	input[type=checkbox] {
+		margin: 1px 4px 4px 0;
+	}
+
+	input[type=text],
+	input[type=password] {
+		-webkit-border-radius: 0;
+		border-radius: 0;
+		-webkit-appearance: none;
+	}
+
+textarea {
+	overflow: auto;
+	resize: vertical;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	-webkit-appearance: none;
+}
+/* Решение проблемы с обрезанием стилизованных кнопок в IE | make buttons play nice in IE */
+button,
+input[type=submit] {
+	width: auto;
+	overflow: visible;
+}
+
+.ie7 input[type=submit],
+.ie7 input[type=reset],
+.ie7 input[type=button] {
+	-webkit-filter: chroma(color=#000000);
+	filter: chroma(color=#000000);
+}
+/* Курсор-указатель на кликабельных элементах | hand cursor on clickable elements */
+input[type=button],
+input[type=submit],
+button {
+	cursor: pointer;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	-webkit-appearance: none;
+}
+
+blockquote,
+q {
+	quotes: none;
+}
+
+	blockquote:before,
+	blockquote:after,
+	q:before,
+	q:after {
+		content: '';
+		content: none;
+	}
+
+del {
+	text-decoration: line-through;
+}
+
+abbr[title],
+dfn[title] {
+	border-bottom: 1px dotted #000;
+	cursor: help;
+}
+
+small {
+	font-size: 85%;
+}
+
+strong {
+	font-weight: bold;
+}
+
+sub,
+sup {
+	font-size: 75%;
+	line-height: 0;
+	position: relative;
+}
+
+sup {
+	top: -0.5em;
+}
+
+sub {
+	bottom: -0.25em;
+}
+
+hr {
+	display: block;
+	height: 1px;
+	border: 0;
+	border-top: 1px solid #ccc;
+	margin: 1em 0;
+	padding: 0;
+	font-size: 0;
+	line-height: 0;
+}
+/* Стандартизируем моноширные элементы | standardize any monospaced elements */
+pre,
+code,
+kbd,
+samp {
+	font-family: monospace, sans-serif;
+}
+
+pre {
+	white-space: pre;
+	/* CSS2 */
+	white-space: pre-wrap;
+	/* CSS 2.1 */
+	white-space: pre-line;
+	/* CSS 3 (and 2.1 as well, actually) */
+	word-wrap: break-word;
+	/* IE */
+}
+/* Устанавливаем произвольный цвет для выделения (не забываем убрать тень для текста)
+  Custom text-selection colors (remove any text shadows: twitter.com/miketaylr/status/12228805301) */
+/* ::-moz-selection{ background:#fcd700; color:#fff; text-shadow:none; } */
+/* ::selection { background:#fcd700; color:#fff; text-shadow:none; } */
+/* Устанавливаем произвольный цвет подсветки ссылок на Apple устройствах: j.mp/webkit-tap-highlight-color */
+/* a:link {-webkit-tap-highlight-color:#fcd700;} */
+/* Правильный ресайз картинок в IE7
+  scale images in IE7 more attractively */
+.ie7 img {
+	-ms-interpolation-mode: bicubic;
+}
+/* Сброс float блоков | let's clear some floats */
+.clear {
+	clear: both;
+	height: 0;
+	font-size: 0;
+	line-height: 0;
+}
+
+.center {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+html {
+	min-width: auto;
+	width: auto;
+	height: 100%;
+}
+
+body {
+	font: normal normal 14px/20px 'Roboto', arial, sans-serif;
+	background: #ffffff;
+	color: #4A4A4A;
+	-webkit-text-size-adjust: 100%;
+	-webkit-font-smoothing: antialiased;
+	-moz-font-smoothing: antialiased;
+	-ms-font-smoothing: antialiased;
+	-o-font-smoothing: antialiased;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	min-width: 320px;
+	min-height: initial;
+	position: relative;
+	top: auto;
+	right: auto;
+	bottom: auto;
+	left: auto;
+}
+
+body input,
+body textarea,
+body button {
+	font-family: 'Roboto', arial, sans-serif;
+}
+
+body *,
+body *:before,
+body *:after {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.clearfix {
+	*zoom: 1;
+}
+
+.clearfix:after {
+	clear: both;
+}
+
+.clearfix:before,
+.clearfix:after {
+	content: " ";
+	display: table;
+}
+
+.container {
+	margin: 0 auto;
+	padding: 0 32px;
+	width: 100%;
+	height: auto;
+	min-width: 1024px;
+	min-height: initial;
+	max-width: 1200px;
+	max-height: initial;
+	position: relative;
+	top: auto;
+	right: auto;
+	bottom: auto;
+	left: auto;
+}
+
+@media (max-width: 639px) {
+	.container {
+		padding: 0 16px;
+		min-width: 320px;
+		min-height: initial;
+	}
+}
+
+.header {
+	z-index: 100;
+	padding: 0 0 16px 0;
+	-webkit-transition: 200ms all ease;
+	-o-transition: 200ms all ease;
+	transition: 200ms all ease;
+	color: #4A4A4A;
+	background: #ffffff;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: auto;
+	left: 0;
+}
+
+@media (max-width: 639px) {
+	.header {
+		padding: 0;
+		background: #ffffff;
+	}
+}
+
+.header--logo {
+	float: left;
+	background: #4A4A4A;
+	display: block;
+	width: 147px;
+	height: 80px;
+}
+
+@media (max-width: 639px) {
+	.header--logo {
+		margin: 8px 0;
+		width: 60px;
+		height: 40px;
+	}
+}
+
+.header--nav {
+	float: left;
+}
+
+.header--list {
+	list-style: none;
+	margin: 0;
+	padding: 30px 0 0;
+	*zoom: 1;
+}
+
+	.header--list:after {
+		clear: both;
+	}
+
+	.header--list:before,
+	.header--list:after {
+		content: " ";
+		display: table;
+	}
+
+.header--item {
+	float: left;
+	margin: 0 0 0 40px;
+}
+
+	.header--item a {
+		text-decoration: none;
+		color: inherit;
+		padding: 9px 0;
+		display: block;
+		font-size: 18px;
+		line-height: 24px;
+		font-weight: 700;
+		position: relative;
+		top: auto;
+		right: auto;
+		bottom: auto;
+		left: auto;
+	}
+
+	.header--item.is-active a:before {
+		content: "";
+		background: #4A4A4A;
+		display: block;
+		width: auto;
+		height: 2px;
+		position: absolute;
+		top: auto;
+		right: 0;
+		bottom: -8px;
+		left: 0;
+	}
+
+.header--links {
+	float: right;
+	list-style: none;
+	margin: 0;
+	padding: 29px 0 0;
+	*zoom: 1;
+}
+
+	.header--links:after {
+		clear: both;
+	}
+
+	.header--links:before,
+	.header--links:after {
+		content: " ";
+		display: table;
+	}
+
+.header--link {
+	float: left;
+	margin: 0 40px 0 0;
+}
+
+	.header--link:last-child {
+		margin: 0;
+	}
+
+	.header--link a {
+		text-decoration: none;
+		padding: 9px 0;
+		color: inherit;
+		display: block;
+		font-size: 18px;
+		line-height: 24px;
+		font-weight: 700;
+	}
+
+	.header--link.is-signup a {
+		border: 2px solid;
+		padding: 7px 14px;
+		-webkit-border-radius: 3px;
+		border-radius: 3px;
+	}
+
+.header.is-light {
+	color: #ffffff;
+	background: none;
+}
+
+.header.is-scrolled {
+	background: #ffffff;
+	color: #4A4A4A;
+}
+
+.header.is-small {
+	padding: 0;
+	position: relative;
+	top: auto;
+	right: auto;
+	bottom: auto;
+	left: auto;
+}
+
+	.header.is-small .header--logo {
+		width: 103px;
+		height: 56px;
+	}
+
+	.header.is-small .header--list {
+		padding: 5px 0 0 10px;
+	}
+
+	.header.is-small .header--links {
+		padding: 5px 0 0;
+	}
+
+	.header.is-small .header--link.is-signup a {
+		color: #DB4432;
+	}
+
+.fixed-box {
+	background: #ffffff;
+	-webkit-transition: 200ms all ease;
+	-o-transition: 200ms all ease;
+	transition: 200ms all ease;
+	z-index: 500;
+	-webkit-box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.2);
+	box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.2);
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: auto;
+	left: 0;
+	-webkit-transform: translate(0, -150%);
+	-moz-transform: translate(0, -150%);
+	-ms-transform: translate(0, -150%);
+	-o-transform: translate(0, -150%);
+	transform: translate(0, -150%);
+}
+
+@media (max-width: 639px) {
+	.fixed-box {
+		display: none !important;
+	}
+}
+
+.fixed-box.is-shown {
+	-webkit-transform: none;
+	-moz-transform: none;
+	-ms-transform: none;
+	-o-transform: none;
+	transform: none;
+}
+
+.footer {
+	background: #F2F2F2;
+	padding: 36px 0 75px;
+}
+
+@media (max-width: 639px) {
+	.footer {
+		padding: 12px 0 30px;
+	}
+}
+
+.footer--left {
+	float: left;
+}
+
+@media (max-width: 639px) {
+	.footer--left {
+		float: none;
+		margin: 0 0 16px;
+	}
+}
+
+.footer--right {
+	float: right;
+}
+
+@media (max-width: 639px) {
+	.footer--right {
+		float: none;
+	}
+}
+
+.footer--phone {
+	text-decoration: none;
+	color: #999999;
+	-webkit-transition: 200ms all ease;
+	-o-transition: 200ms all ease;
+	transition: 200ms all ease;
+	display: inline-block;
+	vertical-align: top;
+	font-size: 13px;
+	line-height: 16px;
+}
+
+	.footer--phone:hover {
+		color: #4A4A4A;
+	}
+
+	.footer--phone span {
+		margin: 0 0 -4px;
+		display: block;
+		font-size: 18px;
+		line-height: 28px;
+	}
+
+.footer--copyrights {
+	color: #999999;
+	margin: 8px 0 0;
+	font-size: 13px;
+	line-height: 16px;
+}
+
+.loader {
+	margin: 0 0 38px;
+	background: url(/images/loader.svg) center center no-repeat;
+	width: auto;
+	height: 60px;
+}
+
+@media (max-width: 639px) {
+	.loader {
+		margin: 0 0 20px;
+		width: auto;
+		height: 80px;
+	}
+}
+
+.visible-xs,
+.visible-md {
+	display: none;
+}
+
+@media (max-width: 639px) {
+	.visible-xs {
+		display: block;
+	}
+
+	.hidden-xs {
+		display: none !important;
+	}
+}
+
+@media (min-width: 1024px) {
+	.visible-md {
+		display: block;
+	}
+
+	.hidden-md {
+		display: none !important;
+	}
+}
+
+/******************/
+/****SELECT********/
+/******************/
+
+.select {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+}
+
+.select_in, .select_in_checkbox {
+    cursor: pointer;
+    background: #FBFBFB;
+    border: 1px solid #F2F2F2;
+    padding: 18px 60px 16px 23px;
+    -webkit-transition: 200ms all ease;
+    -o-transition: 200ms all ease;
+    transition: 200ms all ease;
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    font-size: 18px;
+    line-height: 28px;
+    display: inline-block;
+    width: 100%;
+    text-decoration: none;
+    color: #4a4a4a;
+}
+
+    .select_in:before, .select_in_checkbox:before {
+        -webkit-transition: 200ms all ease;
+        -o-transition: 200ms all ease;
+        transition: 200ms all ease;
+        color: #999999;
+        content: '\e905';
+        font-family: 'icomoon' !important;
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 9px;
+        line-height: 62px;
+        position: absolute;
+        top: 0;
+        right: 23px;
+        bottom: auto;
+        left: auto;
+    }
+
+    .select_in .select_title {
+        white-space: nowrap;
+        -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+.select_placeholder {
+    color: #999999;
+    white-space: nowrap;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+}
+
+.select:hover .select_in,
+.select.is-opened .select_in, .select:hover .select_in_checkbox,
+.select.is-opened .select_in_checkbox, .select_in_checkbox:focus {
+    border-color: #999999;
+}
+
+    .select.is-opened .select_in:before, .select.is-opened .select_in_checkbox:before {
+        -webkit-transform: rotate(180deg);
+        -moz-transform: rotate(180deg);
+        -ms-transform: rotate(180deg);
+        -o-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+
+.select_list, .select_list_checkbox {
+    list-style: none;
+    padding: 9px 0;
+    margin: 5px 0 0;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #999999;
+    -webkit-box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.17);
+    box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.17);
+    -webkit-border-radius: 4px;
+    -ms-border-radius: 4px;
+    border-radius: 4px;
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    height: auto;
+    max-width: initial;
+    max-height: 300px;
+    z-index: 10;
+}
+
+    .select_list li, .select_list_checkbox li label {
+        padding: 14px 23px;
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 28px;
+    }
+
+        .select_list li:hover, .select_list_checkbox li:hover {
+            background: #F5F5F5;
+        }
+
+        .select_list li.is-active, .select_list_checkbox li.is-active {
+            font-weight: 500;
+        }
+
+.select.is-simple .select_in, .select.is-simple .select_in_checkbox {
+    background: none;
+    padding: 3px 0 7px;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    font-size: 16px;
+    line-height: 20px;
+}
+
+    .select.is-simple .select_in:before, .select.is-simple .select_in_checkbox:before {
+        font-size: 7px;
+        line-height: 30px;
+        position: absolute;
+        top: 0;
+        right: 6px;
+        bottom: auto;
+        left: auto;
+    }
+
+.select.is-simple .select_list, .select.is-simple .select_list_checkbox {
+    padding: 5px 0;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+
+    .select.is-simple .select_list li, .select.is-simple .select_list_checkbox li {
+        padding: 7px 15px;
+        font-size: 16px;
+        line-height: 20px;
+    }
