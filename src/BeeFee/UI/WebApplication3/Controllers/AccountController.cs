@@ -74,9 +74,9 @@ namespace WebApplication3.Controllers
 		
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Recover(RecoverModel model)
+		public Task<IActionResult> Recover(RecoverModel model)
 			=> ModelStateIsValid(model, 
-				m => Service.RecoverLink(m.Email, _settings.WebAppUrl),
+				m => Service.RecoverLinkAsync(m.Email, _settings.WebAppUrl),
 				m => TryAjaxView("RecoverDone", m),
 				m => TryAjaxView("Recover", m));
 
@@ -90,7 +90,7 @@ namespace WebApplication3.Controllers
 		public Task<IActionResult> SetPassword(SetPasswordModel model)
 			=> ModelStateIsValid(model,
 				m => Service.RecoverAsync(model.VerifyEmail, model.Password),
-				m => (IActionResult)View("SetPasswordSuccess"), 
+				m => View("SetPasswordSuccess"), 
 				m => View(m.Fluent(x => ModelState.AddModelError("error", "Новый пароль должен отличатся от текущего"))));
 		#endregion
 
@@ -104,7 +104,7 @@ namespace WebApplication3.Controllers
 		public Task<IActionResult> Register(RegisterModel model)
 			=> ModelStateIsValid(model, 
 				m => Service.RegisterAsync(m.Email, m.Name, m.Password),
-				m => (IActionResult) View("RegisterDone"),
+				m => View("RegisterDone"),
 				View);
 		#endregion
 

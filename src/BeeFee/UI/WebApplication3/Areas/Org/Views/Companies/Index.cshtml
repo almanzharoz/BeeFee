@@ -1,2 +1,45 @@
 ﻿@model WebApplication3.Areas.Org.Models.Companies.CompaniesFilter
-
+@{
+	ViewBag.Header = "Мои компании";
+}
+<div class="container">
+	@if (Model.Items.Any())
+	{
+		<table width="100%">
+			<thead>
+			<tr>
+				<th>Название</th>
+				<th>Url</th>
+				<th>Пользователи</th>
+				<th>События</th>
+				<th></th>
+			</tr>
+			</thead>
+			<tbody>
+			@foreach (var e in Model.Items)
+			{
+				<tr>
+					<td>@e.Key.Name</td>
+					<td>@e.Key.Url</td>
+					<td>@(String.Join("<br/>", e.Key.Users.Select(x => x.User.Name)))</td>
+					<td><a asp-action="Index" asp-controller="Event" asp-route-id="@e.Key.Id">[@e.Value]</a></td>
+					<td align="center">
+						<a asp-action="Edit" asp-controller="Company" asp-route-id="@e.Key.Id" asp-route-version="@e.Key.Version">Править</a>
+						@if (e.Value == 0)
+						{
+							<a asp-action="Remove" asp-controller="Company" asp-route-id="@e.Key.Id" asp-route-version="@e.Key.Version" onclick="return confirm('Удалить компанию?')">Удалить</a>
+						}
+					</td>
+				</tr>}
+			</tbody>
+		</table>
+	}
+	else
+	{
+		<div class="text-center">
+			У Вас не создано ни одной компании
+		</div>
+	}
+	<br /><br />
+	<a asp-action="Create">Добавить компанию</a>
+</div>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SharpFuncExt
 {
@@ -69,6 +70,13 @@ namespace SharpFuncExt
 			if (arg.IsNotNull())
 				return ifNotNull(arg);
 			return default(TResult);
+		}
+
+		public static Task<TResult> NotNullOrDefault<T, TResult>(this T arg, Func<T, Task<TResult>> ifNotNull)
+		{
+			if (arg.IsNotNull())
+				return ifNotNull(arg);
+			return Task.FromResult(default(TResult));
 		}
 
 		public static T IfNull<T, TValue>(this T arg, TValue value, Func<TValue, T> func)

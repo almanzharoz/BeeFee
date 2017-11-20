@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Core.ElasticSearch;
 using Core.ElasticSearch.Domain;
 using BeeFee.Model.Interfaces;
+using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
 using BeeFee.Model.Projections.Jobs;
 using Microsoft.Extensions.Logging;
@@ -32,7 +34,14 @@ namespace BeeFee.Model
 		public UserName GetUserName(string userId)
 			=> User = new UserName(userId);
 
+		public T GetUser<T>() where T : BaseEntity, IProjection<User>, IGetProjection
+			=> User.IfNotNull(x => x.Id != null ? GetById<T>(x.Id) : null, () => null);
+
 		protected bool AddJob<T>(T data, DateTime start) where T : struct
 			=> Insert(new NewJob<T>(data, start), false);
+
+		protected Task<bool> AddJobAsync<T>(T data, DateTime start) where T : struct
+			=> InsertAsync(new NewJob<T>(data, start), false);
+
 	}
 }

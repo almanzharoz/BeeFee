@@ -105,6 +105,12 @@ namespace SharpFuncExt
 				ifTrue();
 			return arg;
 		}
+		public static async Task<bool> IfTrue(this bool arg, Func<Task> ifTrue)
+		{
+			if (arg)
+				await ifTrue();
+			return arg;
+		}
 		public static bool IfFalse(this bool arg, Action ifTrue)
 		{
 			if (!arg)

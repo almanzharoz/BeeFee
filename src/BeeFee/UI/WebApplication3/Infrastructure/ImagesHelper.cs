@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace WebApplication3.Infrastructure
 {
@@ -20,6 +17,8 @@ namespace WebApplication3.Infrastructure
 
 		public string GetImageUrl(string companyUrl, string filename)
 			=> String.Concat(_settings.ImagesUrl, "/public/companies/", companyUrl, "/", filename);
+
+		public string GetImageUrl() => _settings.ImagesUrl;
 
 	}
 }

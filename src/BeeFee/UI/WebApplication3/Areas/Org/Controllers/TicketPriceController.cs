@@ -22,8 +22,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		public Task<IActionResult> Edit(TicketPriceEditModel model)
 			=> ModelStateIsValid(model,
 				m => Service.UpdateEventTicketPriceAsync(Model.Id, Model.ParentId, Model.Tid, m.Name, m.Description, m.Price, m.Count, m.Template),
-				m => RedirectToActionPermanent("Prices", "Event", new { area = "Org", Model.Id, Model.ParentId }),
-				m => (IActionResult)View(m));
+				m => RedirectToActionPermanent("Prices", "Event", new { area = "Org", Model.Id, Model.ParentId }));
 
 		public async Task<IActionResult> Remove()
 		{

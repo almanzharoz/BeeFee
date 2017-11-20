@@ -32,10 +32,10 @@ namespace WebApplication3.Controllers
 		[HttpPost]
 		public Task<IActionResult> Register(EventPageModel model)
 			=> ModelStateIsValid(model, async m =>
-					(await Service.GetEventByUrl(Model.ParentId, Model.Id)).Convert(e =>
-						Service.RegisterToEvent(Model.ParentId, Model.Id, m.Email, m.Name, m.Phone, e.Prices.First().Id,
+					await (await Service.GetEventByUrl(Model.ParentId, Model.Id)).Convert(e =>
+						Service.RegisterToEventAsync(Model.ParentId, Model.Id, m.Email, m.Name, m.Phone, e.Prices.First().Id,
 							String.Concat(_settings.ImagesUrl, "/min/", e.Parent.Url, "/", e.Url, "/1162x600/") /* TODO: Выпилить */)),
-				m => (IActionResult) View(),
+				m => View(), // TODO: Реализовать
 				m => View());
 
 		#endregion

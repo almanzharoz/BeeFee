@@ -1,0 +1,26 @@
+﻿@model WebApplication3.Areas.Moderator.Models.Events.EventsFilter
+
+<table width="100%">
+	<thead>
+	<tr>
+		<th>Организатор</th>
+		<th>Событие</th>
+		<th>Url</th>
+		<th>Категория</th>
+		<th>Даты</th>
+	</tr>
+	</thead>
+	<tbody>
+	@foreach (var m in Model.Items)
+	{
+		<tr>
+			<td>@m.Parent.Name</td>
+			<td>@m.Name</td>
+			<td><a asp-action="Index" asp-controller="Event" asp-route-id="@m.Id" asp-route-parentId="@m.Parent.Id">@m.Parent.Url/@m.Url</a></td>
+			<td>@m.Category.Name</td>
+			<td>@m.DateTime</td>
+		</tr>
+	}
+	</tbody>
+</table>
+@Html.Partial("_Pager", Model.Items)

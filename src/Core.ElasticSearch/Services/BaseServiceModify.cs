@@ -51,6 +51,18 @@ namespace Core.ElasticSearch
 				RepositoryLoggingEvents.ES_UPDATE,
 				$"Update (Id: {entity?.Id})");
 
+		protected Task<bool> UpdateAsync<T>(T entity, Func<T, T> setter, bool refresh)
+			where T : BaseEntity, IProjection, IUpdateProjection
+			=> TryAsync(c => c.UpdateAsync(
+					DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity)).Id), d => d
+						.Index(_mapping.GetIndexName<T>())
+						.Type(_mapping.GetTypeName<T>())
+						.Doc(setter(entity))
+						.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
+				r => r.Result == Result.Updated,
+				RepositoryLoggingEvents.ES_UPDATE,
+				$"Update (Id: {entity?.Id})");
+
 		protected bool UpdateWithVersion<T>(T entity, Func<T, T> setter, bool refresh)
 			where T : BaseEntityWithVersion, IProjection, IUpdateProjection
 			=> Try(c => c.Update(
@@ -79,6 +91,21 @@ namespace Core.ElasticSearch
 				RepositoryLoggingEvents.ES_UPDATE,
 				$"Update (Id: {entity?.Id}), Version: {entity?.Version}");
 
+		protected Task<bool> UpdateWithVersionAsync<T, TParent>(T entity, Func<T, T> setter, bool refresh)
+			where T : BaseEntityWithParentAndVersion<TParent>, IProjection, IUpdateProjection
+			where TParent : class, IProjection, IJoinProjection
+			=> TryAsync(c => c.UpdateAsync(
+					DocumentPath<T>.Id(entity.HasNotNullArg(x => x.Id, nameof(entity)).Id), d => d
+						.Index(_mapping.GetIndexName<T>())
+						.Type(_mapping.GetTypeName<T>())
+						.Parent(entity.Parent.HasNotNullArg(x => x.Id, nameof(entity.Parent)).Id)
+						.Version(entity.Version.HasNotNullArg("version"))
+						.Doc(setter(entity))
+						.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
+				r => r.Result == Result.Updated,
+				RepositoryLoggingEvents.ES_UPDATE,
+				$"Update (Id: {entity?.Id}), Version: {entity?.Version}");
+
 		#endregion
 
 		#region UpdateById
@@ -88,6 +115,20 @@ namespace Core.ElasticSearch
 			=> GetById<T>(id).HasNotNullArg("entity")
 				.Convert(entity =>
 					Try(c => c.Update(
+							DocumentPath<T>.Id(entity.Id), d => d
+								.Index(_mapping.GetIndexName<T>())
+								.Type(_mapping.GetTypeName<T>())
+								.Doc(setter(entity))
+								.If(_mapping.ForTests || refresh, x => x.Refresh(Refresh.True))),
+						r => r.Result == Result.Updated,
+						RepositoryLoggingEvents.ES_UPDATE,
+						$"Update (Id: {id})"));
+
+		public Task<bool> UpdateByIdAsync<T>(string id, Func<T, T> setter, bool refresh)
+			where T : BaseEntity, IProjection, IGetProjection, IUpdateProjection
+			=> GetById<T>(id).HasNotNullArg("entity")
+				.Convert(entity =>
+					TryAsync(c => c.UpdateAsync(
 							DocumentPath<T>.Id(entity.Id), d => d
 								.Index(_mapping.GetIndexName<T>())
 								.Type(_mapping.GetTypeName<T>())
@@ -305,19 +346,32 @@ namespace Core.ElasticSearch
 				r => (int) r.Updated,
 				RepositoryLoggingEvents.ES_UPDATEBYQUERY);
 
-		protected Task<(int updated, int total)> UpdateAsync<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query,
-			Func<UpdateByQueryBuilder<T>, UpdateByQueryBuilder<T>> update,
-			bool refresh)
+		protected Task<int> UpdateAsync<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query,
+			Func<UpdateByQueryBuilder<T>, UpdateByQueryBuilder<T>> update, bool refresh)
 			where T : class, IProjection, IUpdateProjection
 			=> TryAsync(c => c.UpdateByQueryAsync<T>(x => x
 					.Index(_mapping.GetIndexName<T>())
 					.Type(_mapping.GetTypeName<T>())
 					.Query(q => q.Bool(b => b.Filter(query)))
-					.Version()
+					//.Version()
 					.If(_mapping.ForTests || refresh, y => y.Refresh())
 					.Script(s => s.Inject(new UpdateByQueryBuilder<T>(), update, (s1, u) => s1.Inline(u).Params(u.GetParams)))),
-				r => ((int) r.Updated, (int) r.Total),
+				r => (int)r.Updated,
 				RepositoryLoggingEvents.ES_UPDATEBYQUERY);
+
+		//protected Task<(int updated, int total)> UpdateAsync<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query,
+		//	Func<UpdateByQueryBuilder<T>, UpdateByQueryBuilder<T>> update,
+		//	bool refresh)
+		//	where T : class, IProjection, IUpdateProjection
+		//	=> TryAsync(c => c.UpdateByQueryAsync<T>(x => x
+		//			.Index(_mapping.GetIndexName<T>())
+		//			.Type(_mapping.GetTypeName<T>())
+		//			.Query(q => q.Bool(b => b.Filter(query)))
+		//			.Version()
+		//			.If(_mapping.ForTests || refresh, y => y.Refresh())
+		//			.Script(s => s.Inject(new UpdateByQueryBuilder<T>(), update, (s1, u) => s1.Inline(u).Params(u.GetParams)))),
+		//		r => ((int) r.Updated, (int) r.Total),
+		//		RepositoryLoggingEvents.ES_UPDATEBYQUERY);
 
 		#endregion
 	}

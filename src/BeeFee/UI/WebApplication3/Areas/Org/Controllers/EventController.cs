@@ -63,7 +63,7 @@ namespace WebApplication3.Areas.Org.Controllers
 						ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
 					.Catch<ExistsUrlException<Event>>((e, r) =>
 						ModelState.AddModelError("Url", e.Message)),
-				m => (IActionResult) View(m));
+				View);
 
 		[HttpGet]
 		public Task<IActionResult> EditDescription()
@@ -76,7 +76,7 @@ namespace WebApplication3.Areas.Org.Controllers
 			=> ModelStateIsValid(model,
 				m => Service.UpdateEventDescriptionAsync(Model.Id, Model.ParentId, Model.Version, model.Html),
 				m => RedirectToActionPermanent("Prices", "Event", new {area="Org", Model.Id, Model.ParentId, version=Model.Version+1}),
-				m => (IActionResult)View(m));
+				View);
 
 		#endregion
 
@@ -94,7 +94,7 @@ namespace WebApplication3.Areas.Org.Controllers
 			=> ModelStateIsValid(model,
 				m => Service.AddEventTicketPriceAsync(Model.Id, Model.ParentId, m.Name, m.Description, m.Price, m.Count, m.Template),
 				m => RedirectToActionPermanent("Prices", "Event", new { area = "Org", Model.Id, Model.ParentId }),
-				m => (IActionResult)View(m));
+				View);
 
 		#endregion
 

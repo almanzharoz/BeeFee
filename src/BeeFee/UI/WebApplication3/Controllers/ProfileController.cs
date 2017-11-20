@@ -1,4 +1,6 @@
-﻿using BeeFee.LoginApp.Projections.User;
+﻿using System.Threading.Tasks;
+using BeeFee.ClientApp.Services;
+using BeeFee.LoginApp.Projections.User;
 using BeeFee.LoginApp.Services;
 using BeeFee.Model.Embed;
 using Microsoft.AspNetCore.Authorization;
@@ -11,8 +13,11 @@ namespace WebApplication3.Controllers
 	[Authorize(Roles = RoleNames.User)]
 	public class ProfileController : BaseController<AuthorizationService>
 	{
-		public ProfileController(AuthorizationService service) : base(service)
+		private readonly UserService _userService;
+
+		public ProfileController(AuthorizationService service, UserService userService) : base(service)
 		{
+			_userService = userService;
 		}
 
 		#region Edit
@@ -23,8 +28,8 @@ namespace WebApplication3.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Edit(ProfileModel model)
-			=> ModelStateIsValid(model, m => Service.UpdateUser(m.Name), m => View("EditError"), View);
+		public Task<IActionResult> Edit(ProfileModel model)
+			=> ModelStateIsValid(model, m => _userService.UpdateUserAsync(m.Name), m => View("EditError"));
 
 		#endregion
 
@@ -35,9 +40,9 @@ namespace WebApplication3.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult ChangePassword(ChangePasswordModel model)
+		public Task<IActionResult> ChangePassword(ChangePasswordModel model)
 			=> ModelStateIsValid(model,
-				m => Service.ChangePassword(m.OldPassword, m.Password),
+				m => Service.ChangePasswordAsync(m.OldPassword, m.Password),
 				m => View("ChangePasswordSuccess"),
 				m => View(m.Fluent(x => ModelState.AddModelError("error", "Новый пароль должен отличатся от текущего"))));
 
@@ -46,10 +51,8 @@ namespace WebApplication3.Controllers
 		#region Registrations
 
 		[HttpGet]
-		public ActionResult Registrations(object model)
-		{
-			return View();
-		}
+		public async Task<IActionResult> Registrations(RegistrationsFilter model)
+			=> View(model.Load(await _userService.GetRegistrations(model.Page, model.Size)));
 
 		#endregion
 

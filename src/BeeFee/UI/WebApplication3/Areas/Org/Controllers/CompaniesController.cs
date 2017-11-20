@@ -37,17 +37,16 @@ namespace WebApplication3.Areas.Org.Controllers
 		public Task<IActionResult> Create(CreateCompanyModel model)
 			=> ModelStateIsValid(model,
 				m => Service.AddCompanyAsync(m.Name, m.Url, m.Email,
-						"company.jpg" /*m.File != null && m.File.Length > 0 ? m.File.FileName : null*/)
-					.IfNotNullAsync<CompanyProjection, IActionResult>(async x =>
-					{
-						if (m.File != null && m.File.Length > 0)
-							await _imagesService.AddCompanyLogo(x.Url, m.File.OpenReadStream());
-						if (Service.StartOrg())
-							return RedirectToActionPermanent("Relogin", "Account",
-								new {area = "", returnUrl = "/Org/Company/Create/" + x.Id});
-						return RedirectToActionPermanent("Index");
-					}, () => Task.FromResult((IActionResult) View("CreateError"))),
-				m => Task.FromResult((IActionResult) View(m)));
+					"company.jpg" /*m.File != null && m.File.Length > 0 ? m.File.FileName : null*/),
+				async (m, c) =>
+				{
+					if (m.File != null && m.File.Length > 0)
+						await _imagesService.AddCompanyLogo(c.Url, m.File.OpenReadStream());
+
+					if (await Service.StartOrgAsync())
+						return RedirectToActionPermanent("Relogin", "Account", new {area = "", returnUrl = "/Org/Company/Create/" + c.Id});
+					return RedirectToActionPermanent("Index");
+				});
 
 		#endregion
 

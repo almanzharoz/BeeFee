@@ -1,0 +1,25 @@
+﻿@model WebApplication3.Models.Profile.RegistrationsFilter
+@{
+	ViewBag.Title = "Мои регистрации";
+}
+
+<table width="100%">
+	<thead>
+	<tr>
+		<th>Дата</th>
+		<th>Статус</th>
+		<th>Сумма</th>
+	</tr>
+	</thead>
+	<tbody>
+	@foreach (var m in Model.Items)
+	{
+		<tr>
+			<td>@m.Date</td>
+			<td>@m.State</td>
+			<td>@m.Sum</td>
+		</tr>
+	}
+	</tbody>
+</table>
+@Html.Partial("_Pager", Model.Items)

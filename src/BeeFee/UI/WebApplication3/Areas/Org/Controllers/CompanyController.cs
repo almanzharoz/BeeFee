@@ -90,13 +90,13 @@ namespace WebApplication3.Areas.Org.Controllers
 					return (IActionResult) RedirectToActionPermanent("EditDescription", "Event", new {area = "Org", id = r});
 				},
 				// обработка исключений
-				(m, c) => c
+				(m, ms, c) => c
 					.Catch<EntityAccessException<Company>>((e, r) =>
-						ModelState.AddModelError("error", $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
+						ms.AddModelError("error", $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
 					.Catch<ArgumentNullException>((e, r) =>
-						ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
+						ms.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
 					.Catch<ExistsUrlException<Event>>((e, r) => 
-						ModelState.AddModelError("Url", e.Message)),
+						ms.AddModelError("Url", e.Message)),
 				// если модель не валидна или не удалось добавить в БД
 				m => View(m.Init(_categoryService.GetAllCategories<BaseCategoryProjection>())));
 

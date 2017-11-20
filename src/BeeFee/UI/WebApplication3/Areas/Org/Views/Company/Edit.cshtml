@@ -1,2 +1,76 @@
-﻿@model WebApplication3.Areas.Org.Models.Company.CompanyEditModel
+﻿@inject ImagesHelper Images
+@using WebApplication3.Infrastructure
+@model WebApplication3.Areas.Org.Models.Company.CompanyEditModel
+@{
+	ViewBag.Title = "Управление компанией";
+}
+<div class="profile">
+	<form asp-action="Edit" asp-controller="Company" method="post">
+		<div class="validation" asp-validation-summary="ModelOnly"></div>
 
+		<div class="create--field is-big">
+			<input class="create--field-i" asp-for="Name" placeholder="Название компании" />
+			<span asp-validation-for="Name" class="text-danger"></span>
+		</div>
+
+		<div class="create--file">
+			<input class="create--file-i" placeholder="Logo" type="file" id="file" />
+			@if (!String.IsNullOrEmpty(Model.Logo))
+			{
+				<img style="display: block;" src="@Images.GetImageUrl(Model.Url, Model.Logo)" />
+			}
+			<div class="create--file-b">Загрузить логотип</div>
+			<input type="hidden" class="form-control" placeholder="Logo" asp-for="Logo" />
+		</div>
+
+		<div class="create--field with-icon is-small">
+			<i class="icon-mail"></i>
+			<input class="create--field-i" asp-for="Email" placeholder="Почта для обратной связи">
+			<span asp-validation-for="Email" class="text-danger"></span>
+		</div>
+		<div class="create--field with-icon is-sm">
+			<i class="icon-site"></i>
+			<div class="create--field-b is-s3">
+				<input class="create--field-i" asp-for="Url" placeholder="Поддомен">
+				<span asp-validation-for="Url" class="text-danger"></span>
+			</div>
+			<div class="create--field-l is-s3">.befree.ru</div>
+		</div>
+		<div class="create--btn">
+			<button class="btn-blue" type="submit">Сохранить</button>
+			<a asp-action="Create" asp-controller="Companies">добавить еще организацию</a>
+		</div>
+	</form>
+</div>
+
+@section Scripts{
+	<script type="text/javascript">
+		$(function () {
+
+			$("#file").change(function() {
+				var $this = $(this);
+				var fd = new FormData;
+				fd.append('file', $this.prop('files')[0]);
+				fd.append('companyName', '@(Model.Url)');
+				$.ajax({
+					url: '@(Images.GetImageUrl())/api/home',
+					contentType: false,
+					processData: false,
+					dataType: 'json',
+					method: "POST",
+					data: fd,
+					success: function (data) {
+						$this.next("span").remove();
+						if (data.error != null) {
+							$this.after("<span class=error>"+data.error+"</span>");
+							return;
+						}
+						$this.next("img").remove();
+						$this.after("<img src='@(Images.GetImageUrl())/public/companies/@(Model.Url)/company.jpg?ver=" + new Date().getTime()+"' />");
+						$("#Logo").val("company.jpg");
+					}
+				});
+			});
+		});
+	</script>
+}

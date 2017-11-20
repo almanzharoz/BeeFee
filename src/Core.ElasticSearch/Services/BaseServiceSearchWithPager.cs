@@ -111,5 +111,26 @@ namespace Core.ElasticSearch
 						.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())),
 				r => new Pager<TInnerProjection>(page, take, (int)r.Total, r.Hits.SelectMany(s => s.InnerHits.Values.SelectMany(h => h.Documents<TInnerProjection>())).ToArray().If(load, Load)),
 				RepositoryLoggingEvents.ES_SEARCH);
+
+		public Task<Pager<TInnerProjection>> FilterNestedAsync<T, TNested, TProjection, TInnerProjection>(
+			Func<QueryContainerDescriptor<T>, QueryContainer> query,
+			Expression<Func<T, TNested[]>> path,
+			Func<QueryContainerDescriptor<T>, QueryContainer> nestedQuery,
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null,
+			int page = 0, int take = 0, bool load = true)
+			where TProjection : class, ISearchProjection, IProjection<T>
+			where T : class, IModel
+			where TInnerProjection : class
+			=> TryAsync(
+				c => c.SearchAsync<T, TProjection>(
+					x => x
+						.Index(_mapping.GetIndexName<T>())
+						.Type(_mapping.GetTypeName<T>())
+						//.Source(s => s.Includes(f => f.Fields(projection.Fields)))
+						.Query(q => query(q) && q.Nested(n => n.Path(path).Query(iq => iq.Bool(b => b.Filter(nestedQuery(new QueryContainerDescriptor<T>()))))
+										.InnerHits(h => h.Name("innerhits").IfNotNull(sort, y => y.Sort(sort)).IfNotNull(take, y => y.Size(take).From(page * take)))))
+						.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())),
+				r => new Pager<TInnerProjection>(page, take, (int)r.Total, r.Hits.SelectMany(s => s.InnerHits.Values.SelectMany(h => h.Documents<TInnerProjection>())).ToArray().If(load, Load)),
+				RepositoryLoggingEvents.ES_SEARCH);
 	}
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BeeFee.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Sharp7Func;
 using SharpFuncExt;
 using WebApplication3.Models.Interfaces;
@@ -39,82 +40,120 @@ namespace WebApplication3.Controllers
 		public IActionResult TryAjaxView<T>(string ajaxViewName, T model)
 			=> IsAjax ? PartialView(ajaxViewName, model) : (IActionResult)View(model);
 
-		public TResult ModelStateIsValid<T, TResult>(T model, Func<T, TResult> funcIfTrue, Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		//public TResult ModelStateIsValid<T, TResult>(T model, Func<T, bool> func, Func<T, TResult> funcIfTrue, Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		//{
+		//	if (ModelState.IsValid && func(model))
+		//		return funcIfTrue(model);
+		//	return funcIfFalse(model);
+		//}
+
+		///// <summary>
+		///// 
+		///// </summary>
+		///// <typeparam name="T"></typeparam>
+		///// <typeparam name="TResult"></typeparam>
+		///// <param name="model">Модель</param>
+		///// <param name="func">Функция сервиса</param>
+		///// <param name="funcIfTrue">Результат при успехе</param>
+		///// <param name="funcIfFalse">Результат при ошибке</param>
+		///// <returns></returns>
+		//public async Task<TResult> ModelStateIsValid<T, TResult>(T model, Func<T, Task<bool>> func, Func<T, TResult> funcIfTrue, Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		//{
+		//	if (ModelState.IsValid && await func(model))
+		//		return funcIfTrue(model);
+		//	return funcIfFalse(model);
+		//}
+
+		public async Task<IActionResult> ModelStateIsValid<T>(T model, Func<T, Task<bool>> saveFunc, Func<T, IActionResult> validFunc, Func<T, IActionResult> invalidFunc) 
 		{
-			if (ModelState.IsValid)
-				return funcIfTrue(model);
-			return funcIfFalse(model);
+			if (ModelState.IsValid && await saveFunc(model))
+				return validFunc(model);
+			return invalidFunc(model);
 		}
 
-		public Task<TResult> ModelStateIsValid<T, TResult>(T model, Func<T, Task<TResult>> funcIfTrue, Func<T, Task<TResult>> funcIfFalse) where TResult : IActionResult
+		public async Task<IActionResult> ModelStateIsValid<T>(T model, Func<T, Task<bool>> saveFunc, Func<T, Task<IActionResult>> validFunc, Func<T, IActionResult> invalidFunc)
 		{
-			if (ModelState.IsValid)
-				return funcIfTrue(model);
-			return funcIfFalse(model);
+			if (ModelState.IsValid && await saveFunc(model))
+				return await validFunc(model);
+			return invalidFunc(model);
 		}
 
-		public TResult ModelStateIsValid<T, TResult>(T model, Action<T> funcIfTrue, Func<T, TResult> next) where TResult : IActionResult
+		public async Task<IActionResult> ModelStateIsValid<T>(T model, Func<T, Task<bool>> saveFunc, Func<T, IActionResult> validFunc)
 		{
-			if (ModelState.IsValid)
-				funcIfTrue(model);
-			return next(model);
+			if (ModelState.IsValid && await saveFunc(model))
+				return validFunc(model);
+			return View(model);
 		}
 
-		public TResult ModelStateIsValid<T, TResult>(T model, Func<T, bool> func, Func<T, TResult> funcIfTrue, Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		public async Task<IActionResult> ModelStateIsValid<T>(T model, Func<T, Task<bool>> saveFunc, Func<T, Task<IActionResult>> validFunc)
 		{
-			if (ModelState.IsValid && func(model))
-				return funcIfTrue(model);
-			return funcIfFalse(model);
+			if (ModelState.IsValid && await saveFunc(model))
+				return await validFunc(model);
+			return View(model);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <typeparam name="TResult"></typeparam>
-		/// <param name="model">Модель</param>
-		/// <param name="func">Функция сервиса</param>
-		/// <param name="funcIfTrue">Результат при успехе</param>
-		/// <param name="funcIfFalse">Результат при ошибке</param>
-		/// <returns></returns>
-		public async Task<TResult> ModelStateIsValid<T, TResult>(T model, Func<T, Task<bool>> func, Func<T, TResult> funcIfTrue, Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		public async Task<IActionResult> ModelStateIsValid<T, TResultModel>(T model, 
+			Func<T, Task<TResultModel>> saveFunc,
+			Func<T, TResultModel, IActionResult> validFunc, 
+			Func<T, IActionResult> invalidFunc)
 		{
-			if (ModelState.IsValid && await func(model))
-				return funcIfTrue(model);
-			return funcIfFalse(model);
+			TResultModel r;
+			if (ModelState.IsValid && (r = await saveFunc(model)) != null)
+				return validFunc(model, r);
+			return invalidFunc(model);
 		}
 
-		public async Task<TResult> ModelStateIsValid<T, TResult, TResultModel>(T model, 
-			Func<T, Task<KeyValuePair<bool, TResultModel>>> func,
-			Func<T, TResultModel, TResult> funcIfTrue, 
-			Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		public async Task<IActionResult> ModelStateIsValid<T, TResultModel>(T model,
+			Func<T, Task<TResultModel>> saveFunc,
+			Func<T, TResultModel, Task<IActionResult>> validFunc,
+			Func<T, IActionResult> invalidFunc)
+		{
+			TResultModel r;
+			if (ModelState.IsValid && (r = await saveFunc(model)) != null)
+				return await validFunc(model, r);
+			return invalidFunc(model);
+		}
+
+		public async Task<IActionResult> ModelStateIsValid<T, TResultModel>(T model,
+			Func<T, Task<TResultModel>> saveFunc,
+			Func<T, TResultModel, IActionResult> validFunc)
+		{
+			TResultModel r;
+			if (ModelState.IsValid && (r = await saveFunc(model)) != null)
+				return validFunc(model, r);
+			return View(model);
+		}
+
+		public async Task<IActionResult> ModelStateIsValid<T, TResultModel>(T model,
+			Func<T, Task<TResultModel>> saveFunc,
+			Func<T, TResultModel, Task<IActionResult>> validFunc)
+		{
+			TResultModel r;
+			if (ModelState.IsValid && (r = await saveFunc(model)) != null)
+				return await validFunc(model, r);
+			return View(model);
+		}
+
+		public async Task<IActionResult> ModelStateIsValid<T>(T model,
+			Func<T, Task<bool>> saveFunc,
+			Func<T, IActionResult> validFunc,
+			Func<T, CatchCollection<T, Task<bool>>, CatchCollection<T, Task<bool>>> catchFunc,
+			Func<T, IActionResult> invalidFunc)
+		{
+			if (ModelState.IsValid && await catchFunc(model, model.Try(saveFunc)).Use())
+				return validFunc(model);
+			return invalidFunc(model);
+		}
+
+		public async Task<IActionResult> ModelStateIsValid<T, TResultModel>(T model,
+			Func<T, Task<KeyValuePair<bool, TResultModel>>> saveFunc,
+			Func<T, TResultModel, Task<IActionResult>> validFunc,
+			Func<T, IActionResult> invalidFunc)
 		{
 			KeyValuePair<bool, TResultModel> r;
-			if (ModelState.IsValid && (r = await func(model)).Key)
-				return funcIfTrue(model, r.Value);
-			return funcIfFalse(model);
-		}
-
-		public async Task<TResult> ModelStateIsValid<T, TResult>(T model,
-			Func<T, Task<bool>> func,
-			Func<T, TResult> funcIfTrue,
-			Func<T, CatchCollection<T, Task<bool>>, CatchCollection<T, Task<bool>>> cathesFunc,
-			Func<T, TResult> funcIfFalse) where TResult : IActionResult
-		{
-			if (ModelState.IsValid && await cathesFunc(model, model.Try(func)).Use())
-				return funcIfTrue(model);
-			return funcIfFalse(model);
-		}
-
-		public async Task<TResult> ModelStateIsValid<T, TResult, TResultModel>(T model,
-			Func<T, Task<KeyValuePair<bool, TResultModel>>> func,
-			Func<T, TResultModel, Task<TResult>> funcIfTrue,
-			Func<T, TResult> funcIfFalse) where TResult : IActionResult
-		{
-			KeyValuePair<bool, TResultModel> r;
-			if (ModelState.IsValid && (r = await func(model)).Key)
-				return await funcIfTrue(model, r.Value);
-			return funcIfFalse(model);
+			if (ModelState.IsValid && (r = await saveFunc(model)).Key)
+				return await validFunc(model, r.Value);
+			return invalidFunc(model);
 		}
 
 		public async Task<TResult> ModelStateIsValid<T, TResult, TResultModel>(T model,
@@ -129,6 +168,17 @@ namespace WebApplication3.Controllers
 			return funcIfFalse(model);
 		}
 
+		public async Task<TResult> ModelStateIsValid<T, TResult, TResultModel>(T model,
+			Func<T, Task<KeyValuePair<bool, TResultModel>>> func,
+			Func<T, TResultModel, Task<TResult>> funcIfTrue,
+			Func<T, ModelStateDictionary, CatchCollection<T, Task<KeyValuePair<bool, TResultModel>>>, CatchCollection<T, Task<KeyValuePair<bool, TResultModel>>>> cathesFunc,
+			Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		{
+			KeyValuePair<bool, TResultModel> r;
+			if (ModelState.IsValid && (r = await cathesFunc(model, ModelState, model.Try(func)).Use()).Key)
+				return await funcIfTrue(model, r.Value);
+			return funcIfFalse(model);
+		}
 	}
 
 	public abstract class BaseController<TService, TModel> : BaseController<TService> where TService : BaseBeefeeService where TModel : class

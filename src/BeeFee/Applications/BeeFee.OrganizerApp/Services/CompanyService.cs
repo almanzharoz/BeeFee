@@ -29,12 +29,16 @@ namespace BeeFee.OrganizerApp.Services
 				x => null);
 
 		public Task<CompanyProjection> AddCompanyAsync(string name, string url, string email, string logo)
-			=> url.IfNull(name, CommonHelper.UriTransliterate).IfNot(ExistsByUrl<CompanyProjection>,
-				x => InsertWithVersionAsync<NewCompany, CompanyProjection>(new NewCompany(GetById<BaseUserProjection>(User.Id), name, x, email, logo)),
-				x => new Task<CompanyProjection>(() => null));
+			=> url.IfNull(name, CommonHelper.UriTransliterate)
+				.IfNot(ExistsByUrl<CompanyProjection>,
+					x => InsertWithVersionAsync<NewCompany, CompanyProjection>(new NewCompany(GetById<BaseUserProjection>(User.Id), name, x, email, logo)),
+					x => Task.FromResult(default(CompanyProjection)));
 
 		public bool StartOrg()
 			=> UpdateById<UserUpdateProjection>(User.Id, u => u.StartOrg(), true);
+
+		public Task<bool> StartOrgAsync()
+			=> UpdateByIdAsync<UserUpdateProjection>(User.Id, u => u.StartOrg(), true);
 
 		public IReadOnlyCollection<KeyValuePair<CompanyProjection, int>> GetMyCompanies()
 			=> SearchWithScore<Company, CompanyProjection>(f =>

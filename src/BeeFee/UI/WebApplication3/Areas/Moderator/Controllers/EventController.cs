@@ -1,6 +1,8 @@
-﻿using BeeFee.ModeratorApp.Services;
+﻿using System.Threading.Tasks;
+using BeeFee.ModeratorApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication3.Areas.Moderator.Models;
+using WebApplication3.Areas.Moderator.Models.Event;
 using WebApplication3.Controllers;
 
 namespace WebApplication3.Areas.Moderator.Controllers
@@ -11,40 +13,18 @@ namespace WebApplication3.Areas.Moderator.Controllers
 		{
 		}
 
-		#region Reject
 		[HttpGet]
-		public ActionResult Reject()
-		{
-			return View();
-		}
+		public IActionResult Index()
+			=> View(new EventModerateModel(Service.GetEvent(Model.Id, Model.ParentId)));
+
+		#region Moderate
 
 		[HttpPost]
-		public ActionResult Reject(object model)
-		{
-			return View();
-		}
-		#endregion
-
-		#region Return
-		[HttpGet]
-		public ActionResult Return()
-		{
-			return View();
-		}
-
-		[HttpPost]
-		public ActionResult Return(object model)
-		{
-			return View();
-		}
-		#endregion
-
-		#region Publicate
-		[HttpPost]
-		public ActionResult Publicate(object model)
-		{
-			return View();
-		}
+		public Task<IActionResult> Moderate(EventModerateModel model)
+			=> ModelStateIsValid(model, 
+				m => Service.ModerateEvent(Model.Id, Model.ParentId, Model.Version, m.Comment, m.Moderate),
+				m => View(m),
+				m => View("Index", m.Init(Service.GetEvent(Model.Id, Model.ParentId)))); //TODO: Обработка ошибок
 		#endregion
 
 	}
