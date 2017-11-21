@@ -42,6 +42,7 @@ namespace WebApplication3.Areas.Org.Models.Event
 		[Required(ErrorMessage = "Email is required"), EmailAddress]
 		public string Email { get; set; }
 
+		public IFormFile File { get; set; }
 		public string Cover { get; set; }
 
 		public string CompanyUrl { get; set; }

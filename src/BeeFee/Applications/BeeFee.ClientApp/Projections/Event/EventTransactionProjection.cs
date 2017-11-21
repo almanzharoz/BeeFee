@@ -6,7 +6,20 @@ using Core.ElasticSearch.Domain;
 
 namespace BeeFee.ClientApp.Projections.Event
 {
-    internal class EventTransactionProjection : BaseEntity, IProjection<EventTransaction>, ISearchProjection, IRemoveProjection
+	public class EventTransactionPricesProjection : BaseEntity, IProjection<EventTransaction>, ISearchProjection
+	{
+		public TicketPrice[] Prices { get; }
+
+		public int TicketsLeft { get; }
+
+		public EventTransactionPricesProjection(string id, TicketPrice[] prices, int ticketsLeft) : base(id)
+		{
+			Prices = prices;
+			TicketsLeft = ticketsLeft;
+		}
+	}
+
+	internal class EventTransactionProjection : BaseEntity, IProjection<EventTransaction>, ISearchProjection, IRemoveProjection
     {
 		public EventJoinProjection Event { get; }
 		public BaseCompanyProjection Company { get; }

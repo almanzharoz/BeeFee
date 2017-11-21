@@ -17,8 +17,8 @@ namespace BeeFee.ModeratorApp.Services
 		{
 		}
 
-		public Pager<EventModeratorGridItem> GetEvents(int page, int take)
-			=> FilterPager<Event, EventModeratorGridItem>(q => q.Term(p => p.State, EEventState.Moderating), page, take,
+		public Task<Pager<EventModeratorGridItem>> GetEvents(int page, int take)
+			=> FilterPagerAsync<Event, EventModeratorGridItem>(q => q.Term(p => p.State, EEventState.Moderating), page, take,
 				s => s.Ascending(p => p.DateTime.Start));
 
 		public EventPreviewProjection GetEvent(string id, string companyId)

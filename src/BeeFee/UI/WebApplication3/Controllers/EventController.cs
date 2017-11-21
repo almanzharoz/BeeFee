@@ -20,12 +20,14 @@ namespace WebApplication3.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> Index()
-			=> (await Service.GetEventByUrl(Model.ParentId, Model.Id)).IfNotNull(e =>
-					View(new EventPageModel(e, /* TODO: Доставать юзера из БД */ User.Identity.Name,
-						User.Claims.Where(c => c.Type.Equals(ClaimTypes.Email, StringComparison.Ordinal)).Select(c => c.Value)
-							.FirstOrDefault(), "")),
-				() => (IActionResult) NotFound());
+		public Task<IActionResult> Index()
+			=> View("Index",
+				m => Service.GetEventByUrl(m.ParentId, m.Id),
+				async e => new EventPageModel(e,
+					await Service.GetEventTransaction(e.Id),
+					User.Identity.Name /* TODO: Доставать юзера из БД */,
+					User.Claims.Where(c => c.Type.Equals(ClaimTypes.Email, StringComparison.Ordinal)).Select(c => c.Value)
+						.FirstOrDefault(), ""));
 
 		#region Register
 
@@ -33,10 +35,12 @@ namespace WebApplication3.Controllers
 		public Task<IActionResult> Register(EventPageModel model)
 			=> ModelStateIsValid(model, async m =>
 					await (await Service.GetEventByUrl(Model.ParentId, Model.Id)).Convert(e =>
-						Service.RegisterToEventAsync(Model.ParentId, Model.Id, m.Email, m.Name, m.Phone, e.Prices.First().Id,
+						Service.RegisterToEventAsync(Model.ParentId, Model.Id, m.Email, m.Name, m.Phone, m.TicketId,
 							String.Concat(_settings.ImagesUrl, "/min/", e.Parent.Url, "/", e.Url, "/1162x600/") /* TODO: Выпилить */)),
-				m => View(), // TODO: Реализовать
-				m => View());
+				m => View("Index", M => Service.GetEventByUrl(M.ParentId, M.Id),
+					async e => new EventPageModel(e, await Service.GetEventTransaction(e.Id), true)),
+				m => View("Index", M => Service.GetEventByUrl(M.ParentId, M.Id),
+					async e => new EventPageModel(e, await Service.GetEventTransaction(e.Id), false)));
 
 		#endregion
 

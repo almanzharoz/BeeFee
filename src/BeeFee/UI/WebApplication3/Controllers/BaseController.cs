@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using BeeFee.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Sharp7Func;
 using SharpFuncExt;
 using WebApplication3.Models.Interfaces;
 
@@ -76,6 +75,13 @@ namespace WebApplication3.Controllers
 			if (ModelState.IsValid && await saveFunc(model))
 				return await validFunc(model);
 			return invalidFunc(model);
+		}
+
+		public async Task<IActionResult> ModelStateIsValid<T>(T model, Func<T, Task<bool>> saveFunc, Func<T, Task<IActionResult>> validFunc, Func<T, Task<IActionResult>> invalidFunc)
+		{
+			if (ModelState.IsValid && await saveFunc(model))
+				return await validFunc(model);
+			return await invalidFunc(model);
 		}
 
 		public async Task<IActionResult> ModelStateIsValid<T>(T model, Func<T, Task<bool>> saveFunc, Func<T, IActionResult> validFunc)
@@ -179,6 +185,19 @@ namespace WebApplication3.Controllers
 				return await funcIfTrue(model, r.Value);
 			return funcIfFalse(model);
 		}
+
+		public async Task<TResult> ModelStateIsValid<T, TResult, TResultModel>(T model,
+			Func<T, Task<BoolResult<TResultModel>>> func,
+			Func<T, TResultModel, Task<TResult>> funcIfTrue,
+			Func<T, ModelStateDictionary, CatchCollection<T, Task<BoolResult<TResultModel>>>, CatchCollection<T, Task<BoolResult<TResultModel>>>> cathesFunc,
+			Func<T, TResult> funcIfFalse) where TResult : IActionResult
+		{
+			BoolResult<TResultModel> r;
+			if (ModelState.IsValid && (r = await cathesFunc(model, ModelState, model.Try(func)).Use()).Success)
+				return await funcIfTrue(model, r.Result);
+			return funcIfFalse(model);
+		}
+
 	}
 
 	public abstract class BaseController<TService, TModel> : BaseController<TService> where TService : BaseBeefeeService where TModel : class
@@ -211,6 +230,15 @@ namespace WebApplication3.Controllers
 				return NotFound();
 			return View(viewName, createModel(p));
 		}
+
+		protected async Task<IActionResult> View<TProjection, TViewModel>(string viewName, Func<TModel, Task<TProjection>> getFunc, Func<TProjection, Task<TViewModel>> createModel)
+		{
+			var p = await getFunc(Model);
+			if (p.IsNull())
+				return NotFound();
+			return View(viewName, await createModel(p));
+		}
+
 	}
 
 }

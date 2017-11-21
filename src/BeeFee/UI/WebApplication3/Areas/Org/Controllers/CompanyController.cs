@@ -55,7 +55,7 @@ namespace WebApplication3.Areas.Org.Controllers
 				m => User.IsInRole(RoleNames.MultiOrganizer)
 					? RedirectToActionPermanent("Index", "Companies")
 					: RedirectToActionPermanent("Events", "Company", new {area = "Org", Model.Id}),
-				m => (IActionResult) View(m));
+				m => View(m));
 		#endregion
 
 		#region Events

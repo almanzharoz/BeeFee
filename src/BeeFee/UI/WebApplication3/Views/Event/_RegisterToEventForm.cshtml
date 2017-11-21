@@ -1,10 +1,11 @@
+@using BeeFee.Model.Embed
 @model WebApplication3.Models.Event.EventPageModel
 @*TODO на форме добавить шаблоны в поля почты и номера телефона*@
 <div class="event-form--title">@*На Queens of the Stone Age идут 1025 человек. Присоединяйтесь!*@ </div>
 <div class="row">
-    @if (!Model.RegisterResult.HasValue)
+    @if (!Model.Registered.HasValue)
 	{
-        <form asp-controller="Event" asp-action="RegisterToEvent" method="post" class="form-horizontal">
+        <form asp-controller="Event" asp-action="Register" method="post" class="form-horizontal">
             <div class="col-xs-4 col-md-3">
                 <div class="input-field">
                     <div class="input-field--b">
@@ -39,16 +40,16 @@
 	}
 	else
 	{
-		if (Model.RegisterResult == 0)
-		{
-        <div class="event-form--title" style="text-align: center; color: #3f7d25;">
-            Регистрация прошла успешно
-        </div>
-		}
-		else if (Model.RegisterResult == 3)
+		if (Model.Event.State != EEventState.Open)
 		{
 			<div class="event-form--title" style="text-align: center; color: #3f7d25;">
 				Регистрация закрыта
+			</div>
+		}
+		else if (Model.Registered.Value)
+		{
+			<div class="event-form--title" style="text-align: center; color: #3f7d25;">
+				Регистрация прошла успешно
 			</div>
 		}
 		else

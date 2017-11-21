@@ -1,4 +1,5 @@
-﻿using BeeFee.ModeratorApp.Services;
+﻿using System.Threading.Tasks;
+using BeeFee.ModeratorApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication3.Areas.Moderator.Models.Events;
 using WebApplication3.Controllers;
@@ -14,8 +15,8 @@ namespace WebApplication3.Areas.Moderator.Controllers
 		/// <summary>
 		/// Список мероприятий, ожидающих публикации
 		/// </summary>
-		public IActionResult Index(EventsFilter model)
-			=> View(model.Load(Service.GetEvents(model.Page, model.Size)));
+		public async Task<IActionResult> Index(EventsFilter model)
+			=> View(model.Load(await Service.GetEvents(model.Page, model.Size)));
 
 	}
 }

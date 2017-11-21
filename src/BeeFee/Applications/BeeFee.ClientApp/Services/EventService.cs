@@ -22,11 +22,14 @@ namespace BeeFee.ClientApp.Services
         {
         }
 
-		public async Task<EventProjection> GetEventByUrl(string companyUrl, string url)
-			=> (await FilterAsync<EventProjection>(f =>
+		public Task<EventProjection> GetEventByUrl(string companyUrl, string url)
+			=> FilterFirstAsync<EventProjection>(f =>
 					f.Term(p => p.Url, url.HasNotNullArg("event url")) &&
-					f.HasParent<Company>(p => p.Query(q => q.Term(x => x.Url, companyUrl.HasNotNullArg("company url"))))))
-				.SingleOrDefault();
+					f.HasParent<Company>(p => p.Query(q => q.Term(x => x.Url, companyUrl.HasNotNullArg("company url")))));
+
+		public Task<EventTransactionPricesProjection> GetEventTransaction(string eventId)
+			=> FilterFirstAsync<EventTransaction, EventTransactionPricesProjection>(f => f.Term(p => p.Event, eventId.HasNotNullArg(nameof(eventId))));
+
 
 		//public IReadOnlyCollection<EventSearchProjection> SearchByName(string query)
 		//    => Search<Event, EventSearchProjection>(q => q

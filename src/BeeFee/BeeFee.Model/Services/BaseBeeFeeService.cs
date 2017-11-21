@@ -31,6 +31,9 @@ namespace BeeFee.Model
 		protected bool ExistsByUrl<T>(string url) where T : class, ISearchProjection, IWithUrl
 			=> FilterCount<T>(f => f.Term(p => p.Url, url.HasNotNullArg(nameof(url))))>0;
 
+		protected bool ExistsByUrl<T>(string id, string url) where T : class, ISearchProjection, IWithUrl
+			=> FilterCount<T>(f => !f.Ids(x => x.Values(id)) && f.Term(p => p.Url, url.HasNotNullArg(nameof(url)))) > 0;
+
 		public UserName GetUserName(string userId)
 			=> User = new UserName(userId);
 

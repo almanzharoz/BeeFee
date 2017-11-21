@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Exceptions;
@@ -53,12 +54,16 @@ namespace WebApplication3.Areas.Org.Controllers
 		[HttpPost]
 		public Task<IActionResult> Edit(EventEditModel model)
 			=> ModelStateIsValid(model,
-				m => Service.UpdateEventAsync(Model.Id, Model.ParentId, Model.Version, m.Name, m.Label, m.Url, m.Cover, m.Email,
-					new EventDateTime(m.StartDateTime, m.FinishDateTime), new Address(m.City, m.Address), m.CategoryId),
-				m => RedirectToActionPermanent("EditDescription", "Event", new {area = "Org", Model.Id, Model.ParentId, version=Model.Version+1}),
+				async m => await Service.UpdateEventAsync(Model.Id, Model.ParentId, Model.Version, m.Name, m.Label, m.Url,
+					await m.Cover.If(x => model.File != null && model.File.Length > 0,
+						x => _imagesService.AddEventCover(Model.ParentId, Model.Id, x, model.File.OpenReadStream())),
+					m.Email, new EventDateTime(m.StartDateTime, m.FinishDateTime), new Address(m.City, m.Address), m.CategoryId),
+				m => RedirectToActionPermanent("EditDescription", "Event",
+					new {area = "Org", Model.Id, Model.ParentId, version = Model.Version + 1}),
 				(m, c) => c
 					.Catch<EntityAccessException<Company>>((e, r) =>
-						ModelState.AddModelError("error", $"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
+						ModelState.AddModelError("error",
+							$"Невозможно получить доступ к указанной компании (Company={e.Id}, User={e.User})"))
 					.Catch<ArgumentNullException>((e, r) =>
 						ModelState.AddModelError("error", $"Не указан или не найден аргумент \"{e.ParamName}\""))
 					.Catch<ExistsUrlException<Event>>((e, r) =>

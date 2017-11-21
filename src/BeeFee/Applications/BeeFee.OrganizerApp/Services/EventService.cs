@@ -57,46 +57,55 @@ namespace BeeFee.OrganizerApp.Services
 				p => p.Prices,
 				q => q.Term(x => x.Prices.First().Id, ticketId));
 
-		/// <exception cref="AddEntityException"></exception>
-		// TODO: добавить проверку 
-		public string AddEvent(string companyId, string categoryId, string name, string label, string url, string email,
-            EventDateTime dateTime, Address address, TicketPrice[] prices, string html, string cover)
-        {
-            // TODO: Проверять и вставлять одним запросом
-            url.IfNull(name, CommonHelper.UriTransliterate)
-                .ThrowIf(ExistsByUrl<EventProjection>, x => new ExistsUrlException<Event>(x));
+		///// <exception cref="AddEntityException"></exception>
+		//// TODO: добавить проверку 
+		//public string AddEvent(string companyId, string categoryId, string name, string label, string url, string email,
+  //          EventDateTime dateTime, Address address, TicketPrice[] prices, string html, string cover)
+  //      {
+  //          // TODO: Проверять и вставлять одним запросом
+  //          url.IfNull(name, CommonHelper.UriTransliterate)
+  //              .ThrowIf(ExistsByUrl<EventProjection>, x => new ExistsUrlException<Event>(x));
 
-            var newEvent = new NewEvent(
-                companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)),
-                GetById<BaseUserProjection>(User.Id).HasNotNullEntity("user"),
-                GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), name, label, url,
-                dateTime, address, email, cover);
+  //          var newEvent = new NewEvent(
+  //              companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)),
+  //              GetById<BaseUserProjection>(User.Id).HasNotNullEntity("user"),
+  //              GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"), name, label, url,
+  //              dateTime, address, email, cover);
 
-            Insert<NewEvent, CompanyJoinProjection>(newEvent, true).ThrowIfNot<AddEntityException<Event>>();
+  //          Insert<NewEvent, CompanyJoinProjection>(newEvent, true).ThrowIfNot<AddEntityException<Event>>();
 
-            Insert(new NewEventTransaction(newEvent), false).ThrowIfNot<AddEntityException<EventTransaction>>(); // TODO: при такой ошибке должен быть откат
+  //          Insert(new NewEventTransaction(newEvent), false).ThrowIfNot<AddEntityException<EventTransaction>>(); // TODO: при такой ошибке должен быть откат
 
-            return newEvent.Id;
-        }
+  //          return newEvent.Id;
+//        }
 
-		public async Task<KeyValuePair<bool, string>> AddEventAsync(string companyId, string categoryId, string name, string label, string url, string email,
+		public async Task<BoolResult<string>> AddEventAsync(string companyId, string categoryId, string name, string label,
+			string url, string email,
 			EventDateTime dateTime, Address address, string cover)
 		{
 			// TODO: Проверять и вставлять одним запросом
-			url.IfNull(name, CommonHelper.UriTransliterate)
-				.ThrowIf(ExistsByUrl<EventProjection>, x => new ExistsUrlException<Event>(x));
+			// Вставить одним запросов не получится, пологаю лучшим вариантом будет, после вставки проверить нет ли другого документа с таким url и откатить этот
 
 			var newEvent = new NewEvent(
 				companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)),
 				GetById<BaseUserProjection>(User.Id).HasNotNullEntity("user"),
 				GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category"),
-				name, label, url, dateTime, address, email, cover);
+				name, label,
+				url.IfNull(name, CommonHelper.UriTransliterate)
+					.ThrowIf(ExistsByUrl<EventProjection>, x => new ExistsUrlException<Event>(x)),
+				dateTime, address, email, cover);
 
-			var result = (await InsertAsync<NewEvent, CompanyJoinProjection>(newEvent, true)).ThrowIfNot<AddEntityException<Event>>();
+			NewEventTransaction newEventTransaction = null;
 
-			(await InsertAsync(new NewEventTransaction(newEvent), false)).ThrowIfNot<AddEntityException<EventTransaction>>(); // TODO: при такой ошибке должен быть откат
-
-			return new KeyValuePair<bool, string>(result, newEvent.Id);
+			return new BoolResult<string>(await
+					newEvent.Rollback(
+						async e => await InsertAsync<NewEvent, CompanyJoinProjection>(e, true) &&
+									!ExistsByUrl<EventProjection>(e.Id, e.Url) &&
+									await InsertAsync(newEventTransaction = new NewEventTransaction(e), true),
+						e => e.Id.NotNullOrDefault(id =>
+							Remove<EventProjection, CompanyJoinProjection>(e.Id, e.Parent.Id, 1, false) &&
+							Remove<EventTransactionProjection>(newEventTransaction.Id, false))),
+				newEvent.Id);
 		}
 
 		private EventTransactionProjection GetEventTransactionById(string eventId, string companyId)

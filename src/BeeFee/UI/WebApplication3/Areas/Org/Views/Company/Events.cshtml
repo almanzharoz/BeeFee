@@ -38,23 +38,23 @@
 					<div class="e-item--title">@e.Name</div>
 					@if (e.State == EEventState.Open)
 					{
-						<a asp-action="Preview" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-view"></a>
-						<a class="e-item--btn is-lock" asp-action="Close" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" onclick="return confirm('Закрыть регистрацию?')"></a>
-						<a asp-action="Registered" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id">список</a>
+						<a asp-action="Preview" asp-controller="Event" asp-route-id="@e.Id" asp-route-parentId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-view"></a>
+						<a class="e-item--btn is-lock" asp-action="Close" asp-controller="Event" asp-route-id="@e.Id" asp-route-parentId="@e.Parent.Id" asp-route-version="@e.Version" onclick="return confirm('Закрыть регистрацию?')"></a>
+						<a asp-action="Registered" asp-controller="Event" asp-route-id="@e.Id" asp-route-parentId="@e.Parent.Id">список</a>
 					}
 					else if (e.State == EEventState.Close)
 					{
 					}
 					else if (e.State == EEventState.Moderating)
 					{
-						<a asp-action="Preview" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-view"></a>
-						<a asp-action="Remove" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-delete" onclick="return confirm('Удалить мероприятие?')"></a>
+						<a asp-action="Preview" asp-controller="Event" asp-route-id="@e.Id" asp-route-parentId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-view"></a>
+						<a asp-action="Remove" asp-controller="Event" asp-route-id="@e.Id" asp-route-parentId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-delete" onclick="return confirm('Удалить мероприятие?')"></a>
 					}
 					else if (e.State == EEventState.Created || e.State == EEventState.NotModerated)
 					{
-						<a asp-action="Edit" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" class="e-item--btn is-edit"></a>
-						<a asp-action="Preview" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-view"></a>
-						<a asp-action="Remove" asp-route-id="@e.Id" asp-route-companyId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-delete" onclick="return confirm('Удалить мероприятие?')"></a>
+						<a asp-action="Edit" asp-controller="Event" asp-route-id="@e.Id" asp-route-parentId="@e.Parent.Id" class="e-item--btn is-edit"></a>
+						<a asp-action="Preview" asp-controller="Event" asp-route-id="@e.Id" asp-route-parentId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-view"></a>
+						<a asp-action="Remove" asp-controller="Event" asp-route-id="@e.Id" asp-route-parentId="@e.Parent.Id" asp-route-version="@e.Version" class="e-item--btn is-delete" onclick="return confirm('Удалить мероприятие?')"></a>
 					}
 				</div>
 				<div class="e-item--text">@GetDescription(e)</div>
@@ -71,4 +71,4 @@ else
 }
 
 <br /><br />
-<a asp-action="CreateEvent" asp-route-companyId="@ViewBag.RequestModel.Id">Добавить новое событие</a>
+<a asp-action="CreateEvent" asp-route-parentId="@ViewBag.RequestModel.Id">Добавить новое событие</a>
