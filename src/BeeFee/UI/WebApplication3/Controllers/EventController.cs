@@ -27,7 +27,7 @@ namespace WebApplication3.Controllers
 					await Service.GetEventTransaction(e.Id),
 					User.Identity.Name /* TODO: Доставать юзера из БД */,
 					User.Claims.Where(c => c.Type.Equals(ClaimTypes.Email, StringComparison.Ordinal)).Select(c => c.Value)
-						.FirstOrDefault(), ""));
+						.FirstOrDefault(), "", Service.CanRegister(e.Id, e.Parent.Id, HttpContext.Session?.Id) ? null : (bool?)false));
 
 		#region Register
 
@@ -36,7 +36,7 @@ namespace WebApplication3.Controllers
 			=> ModelStateIsValid(model, async m =>
 					await (await Service.GetEventByUrl(Model.ParentId, Model.Id)).Convert(e =>
 						Service.RegisterToEventAsync(Model.ParentId, Model.Id, m.Email, m.Name, m.Phone, m.TicketId,
-							String.Concat(_settings.ImagesUrl, "/min/", e.Parent.Url, "/", e.Url, "/1162x600/") /* TODO: Выпилить */)),
+							String.Concat(_settings.ImagesUrl, "/min/", e.Parent.Url, "/", e.Url, "/1162x600/") /* TODO: Выпилить */, HttpContext.Session?.Id)),
 				m => View("Index", M => Service.GetEventByUrl(M.ParentId, M.Id),
 					async e => new EventPageModel(e, await Service.GetEventTransaction(e.Id), true)),
 				m => View("Index", M => Service.GetEventByUrl(M.ParentId, M.Id),

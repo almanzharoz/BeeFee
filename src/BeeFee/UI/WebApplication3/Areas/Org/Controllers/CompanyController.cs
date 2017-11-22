@@ -24,7 +24,8 @@ namespace WebApplication3.Areas.Org.Controllers
 		private readonly EventService _eventService;
 		private readonly CategoryService _categoryService;
 
-		public CompanyController(CompanyService service, EventService eventService, CategoryService categoryService, ImagesService imagesService, CompanyRequestModel model) : base(service, model)
+		public CompanyController(CompanyService service, EventService eventService, CategoryService categoryService, ImagesService imagesService, CompanyRequestModel model) 
+			: base(service, model)
 		{
 			_imagesService = imagesService;
 			_eventService = eventService;
@@ -55,7 +56,7 @@ namespace WebApplication3.Areas.Org.Controllers
 				m => User.IsInRole(RoleNames.MultiOrganizer)
 					? RedirectToActionPermanent("Index", "Companies")
 					: RedirectToActionPermanent("Events", "Company", new {area = "Org", Model.Id}),
-				m => View(m));
+				View);
 		#endregion
 
 		#region Events

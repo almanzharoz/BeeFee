@@ -13,8 +13,9 @@ namespace BeeFee.ClientApp.Projections.Event
 		public float Sum { get; }
 		public ETransactionType Type { get; }
 		public ETransactionState State { get; }
+		public string SessionId { get; }
 
-		public RegisterToEventTransaction(Guid priceId, DateTime date, Contact contact, BaseUserProjection user, float sum, ETransactionType type)
+		public RegisterToEventTransaction(Guid priceId, DateTime date, Contact contact, BaseUserProjection user, float sum, ETransactionType type, string sessionId)
 		{
 			PriceId = priceId;
 			Date = date;
@@ -23,6 +24,7 @@ namespace BeeFee.ClientApp.Projections.Event
 			Sum = sum;
 			Type = type;
 			State = ETransactionState.New;
+			SessionId = sessionId;
 		}
     }
 }

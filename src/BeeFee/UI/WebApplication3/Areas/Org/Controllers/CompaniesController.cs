@@ -1,10 +1,8 @@
 ﻿using System.Threading.Tasks;
 using BeeFee.Model.Embed;
-using BeeFee.OrganizerApp.Projections.Company;
 using BeeFee.OrganizerApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SharpFuncExt;
 using WebApplication3.Areas.Org.Models.Companies;
 using WebApplication3.Controllers;
 
@@ -26,6 +24,9 @@ namespace WebApplication3.Areas.Org.Controllers
 		public async Task<IActionResult> Index(CompaniesFilter model)
 			=> View(model.Load(await Service.GetMyCompaniesAsync()));
 		#endregion
+
+		public ActionResult First() //hack
+			=> RedirectToActionPermanent("Edit", "Company", new {area = "Org", id = Service.GetCompany(null)});
 
 		#region Create
 		[HttpGet]

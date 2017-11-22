@@ -13,25 +13,25 @@ namespace WebApplication3.Models.Event
 		{
 		}
 
-		public EventPageModel(EventProjection @event, EventTransactionPricesProjection eventTransaction, string name, string email, string phone)
+		public EventPageModel(EventProjection @event, EventTransactionPricesProjection eventTransaction, string name, string email, string phone, bool? registered)
 		{
 			Event = @event.HasNotNullEntityWithParent<EventProjection, BaseCompanyProjection>(nameof(@event));
 			EventTransaction = eventTransaction.HasNotNullEntity(nameof(eventTransaction));
 			Name = name;
 			Email = email;
 			Phone = phone;
+			Registered = registered;
 		}
 
 		public EventPageModel(EventProjection @event, EventTransactionPricesProjection eventTransaction, string name, string email, string phone, Guid ticketId)
-			:this(@event, eventTransaction, name, email, phone)
+			:this(@event, eventTransaction, name, email, phone, null)
 		{
 			TicketId = ticketId;
 		}
 
 		public EventPageModel(EventProjection @event, EventTransactionPricesProjection eventTransaction, bool? registered)
-			: this(@event, eventTransaction, null, null, null)
+			: this(@event, eventTransaction, null, null, null, registered)
 		{
-			Registered = registered;
 		}
 
 		public EventProjection Event { get; }

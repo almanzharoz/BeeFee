@@ -4,61 +4,59 @@
 <div class="event-form--title">@*На Queens of the Stone Age идут 1025 человек. Присоединяйтесь!*@ </div>
 <div class="row">
     @if (!Model.Registered.HasValue)
-	{
-        <form asp-controller="Event" asp-action="Register" method="post" class="form-horizontal">
-            <div class="col-xs-4 col-md-3">
-                <div class="input-field">
-                    <div class="input-field--b">
-                        <label class="input-field--l">Ваше имя</label>
-                        @Html.TextBoxFor(x => x.Name, new { @class = "input-field--i visitor-name" })
-                    </div>
-                    <div class="input-field--t"></div>
-                </div>
-            </div>
-            <div class="col-xs-4 col-md-3">
-                <div class="input-field">
-                    <div class="input-field--b">
-                        <label class="input-field--l">Номер телефона</label>
-                        @Html.TextBoxFor(x => x.Phone, new { @class = "input-field--i visitor-phone-number" })
-                    </div>
-                    <div class="input-field--t"></div>
-                </div>
-            </div>
-            <div class="col-xs-4 col-md-3">
-                <div class="input-field">
-                    <div class="input-field--b">
-                        <label class="input-field--l">Электронная почта</label>
-                        @Html.TextBoxFor(x => x.Email, new { @class = "input-field--i visitor-email" })
-                    </div>
-                    <div class="input-field--t"></div>
-                </div>
-            </div>
-            <div class="col-xs-4 col-md-3">
-                <button class="btn is-block" type="submit">Регистрация</button>
-            </div>
-        </form>
-	}
-	else
-	{
-		if (Model.Event.State != EEventState.Open)
-		{
-			<div class="event-form--title" style="text-align: center; color: #3f7d25;">
+    {
+	    <form asp-controller="Event" asp-action="Register" method="post" class="form-horizontal">
+			<div class="col-xs-4 col-md-3">
+				<div class="input-field">
+					<div class="input-field--b">
+						<label class="input-field--l">Ваше имя</label>
+						@Html.TextBoxFor(x => x.Name, new {@class = "input-field--i visitor-name"})
+					</div>
+					<div class="input-field--t"></div>
+				</div>
+			</div>
+			<div class="col-xs-4 col-md-3">
+				<div class="input-field">
+					<div class="input-field--b">
+						<label class="input-field--l">Номер телефона</label>
+						@Html.TextBoxFor(x => x.Phone, new {@class = "input-field--i visitor-phone-number"})
+					</div>
+					<div class="input-field--t"></div>
+				</div>
+			</div>
+			<div class="col-xs-4 col-md-3">
+				<div class="input-field">
+					<div class="input-field--b">
+						<label class="input-field--l">Электронная почта</label>
+						@Html.TextBoxFor(x => x.Email, new {@class = "input-field--i visitor-email"})
+					</div>
+					<div class="input-field--t"></div>
+				</div>
+			</div>
+			<div class="col-xs-4 col-md-3">
+				<button class="btn is-block" type="submit">Регистрация</button>
+			</div>
+		</form>
+    }
+    else
+    {
+	    if (Model.Event.State != EEventState.Open)
+	    {
+		    <div class="event-form--title" style="text-align: center; color: #3f7d25;">
 				Регистрация закрыта
 			</div>
-		}
-		else if (Model.Registered.Value)
-		{
-			<div class="event-form--title" style="text-align: center; color: #3f7d25;">
+	    }
+	    else if (Model.Registered.Value)
+	    {
+		    <div class="event-form--title" style="text-align: center; color: #3f7d25;">
 				Регистрация прошла успешно
 			</div>
-		}
-		else
-		{
-
-		<div class="event-form--title" style="text-align: center; color: #bf1b1b;">
-            <span class="danger">При регистрация произошла ошибка, возможно свободных мест больше нет</span>
-        </div>
-
-		}
-	}
+	    }
+	    else
+	    {
+		    <div class="event-form--title" style="text-align: center; color: #bf1b1b;">
+				<span class="danger">Регистрация не возможна, возможно свободных мест больше нет или Вы уже зарегистрированы на это мероприятие</span>
+			</div>
+	    }
+    }
 </div>

@@ -10,7 +10,7 @@
 	<ul class="header--links hidden-xs">
 		@if (User.Identity.IsAuthenticated)
 		{
-			<li class="header--link"><a asp-action="Profile" asp-controller="Account">@User.Identity.Name</a></li>
+			<li class="header--link"><a asp-action="Edit" asp-controller="Profile">@User.Identity.Name</a></li>
 			<li class="header--link"><a asp-action="LogOff" asp-controller="Account">выход</a></li>
 		}
 		else

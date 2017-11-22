@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace WebApplication3.Areas.Org.Models.Event
 {
-	public class EventEditModel
+	public interface IEventEditModel { }
+
+	public class EventEditModel : IEventEditModel
 	{
 		[Required(ErrorMessage = "Name is required")]
 		public string Name { get; set; }

@@ -158,7 +158,7 @@ namespace BeeFee.OrganizerApp.Services
 			string categoryId)
 			=> UpdateByIdAsync<EventProjection, CompanyJoinProjection>(id,
 				company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version,
-				x => x.Change(name, label, url, cover, email, dateTime, address,
+				x => x.Change(name, label, url.ThrowIf(z => ExistsByUrl<EventProjection>(id, z), z => new ExistsUrlException<Event>(z)), cover, email, dateTime, address,
 					GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category")), true);
 
 		public bool UpdateEvent(string id, string company, int version, string html)

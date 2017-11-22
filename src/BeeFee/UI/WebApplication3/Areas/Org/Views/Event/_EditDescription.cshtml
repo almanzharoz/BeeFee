@@ -1,0 +1,14 @@
+﻿@model WebApplication3.Areas.Org.Models.Event.EventDescriptionModel
+
+<form method="post" class="form-horizontal" id="event-form">
+	@Html.ValidationSummary(false)
+	@Html.ValidationMessageFor(m => m.Html, null, new { @class = "text-danger" })
+	<div class="create--editor">
+		<textarea class="html-editor" rows="10" placeholder="HTML here" asp-for="Html"></textarea>
+	</div>
+</form>
+
+@section Scripts
+{
+	
+}

@@ -88,7 +88,8 @@ namespace WebApplication3.Areas.Org.Controllers
 		#region Prices
 
 		public async Task<IActionResult> Prices()
-			=> View((await Service.GetEventTransactionByIdAsync(Model.Id, Model.ParentId)).Prices);
+			=> View("Edit", new EventPricesModel((await Service.GetEventTransactionByIdAsync(Model.Id, Model.ParentId)).Prices));
+
 
 		[HttpGet]
 		public IActionResult AddPrice()
@@ -106,7 +107,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		#region Preview
 
 		public async Task<IActionResult> Preview()
-			=> View(await Service.GetPreviewEventAsync(Model.Id, Model.ParentId));
+			=> View("Edit", new EventPreviewModel(await Service.GetPreviewEventAsync(Model.Id, Model.ParentId)));
 		
 		#endregion
 

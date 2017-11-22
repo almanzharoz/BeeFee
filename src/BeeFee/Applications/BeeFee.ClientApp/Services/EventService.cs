@@ -84,12 +84,23 @@ namespace BeeFee.ClientApp.Services
                     .Filter(qf.ToArray())), pageIndex, pageSize, null, false);
         }
 
+		public bool CanRegister(string id, string companyId, string sessionId)
+			=> FilterCount<RegisterToEventProjection>(f =>
+					f.Term(p => p.Event, id.HasNotNullArg(nameof(id))) &&
+					f.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId))) &&
+					f.Range(r => r.Field(p => p.TicketsLeft).GreaterThan(0.0)) &&
+					!(f.Term(p => p.Transactions.First().SessionId, sessionId.HasNotNullArg(nameof(sessionId)))
+						/*|| f.Term(p => p.Transactions.First().User, User.Id)*/)) > 0;
 
 		public async Task<bool> RegisterToEventAsync(string id, string companyId, string email, string name,
-			string phoneNumber, Guid ticketId, string imagesUrl)
+			string phoneNumber, Guid ticketId, string imagesUrl, string sessionId)
 			=> await UpdateAsync<RegisterToEventProjection>(f =>
 						f.Term(p => p.Event, id.HasNotNullArg(nameof(id))) &&
 						f.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId))) &&
+						!(f.Term(p => p.Transactions.First().SessionId, sessionId.HasNotNullArg(nameof(sessionId))) ||
+						f.Term(p => p.Transactions.First().Contact.Email, email) ||
+						f.Term(p => p.Transactions.First().Contact.Phone, phoneNumber)
+							/*|| f.Term(p => p.Transactions.First().User, User.Id)*/) &&
 						f.Nested(n => n.Path(p => p.Prices)
 							.Query(q =>
 								q.Term(t => t.Prices.First().Id, ticketId) &&
@@ -99,7 +110,7 @@ namespace BeeFee.ClientApp.Services
 						.IncNested(p => p.Prices, p => p.Left, ticketId, -1)
 						.Add(p => p.Transactions,
 							new RegisterToEventTransaction(ticketId, DateTime.Now, new Contact(name, email, phoneNumber),
-								GetUser<BaseUserProjection>(), 0, ETransactionType.Registrition)), true) > 0
+								GetUser<BaseUserProjection>(), 0, ETransactionType.Registrition, sessionId)), true) > 0
 				&&
 				await AddJobAsync(
 					base.GetById<EventProjection, BaseCompanyProjection>(id, companyId).Convert(x =>
