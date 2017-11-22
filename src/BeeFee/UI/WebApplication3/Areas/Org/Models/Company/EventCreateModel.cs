@@ -16,7 +16,8 @@ namespace WebApplication3.Areas.Org.Models.Company
 		[Required(ErrorMessage = "Label is required")]
 		public string Label { get; set; }
 
-		[RegularExpression(@"[a-zA-Z-_\d]{3,}")]
+		// TODO: Добавить клиентскую Remote-проверку
+		[RegularExpression(@"[a-zA-Z-_\d]{1,}", ErrorMessage = "Доступны только латинские буквы, цифры и символы \"_\", \"-\"")]
 		public string Url { get; set; }
 
 		[Required(ErrorMessage = "Category is required")]
