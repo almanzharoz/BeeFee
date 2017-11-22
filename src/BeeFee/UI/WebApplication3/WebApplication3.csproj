@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\Admin\Views\User\" />
+    <Folder Include="Areas\Admin\Views\Users\" />
+    <Folder Include="Areas\Admin\Views\Category\" />
+    <Folder Include="Areas\Admin\Views\Categories\" />
     <Folder Include="Areas\Moderator\Models\Events\" />
   </ItemGroup>
 
