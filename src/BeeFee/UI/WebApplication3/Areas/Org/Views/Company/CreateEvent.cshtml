@@ -2,109 +2,109 @@
 @using WebApplication3.Infrastructure
 @model WebApplication3.Areas.Org.Models.Company.EventCreateModel
 @{
-	ViewBag.Title = "Создание нового события";
+    ViewBag.Title = "Создание нового события";
 }
 <div class="create">
-	<div class="create--step">
-		<div class="create--head">
-			<div class="create--number">1 / 4</div>
-			<div class="create--title">Основная информация</div>
-		</div>
-		<div class="create--body" style="display: block">
-			<form method="post" enctype="multipart/form-data">
-				@Html.ValidationSummary(false)
-@Html.ValidationMessageFor(m => m.Name, null, new { @class = "text-danger" })
-<div class="create--field is-big">
-	@Html.TextBoxFor(m => m.Name, new { @class = "create--field-i", placeholder = "Название события" })
-</div>
-@Html.ValidationMessageFor(m => m.Label, null, new { @class = "text-danger" })
-<div class="create--field">
-	@Html.TextBoxFor(m => m.Label, new { @class = "create--field-i", placeholder = "Краткое описание события" })
-</div>
-@Html.ValidationMessageFor(m => m.Url, null, new { @class = "text-danger" })
-<div class="create--field">
-	@Html.TextBoxFor(m => m.Url, new { @class = "create--field-i", placeholder = "Url события" })
-</div>
-@Html.ValidationMessageFor(m => m.Cover, null, new { @class = "text-danger" })
-<div class="create--file">
-	@Html.ValidationMessage("File")
-	<input class="create--file-i" type="file" name="File" data-val-required="Image is required" data-val="true" />
-	<div class="create--file-b">Загрузить изображение</div>
-</div>
-@Html.ValidationMessageFor(m => m.StartDateTime, null, new { @class = "text-danger" })
-@Html.ValidationMessageFor(m => m.FinishDateTime, null, new { @class = "text-danger" })
-<div class="create--field with-icon is-small">
-	<i class="icon-date"></i>
-	<div class="create--field-di">
-		<div class="create--field-dl">Начало</div>
-		<input type="text" data-range="start" name="@Html.NameFor(m => m.StartDateTime)" value="@Model.StartDateTime.ToString("u")" /><span class="is-s1">дд/мм/гггг</span><span class="is-s2">чч:мм</span>
-	</div>
-	<div class="create--field-di">
-		<div class="create--field-dl">Конец</div>
-		<input type="text" data-range="end" name="@Html.NameFor(m => m.FinishDateTime)" value="@Model.FinishDateTime.ToString("u")" /><span class="is-s1">дд/мм/гггг</span><span class="is-s2">чч:мм</span>
-	</div>
-</div>
-@Html.ValidationMessageFor(m => m.City, null, new { @class = "text-danger" })
-<div class="create--field with-icon is-small">
-	<i class="icon-marker"></i>
-	@Html.TextBoxFor(m => m.City, new { @class = "create--field-i", placeholder = "Город" })
-</div>
-@Html.ValidationMessageFor(m => m.Address, null, new { @class = "text-danger" })
-<div class="create--field with-icon is-small">
-	<i class="icon-marker"></i>
-	@Html.TextBoxFor(m => m.Address, new { @class = "create--field-i", placeholder = "Адрес события" })
-</div>
-@Html.ValidationMessageFor(m => m.CategoryId, null, new { @class = "text-danger" })
-<div class="create--field with-icon">
-	<i class="icon-type"></i>
-	<div class="select is-simple">
-		@Html.HiddenFor(m => m.CategoryId, new { @class = "select_hidden" })
-		<div class="select_in">
-			<div class="select_title">@Html.Raw(Model.Categories.Any(x => x.Selected) ? Model.Categories.Where(x => x.Selected).Select(x => x.Text).FirstOrDefault() : "<span class=\"select_placeholder\">Категория</span>")</div>
-		</div>
-		<ul class="select_list">
-			@foreach (var category in Model.Categories)
-			{
-				<li data-value="@category.Value">@category.Text</li>
-			}
-		</ul>
-	</div>
-</div>
-@Html.ValidationMessageFor(m => m.Email, null, new { @class = "text-danger" })
-				<div class="create--field with-icon is-small">
-					<i class="icon-mail"></i>
-					@Html.TextBoxFor(m => m.Email, new { @class = "create--field-i", placeholder = "Почта для обратной связи" })
-				</div>
-				<div class="create--btn">
-					<button class="btn-blue" type="submit">Сохранить</button>
-				</div>
-			</form>
-		</div>
-	</div>
-	<div class="create--step">
-		<div class="create--head">
-			<div class="create--number">2 / 4</div>
-			<div class="create--title">Подробное описание</div>
-		</div>
-	</div>
-	<div class="create--step">
-		<div class="create--head">
-			<div class="create--number">3 / 4</div>
-			<div class="create--title">Настройки билетов</div>
-		</div>
-	</div>
-	<div class="create--step">
-		<div class="create--head">
-			<div class="create--number">4 / 4</div>
-			<div class="create--title">Предпросмотр</div>
-		</div>
-	</div>
+    <div class="create--step">
+        <div class="create--head">
+            <div class="create--number">1 / 4</div>
+            <div class="create--title">Основная информация</div>
+        </div>
+        <div class="create--body" style="display: block">
+            <form method="post" enctype="multipart/form-data">
+                @Html.ValidationSummary(false)
+                @Html.ValidationMessageFor(m => m.Name, null, new { @class = "text-danger" })
+                <div class="create--field is-big">
+                    @Html.TextBoxFor(m => m.Name, new { @class = "create--field-i", placeholder = "Название события" })
+                </div>
+                @Html.ValidationMessageFor(m => m.Label, null, new { @class = "text-danger" })
+                <div class="create--field">
+                    @Html.TextBoxFor(m => m.Label, new { @class = "create--field-i", placeholder = "Краткое описание события" })
+                </div>
+                @Html.ValidationMessageFor(m => m.Url, null, new { @class = "text-danger" })
+                <div class="create--field">
+                    @Html.TextBoxFor(m => m.Url, new { @class = "create--field-i", placeholder = "Url события" })
+                </div>
+                @Html.ValidationMessageFor(m => m.Cover, null, new { @class = "text-danger" })
+                <div class="create--file">
+                    @Html.ValidationMessage("File")
+                    <input class="create--file-i" type="file" name="File"/>
+                    <div class="create--file-b">Загрузить изображение</div>
+                </div>
+                @Html.ValidationMessageFor(m => m.StartDateTime, null, new { @class = "text-danger" })
+                @Html.ValidationMessageFor(m => m.FinishDateTime, null, new { @class = "text-danger" })
+                <div class="create--field with-icon is-small">
+                    <i class="icon-date"></i>
+                    <div class="create--field-di">
+                        <div class="create--field-dl">Начало</div>
+                        <input type="text" data-range="start" name="@Html.NameFor(m => m.StartDateTime)" value="@Model.StartDateTime.ToString("u")" /><span class="is-s1">дд/мм/гггг</span><span class="is-s2">чч:мм</span>
+                    </div>
+                    <div class="create--field-di">
+                        <div class="create--field-dl">Конец</div>
+                        <input type="text" data-range="end" name="@Html.NameFor(m => m.FinishDateTime)" value="@Model.FinishDateTime.ToString("u")" /><span class="is-s1">дд/мм/гггг</span><span class="is-s2">чч:мм</span>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(m => m.City, null, new { @class = "text-danger" })
+                <div class="create--field with-icon is-small">
+                    <i class="icon-marker"></i>
+                    @Html.TextBoxFor(m => m.City, new { @class = "create--field-i", placeholder = "Город" })
+                </div>
+                @Html.ValidationMessageFor(m => m.Address, null, new { @class = "text-danger" })
+                <div class="create--field with-icon is-small">
+                    <i class="icon-marker"></i>
+                    @Html.TextBoxFor(m => m.Address, new { @class = "create--field-i", placeholder = "Адрес события" })
+                </div>
+                @Html.ValidationMessageFor(m => m.CategoryId, null, new { @class = "text-danger" })
+                <div class="create--field with-icon">
+                    <i class="icon-type"></i>
+                    <div class="select is-simple">
+                        @Html.HiddenFor(m => m.CategoryId, new { @class = "select_hidden" })
+                        <div class="select_in">
+                            <div class="select_title">@Html.Raw(Model.Categories.Any(x => x.Selected) ? Model.Categories.Where(x => x.Selected).Select(x => x.Text).FirstOrDefault() : "<span class=\"select_placeholder\">Категория</span>")</div>
+                        </div>
+                        <ul class="select_list">
+                            @foreach (var category in Model.Categories)
+                            {
+                                <li data-value="@category.Value">@category.Text</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                @Html.ValidationMessageFor(m => m.Email, null, new { @class = "text-danger" })
+                <div class="create--field with-icon is-small">
+                    <i class="icon-mail"></i>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "create--field-i", placeholder = "Почта для обратной связи" })
+                </div>
+                <div class="create--btn">
+                    <button class="btn-blue" type="submit">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="create--step">
+        <div class="create--head">
+            <div class="create--number">2 / 4</div>
+            <div class="create--title">Подробное описание</div>
+        </div>
+    </div>
+    <div class="create--step">
+        <div class="create--head">
+            <div class="create--number">3 / 4</div>
+            <div class="create--title">Настройки билетов</div>
+        </div>
+    </div>
+    <div class="create--step">
+        <div class="create--head">
+            <div class="create--number">4 / 4</div>
+            <div class="create--title">Предпросмотр</div>
+        </div>
+    </div>
 </div>
 
-@section Scripts{ 
-	<script>
-		$(function () {
-			initEventEdit();
-		});
-	</script>
+@section Scripts{
+    <script>
+        $(function () {
+            initEventEdit();
+        });
+    </script>
 }

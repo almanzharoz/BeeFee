@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using BeeFee.Model.Projections;
 using Microsoft.AspNetCore.Http;
@@ -45,9 +46,9 @@ namespace WebApplication3.Areas.Org.Models.Company
 		[Required]
 		public IFormFile File { get; set; }
 
-		public string Cover { get; set; }
+		public string Cover => File != null && File.Length > 0 ? Path.GetFileName(File.FileName) : null;
 
-		public string CompanyUrl { get; set; }
+	    public string CompanyUrl { get; set; }
 
 		public IList<SelectListItem> Categories { get; private set; }
 
