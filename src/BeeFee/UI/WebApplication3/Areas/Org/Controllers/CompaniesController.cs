@@ -26,7 +26,9 @@ namespace WebApplication3.Areas.Org.Controllers
 		#endregion
 
 		public ActionResult First() //hack
-			=> RedirectToActionPermanent("Edit", "Company", new {area = "Org", id = Service.GetCompany(null)});
+			=> RedirectToActionPermanent("Edit", "Company", new {area = "Org", id = Service.GetCompany(null).Id});
+		public ActionResult FirstEvents() //hack
+			=> RedirectToActionPermanent("Events", "Company", new { area = "Org", id = Service.GetCompany(null).Id });
 
 		#region Create
 		[HttpGet]

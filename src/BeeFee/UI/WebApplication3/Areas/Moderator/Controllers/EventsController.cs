@@ -3,10 +3,14 @@ using BeeFee.ModeratorApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication3.Areas.Moderator.Models.Events;
 using WebApplication3.Controllers;
+using BeeFee.Model.Embed;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApplication3.Areas.Moderator.Controllers
 {
-    public class EventsController : BaseController<EventModeratorService>
+	[Area("Moderator")]
+	[Authorize(Roles = RoleNames.EventModerator)]
+	public class EventsController : BaseController<EventModeratorService>
     {
 		public EventsController(EventModeratorService service) : base(service)
 		{

@@ -1,5 +1,4 @@
 ﻿using Core.ElasticSearch;
-using Core.ElasticSearch.Domain;
 
 namespace WebApplication3.Models
 {

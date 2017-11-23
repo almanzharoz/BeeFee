@@ -7,6 +7,7 @@ using BeeFee.Model;
 using BeeFee.Model.Projections;
 using BeeFee.ModeratorApp;
 using BeeFee.OrganizerApp;
+using BeeFee.OrganizerApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -60,6 +61,8 @@ namespace WebApplication3
 				return null;
 			});
 
+			services.AddSingleton(x => new ImagesService(x.GetService<BeeFeeWebAppSettings>().ImagesUrl));
+
 			services
 				.AddBeefeeModel(new Uri("http://localhost:9200/"), s => s
 					.AddBeefeeLoginApp()
@@ -90,12 +93,16 @@ namespace WebApplication3
 
 			app.UseMvc(routes =>
             {
+				routes.MapRoute(
+					name: "home",
+					template: "", defaults: new {controller="Events", action="Index"});
+
 				routes.MapRoute(name: "areaRoute",
-					template: "{area:exists}/{controller=Home}/{action=Index}/{parentid?}/{id?}");
+					template: "{area:exists}/{controller=Home}/{action=Index}/{id?}/{parentid?}");
 
 				routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}/{id?}/{parentid?}");
             });
 
 			app.ApplicationServices

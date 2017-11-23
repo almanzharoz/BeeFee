@@ -6,7 +6,8 @@
 			<li class="header--item"><a asp-area="" asp-controller="Profile" asp-action="Edit">Профиль</a></li>
 			@if (User.IsInRole(RoleNames.Admin))
 			{
-				<li class="header--item"><a asp-area="Admin" asp-controller="Category" asp-action="Index">Категории</a></li>
+				<li class="header--item"><a asp-area="Admin" asp-controller="Categories" asp-action="Index">Категории</a></li>
+				<li class="header--item"><a asp-area="Admin" asp-controller="Users" asp-action="Index">Пользователи</a></li>
 			}
 			@if (User.IsInRole(RoleNames.MultiOrganizer))
 			{
@@ -14,7 +15,7 @@
 			}
 			else if (User.IsInRole(RoleNames.Organizer))
 			{
-				<li class="header--item"><a asp-area="Org" asp-controller="Event" asp-action="Index">Мои события</a></li>
+				<li class="header--item"><a asp-area="Org" asp-controller="Companies" asp-action="FirstEvents">Мои события</a></li>
 				<li class="header--item"><a asp-area="Org" asp-controller="Companies" asp-action="First">Профиль орг-ра</a></li>
 			}
 			@if (User.IsInRole(RoleNames.EventModerator))

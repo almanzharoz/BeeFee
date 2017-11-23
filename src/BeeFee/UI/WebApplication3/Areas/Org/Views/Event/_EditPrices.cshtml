@@ -1,2 +1,32 @@
-﻿@model WebApplication3.Areas.Org.Models.Event.EventPricesModel
-
+﻿@using BeeFee.Model.Embed
+@model WebApplication3.Areas.Org.Models.Event.EventPricesModel
+@{
+	var requestModel = ViewBag.RequestModel as WebApplication3.Areas.Org.Models.Event.EventRequestModel;
+}
+<table width="100%">
+	<thead>
+	<tr>
+		<th>Название</th>
+		<th>Цена</th>
+		<th>Кол-во</th>
+		<th>Остаток</th>
+		<th></th>
+	</tr>
+	</thead>
+	<tbody>
+	@foreach (var p in Model.Prices ?? new TicketPrice[0])
+	{
+		<tr>
+			<td>@p.Name</td>
+			<td>@p.Price</td>
+			<td>@p.Count</td>
+			<td>@p.Left</td>
+			<td>
+				<a asp-action="Edit" asp-controller="TicketPrice"  asp-route-tid="@p.Id" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version">редактировать</a>
+				<a asp-action="Remove" asp-controller="TicketPrice" asp-route-tid="@p.Id" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version" onclick="confirm('Удалить цену?')">удалить</a>
+			</td>
+		</tr>
+	}
+	</tbody>
+</table>
+<a asp-action="AddPrice" asp-controller="Event" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version">добавить цену</a>

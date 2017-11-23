@@ -8,6 +8,7 @@
 		<th>Url</th>
 		<th>Категория</th>
 		<th>Даты</th>
+		<td></td>
 	</tr>
 	</thead>
 	<tbody>
@@ -16,9 +17,10 @@
 		<tr>
 			<td>@m.Parent.Name</td>
 			<td>@m.Name</td>
-			<td><a asp-action="Index" asp-controller="Event" asp-route-id="@m.Id" asp-route-parentId="@m.Parent.Id">@m.Parent.Url/@m.Url</a></td>
+			<td>@m.Parent.Url/@m.Url</td>
 			<td>@m.Category.Name</td>
 			<td>@m.DateTime</td>
+			<td><a asp-action="Index" asp-controller="Event" asp-route-id="@m.Id" asp-route-parentId="@m.Parent.Id" asp-route-version="@m.Version">@m.Parent.Url/@m.Url</a></td>
 		</tr>
 	}
 	</tbody>

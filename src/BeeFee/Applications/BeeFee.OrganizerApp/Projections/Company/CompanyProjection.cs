@@ -39,7 +39,7 @@ namespace BeeFee.OrganizerApp.Projections.Company
 
 		public CompanyUser[] Users { get; private set; }
 
-		internal CompanyJoinProjection(string id) : base(id)
+		public CompanyJoinProjection(string id) : base(id)
 		{
 		}
 

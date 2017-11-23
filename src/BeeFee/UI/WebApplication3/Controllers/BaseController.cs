@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BeeFee.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SharpFuncExt;
 using WebApplication3.Models.Interfaces;
@@ -213,6 +214,12 @@ namespace WebApplication3.Controllers
 			Model.As<TModel, IRequestModelWithId>(m => m.Id.HasNotNullArg("Id"));
 			Model.As<TModel, IRequestModelWithParent>(m => m.ParentId.HasNotNullArg("ParentId"));
 			ViewBag.RequestModel = Model; // TODO: Приколь было бы, если эта модель попадала во вьюшку типизированной
+		}
+
+		public override void OnActionExecuted(ActionExecutedContext context)
+		{
+			base.OnActionExecuted(context);
+			ViewBag.RequestModel = Model;
 		}
 
 		protected IActionResult View<TProjection, TViewModel>(string viewName, Func<TModel, TProjection> getFunc, Func<TProjection, TViewModel> createModel)

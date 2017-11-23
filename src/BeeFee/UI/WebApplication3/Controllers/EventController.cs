@@ -19,6 +19,7 @@ namespace WebApplication3.Controllers
 			_settings = settings;
 		}
 
+		[Route("event/{parentid}/{id}")]
 		[HttpGet]
 		public Task<IActionResult> Index()
 			=> View("Index",
@@ -35,7 +36,7 @@ namespace WebApplication3.Controllers
 		public Task<IActionResult> Register(EventPageModel model)
 			=> ModelStateIsValid(model, async m =>
 					await (await Service.GetEventByUrl(Model.ParentId, Model.Id)).Convert(e =>
-						Service.RegisterToEventAsync(Model.ParentId, Model.Id, m.Email, m.Name, m.Phone, m.TicketId,
+						Service.RegisterToEventAsync(e.Id, e.Parent.Id, m.Email, m.Name, m.Phone, m.TicketId,
 							String.Concat(_settings.ImagesUrl, "/min/", e.Parent.Url, "/", e.Url, "/1162x600/") /* TODO: Выпилить */, HttpContext.Session?.Id)),
 				m => View("Index", M => Service.GetEventByUrl(M.ParentId, M.Id),
 					async e => new EventPageModel(e, await Service.GetEventTransaction(e.Id), true)),

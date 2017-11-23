@@ -6,9 +6,17 @@
 	<div class="create--editor">
 		<textarea class="html-editor" rows="10" placeholder="HTML here" asp-for="Html"></textarea>
 	</div>
+	<div class="create--btn">
+		<button class="btn-blue">Сохранить и перейти к билетам</button>
+	</div>
 </form>
 
 @section Scripts
 {
-	
+	<script src="~/lib/ckeditor/ckeditor.js"></script>
+	<script>
+		$(function () {
+			CKEDITOR.replace($(".html-editor")[0]);
+		});
+	</script>
 }

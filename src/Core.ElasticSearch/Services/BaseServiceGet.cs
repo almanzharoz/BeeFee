@@ -70,6 +70,20 @@ namespace Core.ElasticSearch
 						RepositoryLoggingEvents.ES_GET,
 						$"Get (Id: {id}, Version: {version})"));
 
+		protected Task<T> GetByIdAsync<T>(string id, int version, bool load = true)
+			where T : BaseEntityWithVersion, IProjection, IGetProjection
+			=> _mapping.GetProjectionItem<T>()
+			.Convert(
+				projection => TryAsync(
+					c => c.GetAsync(
+					DocumentPath<T>.Id(id.HasNotNullArg(nameof(id)))
+						.Index(projection.MappingItem.IndexName)
+						.Type(projection.MappingItem.TypeName),
+					x => x.Version(version.HasNotNullArg(nameof(version))).SourceInclude(projection.Fields)),
+				r => r.Source.If(load, Load),
+				RepositoryLoggingEvents.ES_GET,
+				$"Get (Id: {id}, Version: {version})"));
+
 		protected Task<T> GetByIdAsync<T>(string id, bool load = true)
 			where T : class, IProjection, IGetProjection
 			=> _mapping.GetProjectionItem<T>()

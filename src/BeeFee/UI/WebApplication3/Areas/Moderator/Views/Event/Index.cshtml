@@ -3,7 +3,7 @@
 
 @Html.Partial("_EventPage", Tuple.Create<IEventPageProjection, object>(Model.Event, null))
 
-<form method="post" asp-action="Moderate">
+<form method="post">
 	<div>
 		<textarea asp-for="Comment"></textarea>
 	</div>

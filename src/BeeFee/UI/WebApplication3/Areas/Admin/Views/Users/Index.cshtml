@@ -1,0 +1,50 @@
+﻿@using BeeFee.Model.Embed
+@model WebApplication3.Areas.Admin.Models.Users.UsersFilter
+@{
+	ViewBag.Title = "Пользователи";
+}
+
+<table width="100%">
+	<thead>
+		<tr>
+			<th>Имя</th>
+			<th>Email</th>
+			<th>Роли</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var u in Model.Items)
+		{
+			<tr>
+				<td>@u.Name</td>
+				<td>@u.Email</td>
+				<td>
+					@foreach (EUserRole e in Enum.GetValues(typeof(EUserRole)))
+					{
+						<div><label><input type="checkbox" class="change-role" _id="@u.Id" checked="@(u.Roles.Contains(e))" value="@(e)" /> @e.ToString()</label></div>
+					}
+				</td>
+				<td></td>
+			</tr>
+		}
+	</tbody>
+</table>
+@Html.Partial("_Pager", Model.Items)
+
+@section Scripts
+	{
+	<script>
+		$(function() {
+			$(".change-role").change(function() {
+				var $t = $(this);
+				$.post("/admin/user/ChangeRole/" + $t.attr("_id"),
+					{role: $t.val()},
+					function (data) {
+						if (data === false)
+							$t.attr("checked", !$t.attr("checked"));
+					});
+			});
+		});
+	</script>
+}

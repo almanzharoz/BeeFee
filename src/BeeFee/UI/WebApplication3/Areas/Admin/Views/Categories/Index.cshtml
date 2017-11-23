@@ -1,0 +1,31 @@
+﻿@model WebApplication3.Areas.Admin.Models.Categories.CategoriesFilter
+@{
+	ViewBag.Title = "Категории";
+}
+
+<table width="100%">
+	<thead>
+	<tr>
+		<th>Название</th>
+		<th>Url</th>
+		<th></th>
+	</tr>
+	</thead>
+	<tbody>
+	@foreach (var u in Model.Items)
+	{
+		<tr>
+			<td>@u.Name</td>
+			<td>@u.Url</td>
+			<td>
+				<a asp-action="Edit" asp-controller="Category" asp-route-id="@u.Id" asp-route-version="@u.Version">Править</a>
+				<a asp-action="Remove" asp-controller="Category" asp-route-id="@u.Id" asp-route-version="@u.Version">Удалить</a>
+			</td>
+		</tr>
+	}
+	</tbody>
+</table>
+
+<div>
+	<a asp-action="Create" asp-controller="Categories">Создать</a>
+</div>

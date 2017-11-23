@@ -1,0 +1,16 @@
+﻿@model WebApplication3.Areas.Admin.Models.Category.CategoryEditModel
+
+<form method="post">
+	<div class="create--field is-big">
+		<input class="create--field-i" asp-for="Name" placeholder="Название" />
+		<span asp-validation-for="Name" class="text-danger"></span>
+	</div>
+
+	<div class="create--field is-big">
+		<input class="create--field-i" asp-for="Url" placeholder="Url" />
+		<span asp-validation-for="Url" class="text-danger"></span>
+	</div>
+	<div class="create--btn">
+		<button class="btn-blue" type="submit">Сохранить</button>
+	</div>
+</form>

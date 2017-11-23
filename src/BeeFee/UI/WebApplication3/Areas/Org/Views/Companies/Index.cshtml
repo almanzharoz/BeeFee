@@ -22,7 +22,7 @@
 					<td>@e.Key.Name</td>
 					<td>@e.Key.Url</td>
 					<td>@(String.Join("<br/>", e.Key.Users.Select(x => x.User.Name)))</td>
-					<td><a asp-action="Index" asp-controller="Event" asp-route-id="@e.Key.Id">[@e.Value]</a></td>
+					<td><a asp-action="Events" asp-controller="Company" asp-route-id="@e.Key.Id">[@e.Value]</a></td>
 					<td align="center">
 						<a asp-action="Edit" asp-controller="Company" asp-route-id="@e.Key.Id" asp-route-version="@e.Key.Version">Править</a>
 						@if (e.Value == 0)

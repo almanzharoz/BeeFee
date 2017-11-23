@@ -6,6 +6,7 @@ using BeeFee.Model.Exceptions;
 using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
 using BeeFee.Model.Services;
+using BeeFee.OrganizerApp.Projections.Company;
 using BeeFee.OrganizerApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -55,9 +56,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		public Task<IActionResult> Edit(EventEditModel model)
 			=> ModelStateIsValid(model,
 				async m => await Service.UpdateEventAsync(Model.Id, Model.ParentId, Model.Version, m.Name, m.Label, m.Url,
-					await m.Cover.If(x => model.File != null && model.File.Length > 0,
-						x => _imagesService.AddEventCover(Model.ParentId, Model.Id, x, model.File.OpenReadStream())),
-					m.Email, new EventDateTime(m.StartDateTime, m.FinishDateTime), new Address(m.City, m.Address), m.CategoryId),
+					m.Cover, m.Email, new EventDateTime(m.StartDateTime, m.FinishDateTime), new Address(m.City, m.Address), m.CategoryId),
 				m => RedirectToActionPermanent("EditDescription", "Event",
 					new {area = "Org", Model.Id, Model.ParentId, version = Model.Version + 1}),
 				(m, c) => c

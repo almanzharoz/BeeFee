@@ -29,7 +29,7 @@ namespace WebApplication3.Controllers
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public Task<IActionResult> Edit(ProfileModel model)
-			=> ModelStateIsValid(model, m => _userService.UpdateUserAsync(m.Name), m => View("EditError"));
+			=> ModelStateIsValid(model, m => _userService.UpdateUserAsync(m.Name), m => View(m), m => View("EditError"));
 
 		#endregion
 

@@ -88,7 +88,7 @@ namespace WebApplication3.Areas.Org.Controllers
 						await _imagesService.AddEventCover(company.Url, newEvent.Url,
 							Path.GetFileName(model.File.FileName),
 							model.File.OpenReadStream());
-					return (IActionResult) RedirectToActionPermanent("EditDescription", "Event", new {area = "Org", id = r});
+					return (IActionResult) RedirectToActionPermanent("EditDescription", "Event", new {area = "Org", id = r, parentId=company.Id});
 				},
 				// обработка исключений
 				(m, ms, c) => c

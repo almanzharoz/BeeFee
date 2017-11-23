@@ -1,4 +1,5 @@
-﻿@model WebApplication3.Models.Profile.ProfileModel
+﻿@using BeeFee.Model.Embed
+@model WebApplication3.Models.Profile.ProfileModel
 
 <div class="container">
 	<div class="event-text" id="ajax-container">
@@ -19,7 +20,14 @@
 				<button class="btn is-block" type="submit">Сохранить</button>
 			</div>
 		</form>
+		<br />
 		<a asp-action="ChangePassword" class="btn is-block">Сменить пароль</a>
+		<br/>
 		<a asp-action="Registrations" class="btn is-block">История моих регистраций</a>
+		@if (User.IsInRole(RoleNames.Organizer))
+		{
+			<br/>
+			<a asp-action="First" asp-controller="Companies" asp-area="Org" class="btn is-block">Кабинет организатора</a>
+		}
 	</div>
 </div>

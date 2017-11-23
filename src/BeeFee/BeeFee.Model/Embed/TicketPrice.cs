@@ -1,6 +1,7 @@
 ﻿using System;
 using Core.ElasticSearch;
 using Nest;
+using Newtonsoft.Json;
 
 namespace BeeFee.Model.Embed
 {
@@ -36,7 +37,7 @@ namespace BeeFee.Model.Embed
 			TicketTemplate = tickettemplate;
 		}
 
-		[DeserializeConstructor]
+		[JsonConstructor]
 		public TicketPrice(Guid id, string name, string description, string tickettemplate, decimal price, int count, int left)
 		{
 			Id = id;

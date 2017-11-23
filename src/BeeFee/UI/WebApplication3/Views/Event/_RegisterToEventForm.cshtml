@@ -1,11 +1,16 @@
 @using BeeFee.Model.Embed
 @model WebApplication3.Models.Event.EventPageModel
+@{
+	var requestModel = ViewBag.RequestModel as EventRequestModel;
+}
 @*TODO на форме добавить шаблоны в поля почты и номера телефона*@
+@*TODO нужен выбор билета *@
 <div class="event-form--title">@*На Queens of the Stone Age идут 1025 человек. Присоединяйтесь!*@ </div>
 <div class="row">
     @if (!Model.Registered.HasValue)
     {
-	    <form asp-controller="Event" asp-action="Register" method="post" class="form-horizontal">
+	    <form asp-controller="Event" asp-action="Register" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" method="post" class="form-horizontal">
+			<input type="hidden" asp-for="TicketId" value="@Model.EventTransaction.Prices.First().Id"/>
 			<div class="col-xs-4 col-md-3">
 				<div class="input-field">
 					<div class="input-field--b">
