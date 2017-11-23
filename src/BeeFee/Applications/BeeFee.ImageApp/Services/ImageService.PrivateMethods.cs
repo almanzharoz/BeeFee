@@ -94,6 +94,10 @@ namespace BeeFee.ImageApp.Services
 				_cacheManager.Get<MemoryCacheKeyObject>(key)
 					.Convert(x => x != null && x.IsAdminKey);
 
+		private bool IsAdminKey(string key)
+			=> _cacheManager.Get<MemoryCacheKeyObject>(key)
+					.Convert(x => x != null && x.IsAdminKey);
+
 		private void SerializeSettings()
 		{
 			lock (_locker)

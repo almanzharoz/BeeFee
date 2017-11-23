@@ -17,9 +17,10 @@ namespace BeeFee.ImageApp.Embed
 		private readonly string _companiesDirectory;
 		private readonly string _userAvatarFileName;
 		private readonly string _companyLogoFileName;
+		private readonly string _tempDirectory;
 
 		public PathHandler(string parentDirectory, string privateOriginalDirectory, string publicOriginalFolder,
-			string resizedFolder, string usersDirectory, string companiesDirectory, string userAvatarFileName, string companyLogoFileName)
+			string resizedFolder, string usersDirectory, string companiesDirectory, string userAvatarFileName, string companyLogoFileName, string tempDirectory)
 		{
 			_parentDirectory = parentDirectory;
 			_privateOriginalDirectory = privateOriginalDirectory;
@@ -29,6 +30,7 @@ namespace BeeFee.ImageApp.Embed
 			_companiesDirectory = companiesDirectory;
 			_userAvatarFileName = userAvatarFileName;
 			_companyLogoFileName = companyLogoFileName;
+			_tempDirectory = tempDirectory;
 		}
 
 		private string GetParentDirectory(EImageType imageType, string companyOrUserName, string eventName = "")
@@ -192,5 +194,13 @@ namespace BeeFee.ImageApp.Embed
 
 		internal bool IsAvatarOrLogoExists(string name, EImageType imageType)
 			=> File.Exists(GetPathToLogoOrAvatar(name, imageType));
+
+		public string GetPathToTempDirectory()
+			=> Path.Combine(_parentDirectory, _tempDirectory);
+
+		public string GetUniqueFileName(string companyName, string eventName)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
