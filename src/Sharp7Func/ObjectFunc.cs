@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace SharpFuncExt
 {
@@ -142,6 +139,13 @@ namespace SharpFuncExt
 
 		public static T As<T>(this object arg) where T : class => arg as T;
 		public static TResult As<T, TResult>(this T arg) where TResult : class, T => arg as TResult;
+
+		public static TArg As<TArg, T>(this TArg arg, Action<T> action) where T : class where TArg : class
+		{
+			var a = arg as T;
+			if (a != null) action(a);
+			return arg;
+		}
 
 		public static ValueTuple<T, T1> Extend<T, T1>(this T arg, Func<T, T1> func) => new ValueTuple<T, T1>(arg, func(arg));
 

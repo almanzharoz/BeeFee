@@ -1,0 +1,61 @@
+﻿@model WebApplication3.Models.Account.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container">
+	<div class="event-text">
+		<h2>Регистрация нового пользователя</h2>
+		<section>
+			<form asp-controller="Account" asp-action="Register" method="post" class="form-horizontal">
+				<div class="text-danger" asp-validation-summary="ModelOnly"></div>
+
+				<div class="modals--field">
+					<div class="input-field@(!String.IsNullOrEmpty(Model.Email)?" with-focus":null)">
+						<div class="input-field--b">
+							<label class="input-field--l">Электронная почта</label>
+							@Html.TextBoxFor(x => x.Email, new { @class = "input-field--i" })
+						</div>
+						<div class="input-field--t"></div>
+					</div>
+				</div>
+
+				<div class="modals--field">
+					<div class="input-field@(!String.IsNullOrEmpty(Model.Name)?" with-focus":null)">
+						<div class="input-field--b">
+							<label class="input-field--l">Имя</label>
+							@Html.TextBoxFor(x => x.Name, new { @class = "input-field--i" })
+						</div>
+						<div class="input-field--t"></div>
+					</div>
+				</div>
+
+				<div class="modals--field">
+					<div class="input-field@(!String.IsNullOrEmpty(Model.Password)?" with-focus":null)">
+						<div class="input-field--b">
+							<label class="input-field--l">Пароль</label>
+							@Html.PasswordFor(x => x.Password, new { @class = "input-field--i" })
+						</div>
+						<div class="input-field--t"></div>
+					</div>
+				</div>
+
+				<div class="modals--field">
+					<div class="input-field@(!String.IsNullOrEmpty(Model.RetryPassword)?" with-focus":null)">
+						<div class="input-field--b">
+							<label class="input-field--l">Повторите пароль</label>
+							@Html.PasswordFor(x => x.RetryPassword, new { @class = "input-field--i" })
+						</div>
+						<div class="input-field--t"></div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-md-offset-2 col-md-10">
+						<button type="submit" class="btn btn-default">Зарегистрироваться</button>
+					</div>
+				</div>
+			</form>
+		</section>
+	</div>
+</div>

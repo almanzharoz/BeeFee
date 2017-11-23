@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Core.ElasticSearch;
 using Core.ElasticSearch.Domain;
 using BeeFee.Model.Interfaces;
+using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
 using BeeFee.Model.Projections.Jobs;
 using Microsoft.Extensions.Logging;
@@ -29,10 +31,20 @@ namespace BeeFee.Model
 		protected bool ExistsByUrl<T>(string url) where T : class, ISearchProjection, IWithUrl
 			=> FilterCount<T>(f => f.Term(p => p.Url, url.HasNotNullArg(nameof(url))))>0;
 
+		protected bool ExistsByUrl<T>(string id, string url) where T : class, ISearchProjection, IWithUrl
+			=> FilterCount<T>(f => !f.Ids(x => x.Values(id)) && f.Term(p => p.Url, url.HasNotNullArg(nameof(url)))) > 0;
+
 		public UserName GetUserName(string userId)
 			=> User = new UserName(userId);
 
+		public T GetUser<T>() where T : BaseEntity, IProjection<User>, IGetProjection
+			=> User.IfNotNull(x => x.Id != null ? GetById<T>(x.Id) : null, () => null);
+
 		protected bool AddJob<T>(T data, DateTime start) where T : struct
 			=> Insert(new NewJob<T>(data, start), false);
+
+		protected Task<bool> AddJobAsync<T>(T data, DateTime start) where T : struct
+			=> InsertAsync(new NewJob<T>(data, start), false);
+
 	}
 }

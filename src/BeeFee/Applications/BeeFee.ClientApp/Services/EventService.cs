@@ -22,24 +22,28 @@ namespace BeeFee.ClientApp.Services
         {
         }
 
-        public async Task<EventProjection> GetEventByUrl(string companyUrl, string url)
-            => (await FilterAsync<EventProjection>(f => f.Term(p => p.Url, url.HasNotNullArg("event url"))
-             && f.HasParent<Company>(p => p.Query(q => q.Term(x => x.Url, companyUrl)))
-            )).SingleOrDefault();
+		public Task<EventProjection> GetEventByUrl(string companyUrl, string url)
+			=> FilterFirstAsync<EventProjection>(f =>
+					f.Term(p => p.Url, url.HasNotNullArg("event url")) &&
+					f.HasParent<Company>(p => p.Query(q => q.Term(x => x.Url, companyUrl.HasNotNullArg("company url")))));
 
-        //public IReadOnlyCollection<EventSearchProjection> SearchByName(string query)
-        //    => Search<Event, EventSearchProjection>(q => q
-        //        .Match(m => m
-        //            .Field(x => x.Name)
-        //            .Query(query)));
+		public Task<EventTransactionPricesProjection> GetEventTransaction(string eventId)
+			=> FilterFirstAsync<EventTransaction, EventTransactionPricesProjection>(f => f.Term(p => p.Event, eventId.HasNotNullArg(nameof(eventId))));
 
-        //public IReadOnlyCollection<EventSearchProjection> FilterEventsByNameAndCity(string query, string city)
-        //    => Search<Event, EventSearchProjection>(q => q
-        //        .Bool(b => b
-        //            .Must(Query<Event>.Match(m => m.Field(x => x.Name).Query(query)) &&
-        //                  Query<Event>.Match(m => m.Field(x => x.Address.City).Query(city)))));
 
-        public Task<Pager<EventGridItem>> SearchEvents(string query = null, string city = null, string[] categories = null, DateTime? startDateTime = null, DateTime? endDateTime = null, decimal? maxPrice = null, int pageSize = 9, int pageIndex = 0)
+		//public IReadOnlyCollection<EventSearchProjection> SearchByName(string query)
+		//    => Search<Event, EventSearchProjection>(q => q
+		//        .Match(m => m
+		//            .Field(x => x.Name)
+		//            .Query(query)));
+
+		//public IReadOnlyCollection<EventSearchProjection> FilterEventsByNameAndCity(string query, string city)
+		//    => Search<Event, EventSearchProjection>(q => q
+		//        .Bool(b => b
+		//            .Must(Query<Event>.Match(m => m.Field(x => x.Name).Query(query)) &&
+		//                  Query<Event>.Match(m => m.Field(x => x.Address.City).Query(city)))));
+
+		public Task<Pager<EventGridItem>> SearchEvents(string query = null, string city = null, string[] categories = null, DateTime? startDateTime = null, DateTime? endDateTime = null, decimal? maxPrice = null, int pageSize = 9, int pageIndex = 0)
         {
             List<QueryContainer> qc = new List<QueryContainer>();
             if (!string.IsNullOrEmpty(query))
@@ -65,12 +69,14 @@ namespace BeeFee.ClientApp.Services
             {
                 qf.Add(Query<Event>.DateRange(m => m.Field(x => x.DateTime.Finish).LessThanOrEquals(endDateTime.Value)));
             }
-            List<QueryContainer> notqf = new List<QueryContainer>();
-            if (maxPrice.HasValue)
-            {
-                qf.Add(Query<Event>.Range(m => m.Field(x => x.Prices.First().Price).LessThanOrEquals((double)maxPrice.Value)) || !Query<Event>.Exists(x => x.Field(p => p.Prices.First().Price)));
-                //qf.Add(!Query<Event>.Exists(x => x.Field(p => p.Prices)));
-            }
+
+			// TODO: Поиск по цене не доступен из-за измененной модели данных
+            //List<QueryContainer> notqf = new List<QueryContainer>();
+            //if (maxPrice.HasValue)
+            //{
+            //    qf.Add(Query<Event>.Range(m => m.Field(x => x.Prices.First().Price).LessThanOrEquals((double)maxPrice.Value)) || !Query<Event>.Exists(x => x.Field(p => p.Prices.First().Price)));
+            //    //qf.Add(!Query<Event>.Exists(x => x.Field(p => p.Prices)));
+            //}
             return SearchPagerAsync<Event, EventGridItem>(q => q
                 .Bool(b => b
                     .Must(qc.ToArray())
@@ -78,23 +84,42 @@ namespace BeeFee.ClientApp.Services
                     .Filter(qf.ToArray())), pageIndex, pageSize, null, false);
         }
 
+		public bool CanRegister(string id, string companyId, string sessionId)
+			=> FilterCount<RegisterToEventProjection>(f =>
+					f.Term(p => p.Event, id.HasNotNullArg(nameof(id))) &&
+					f.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId))) &&
+					f.Range(r => r.Field(p => p.TicketsLeft).GreaterThan(0.0)) &&
+					!(f.Term(p => p.Transactions.First().SessionId, sessionId.HasNotNullArg(nameof(sessionId)))
+						/*|| f.Term(p => p.Transactions.First().User, User.Id)*/)) > 0;
 
-		public bool RegisterToEvent(string id, string companyId, string email, string name, string phoneNumber, Guid ticketId, string imagesUrl)
-			=> (Update<RegisterToEventProjection>(f => f
-				.Term(p => p.Event, id.HasNotNullArg(nameof(id))) && f.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId))) &&
-					f.Nested(n => n.Path(p => p.Prices).Query(q => q.Term(t => t.Prices.First().Id, ticketId) && q.Range(r => r.Field(p => p.Prices.First().Left).GreaterThan(0.0)))),
-				u => u
-					.Inc(p => p.TicketsLeft, -1)
-					.IncNested(p => p.Prices, p => p.Left, ticketId, -1)
-					.Add(p => p.Transactions, new RegisterToEventTransaction(ticketId, DateTime.Now, new Contact(name, email, phoneNumber), 0, ETransactionType.Registrition))
-				, true) > 0).IfTrue(() => AddJob(
-					base.GetById<EventProjection, BaseCompanyProjection>(id, companyId).Convert(x => new CreateTicket(x.Name, name, x.Page.Date, email, imagesUrl+x.Page.Cover, x.Page.Label, Guid.NewGuid().ToString()))
-					, DateTime.UtcNow));
+		public async Task<bool> RegisterToEventAsync(string id, string companyId, string email, string name,
+			string phoneNumber, Guid ticketId, string imagesUrl, string sessionId)
+			=> await UpdateAsync<RegisterToEventProjection>(f =>
+						f.Term(p => p.Event, id.HasNotNullArg(nameof(id))) &&
+						f.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId))) &&
+						!(f.Term(p => p.Transactions.First().SessionId, sessionId.HasNotNullArg(nameof(sessionId))) ||
+						f.Term(p => p.Transactions.First().Contact.Email, email) ||
+						f.Term(p => p.Transactions.First().Contact.Phone, phoneNumber)
+							/*|| f.Term(p => p.Transactions.First().User, User.Id)*/) &&
+						f.Nested(n => n.Path(p => p.Prices)
+							.Query(q =>
+								q.Term(t => t.Prices.First().Id, ticketId) &&
+								q.Range(r => r.Field(p => p.Prices.First().Left).GreaterThan(0.0)))),
+					u => u
+						.Inc(p => p.TicketsLeft, -1)
+						.IncNested(p => p.Prices, p => p.Left, ticketId, -1)
+						.Add(p => p.Transactions,
+							new RegisterToEventTransaction(ticketId, DateTime.Now, new Contact(name, email, phoneNumber),
+								GetUser<BaseUserProjection>(), 0, ETransactionType.Registrition, sessionId)), true) > 0
+				&&
+				await AddJobAsync(
+					base.GetById<EventProjection, BaseCompanyProjection>(id, companyId).Convert(x =>
+						new CreateTicket(x.Name, name, x.Page.Date, email, imagesUrl + x.Page.Cover, x.Page.Label,
+							Guid.NewGuid().ToString())), DateTime.UtcNow);
 
-
-        //TODO сделать агргегацию посредством эластика+кеширование
-        // скорее всего сделаем справочник городов
-        public IReadOnlyCollection<string> GetAllCities()
+		//TODO сделать агргегацию посредством эластика+кеширование
+		// скорее всего сделаем справочник городов
+		public IReadOnlyCollection<string> GetAllCities()
             => Filter<Event, EventAddressProjection>(q => q).Select(a => a.Address.City).Distinct().OrderBy(c => c).ToArray();
 
     }

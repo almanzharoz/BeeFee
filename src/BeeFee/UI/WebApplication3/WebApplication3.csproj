@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Admin\Views\User\" />
+    <Folder Include="Areas\Admin\Views\Users\" />
+    <Folder Include="Areas\Admin\Views\Category\" />
+    <Folder Include="Areas\Admin\Views\Categories\" />
+    <Folder Include="Areas\Moderator\Models\Events\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Sharp7Func\Sharp7Func.csproj" />
+    <ProjectReference Include="..\..\Applications\BeeFee.AdminApp\BeeFee.AdminApp.csproj" />
+    <ProjectReference Include="..\..\Applications\BeeFee.ClientApp\BeeFee.ClientApp.csproj" />
+    <ProjectReference Include="..\..\Applications\BeeFee.LoginApp\BeeFee.LoginApp.csproj" />
+    <ProjectReference Include="..\..\Applications\BeeFee.ModeratorApp\BeeFee.ModeratorApp.csproj" />
+    <ProjectReference Include="..\..\Applications\BeeFee.OrganizerApp\BeeFee.OrganizerApp.csproj" />
+    <ProjectReference Include="..\..\BeeFee.Model\BeeFee.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\site_script.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Shared\_Layout.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

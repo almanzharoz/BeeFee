@@ -1,0 +1,161 @@
+@model WebApplication3.Models.Events.EventsFilter
+
+<div class="filter" data-fixed-wrap="filter">
+    <div class="container">
+        <a class="filter--head" href="#" data-toggle="filter">Все события @(!String.IsNullOrWhiteSpace(Model.City) ? "в городе " + Model.City : null) в ближайшее время</a>
+    </div>
+    <div class="filter--body">
+        <div class="container">
+            <form>
+                <div class="filter--in hidden-xs">
+                    <div class="filter--field">
+                        <div class="vertical-field">
+                            <div class="row">
+                                <div class="col-xs-4 col-md-3">
+                                    <label class="vertical-field--l"><span>Поиск по ключевым словам</span></label>
+                                </div>
+                                <div class="col-xs-4 col-md-6">
+                                    @Html.TextBoxFor(x => x.Text, new { @class = "vertical-field--i", placeholder = "текст для поиска..." })
+                                </div>
+                                <div class="col-xs-4 col-xs-offset-l-0 col-md-9 col-md-offset-l-3">
+                                    <div class="vertical-field--t"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter--field">
+                        <div class="vertical-field">
+                            <div class="row">
+                                <div class="col-xs-4 col-md-3">
+                                    <label class="vertical-field--l"><span>Выберите город</span></label>
+                                </div>
+                                <div class="col-xs-4 col-md-6">
+                                    <div class="select">
+                                        @Html.HiddenFor(x => x.City, new { @class = "select_hidden" })
+                                        @*<input class="select_hidden" id="selectCity1" type="hidden" value="@(Model.Cities.FirstOrDefault(x => x.Selected)?.Text)"/>*@
+                                        <div class="select_in">
+                                            <div class="select_title">
+                                                @if (!String.IsNullOrWhiteSpace(Model.City))
+                                                {
+                                                    @Model.City
+                                                }
+                                                else
+                                                {
+                                                    <span class="select_placeholder">Выберите город</span>
+                                                }
+                                            </div>
+                                        </div>
+                                        <ul class="select_list">
+                                            @{
+                                                var index = 1;
+                                                foreach (var city in Model.Cities)
+                                                {
+                                                    <li data-value="@city.Text">
+                                                        @city.Text
+                                                    </li>
+                                                    index++;
+                                                }
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-xs-offset-l-0 col-md-9 col-md-offset-l-3">
+                                    <div class="vertical-field--t"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter--field">
+                        <div class="vertical-field">
+                            <div class="row">
+                                <div class="col-xs-4 col-md-3">
+                                    <label class="vertical-field--l"><span>Выберите даты</span></label>
+                                </div>
+                                <div class="col-xs-1 col-md-1" style="width: 16px;">
+                                    <label class="vertical-field--l"><span>c</span></label>
+                                </div>
+                                <div class="col-xs-3 col-md-3">
+                                    <div class="vertical-field--d">
+                                        @*@Html.TextBoxFor(x => x.EndDate, new { @class = "vertical-field--i js-date", id = "endDate1" })*@
+                                        <input name="@Html.NameFor(x=>x.StartDate)" class="vertical-field--i js-date" type="text" id="startDate1" value="@Model.StartDate.Date.ToString("dd.MM.yyyy")" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-1 col-md-1" style="width: 35px;">
+                                    <label class="vertical-field--l"><span>по</span></label>
+                                </div>
+                                <div class="col-xs-3 col-md-3">
+                                    <div class="vertical-field--d">
+                                        @*@Html.TextBoxFor(x => x.EndDate, new { @class = "vertical-field--i js-date", id = "endDate1" })*@
+                                        <input name="@Html.NameFor(x=>x.EndDate)" class="vertical-field--i js-date" type="text" id="endDate1" value="@Model.EndDate.Date.ToString("dd.MM.yyyy")" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-xs-offset-l-0 col-md-9 col-md-offset-l-3">
+                                    <div class="vertical-field--t"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter--field">
+                        <div class="vertical-field">
+                            <div class="row">
+                                <div class="col-xs-4 col-md-3">
+                                    <label class="vertical-field--l"><span>Выберите категорию</span></label>
+                                </div>
+                                <div class="col-xs-4 col-md-6">
+                                    <div class="select">
+                                        <a href="#" class="select_in_checkbox">
+                                            <div class="select_title">
+                                                <span class="select_placeholder">Нажмите для выбора</span>
+                                                <div></div>
+                                            </div>
+                                        </a>
+                                        <ul class="select_list_checkbox">
+                                            <li>
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="checkbox--input category-checkbox" @(Model.Categories.All(c => c.Selected) ? "checked=\"checked\"" : "") data-checkboxes="total" />
+                                                    <div class="checkbox--label">Все категории</div>
+                                                </label>
+                                            </li>
+                                            @foreach (var category in Model.Categories)
+                                            {
+                                                <li>
+                                                    <label class="checkbox">
+                                                        <input type="checkbox" class="checkbox--input category-checkbox" value="@category.Value" name="Categories" @(category.Selected ? "checked=\"checked\"" : "") />
+                                                        <div class="checkbox--label">@category.Text</div>
+                                                    </label>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-xs-offset-l-0 col-md-9 col-md-offset-l-3">
+                                    <div class="vertical-field--t"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="filter--field">
+                            <div class="vertical-field">
+                                <div class="row">
+                                    <div class="col-xs-4 col-md-3">
+                                        <label class="vertical-field--l"><span>Максимальная цена билета</span></label>
+                                    </div>
+                                    <div class="col-xs-4 col-md-6">
+                                        @Html.TextBoxFor(x => x.MaxPrice, new { @class = "vertical-field--i", id = "maxPrice1" })
+                                    </div>
+                                    <div class="col-xs-4 col-xs-offset-l-0 col-md-9 col-md-offset-l-3">
+                                        <div class="vertical-field--t"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+                    <div class="row">
+                        <div class="col-xs-4 col-md-6 col-md-offset-l-3">
+                            <button class="btn is-block" type="submit">Найти мероприятия</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

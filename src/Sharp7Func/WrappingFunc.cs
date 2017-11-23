@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace SharpFuncExt
 {
@@ -57,5 +54,9 @@ namespace SharpFuncExt
 		};
 
 		public static Func<T, TResult> Next<T, TMid, TResult>(this Func<T, TMid> func, Func<TMid, TResult> next) => x => next(func(x));
+
+		public static TResult UseIn<TArg, TResult>(this TArg arg, Func<TArg, TResult> func) => func(arg);
+		public static TResult UseIn<TArg1, TArg2, TResult>(this (TArg1, TArg2) arg, Func<TArg1, TArg2, TResult> func) => func(arg.Item1, arg.Item2);
+		public static TResult UseIn<TArg1, TArg2, TArg3, TResult>(this (TArg1, TArg2, TArg3) arg, Func<TArg1, TArg2, TArg3, TResult> func) => func(arg.Item1, arg.Item2, arg.Item3);
 	}
 }

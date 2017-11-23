@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SharpFuncExt;
 
-namespace Sharp7Func
+namespace SharpFuncExt
 {
 	public abstract class BaseCatchCollection<TArg>
 	{

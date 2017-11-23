@@ -1,0 +1,15 @@
+{
+  "name": "asp.net",
+  "private": true,
+  "dependencies": {
+    "jquery": "3.2.1",
+    "jquery-validation": "1.17.0",
+    "jquery-validation-unobtrusive": "3.2.6",
+    "jquery.maskedinput": "jquery-maskedinput#1.4.1",
+    "ckeditor": "#standard/4.7.3"
+  },
+  "resolutions": {
+    "jquery": "3.2.1",
+    "jquery-validation": "1.17.0"
+  }
+}

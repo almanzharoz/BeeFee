@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using BeeFee.Model;
 using BeeFee.Model.Embed;
+using BeeFee.Model.Interfaces;
 using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
 using BeeFee.ModeratorApp.Projections.Embed;

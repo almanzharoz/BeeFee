@@ -10,8 +10,6 @@ namespace BeeFee.Model.Interfaces
 
 		EEventState State { get; }
 
-		TicketPrice[] Prices { get; }
-
 		EventPage Page { get; }
 
 	}

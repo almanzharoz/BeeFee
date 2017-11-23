@@ -1,0 +1,63 @@
+﻿@using WebApplication3.Models.Account
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>@ViewBag.Title</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+	<meta name="format-detection" content="telephone=no" />
+	<environment include="Development">
+		<link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+	</environment>
+	<environment exclude="Development">
+		<link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+	</environment>
+</head>
+<body>
+	<div class="page">
+		<header class="header" data-fixed-wrap="header">
+			@Html.Partial("_TopMenu")
+		</header>
+		<div class="fixed-box">
+			<div class="fixed-box--r" data-fixed="header">
+				<header class="header is-small">
+					@Html.Partial("_TopMenu")
+				</header>
+			</div>
+			@RenderSection("fixed_header", false)
+		</div>
+		@RenderBody()
+		@Html.Partial("_Footer")
+		@RenderSection("after_footer", false)
+		<div class="modals">
+			<div class="modals--overlay js-modals-close"></div>
+			<div class="modals--item" id="authModal">
+				<div class="modals--title">Вход и регистрация</div>
+				<div class="modals--body">
+					@Html.Partial("_LoginForm", new LoginModel() { ReturnUrl = "/" })
+				</div>
+			</div>
+		</div>
+	</div>
+	<environment include="Development">
+		<script src="~/js/jquery.min.js" asp-append-version="true"></script>
+		<script src="~/lib/sticky-kit/jquery.sticky-kit.js"></script>
+		<script src="~/lib/datetimepicker/build/jquery.datetimepicker.full.js"></script>
+		@*<script src="~/lib/ScrollToFixed/jquery-scrolltofixed.js" asp-append-version="true"></script>*@
+		<script src="~/scripts/site_script.js" asp-append-version="true"></script>
+		<script src="~/js/events.js" asp-append-version="true"></script>
+		<script src="~/js/site.js" asp-append-version="true"></script>
+	</environment>
+	<environment exclude="Development">
+		<script src="~/js/jquery.min.js" asp-append-version="true"></script>
+		<script src="~/lib/sticky-kit/jquery.sticky-kit.js"></script>
+		<script src="~/lib/datetimepicker/build/jquery.datetimepicker.full.js"></script>
+		@*<script src="~/lib/ScrollToFixed/jquery-scrolltofixed.js" asp-append-version="true"></script>*@
+		<script src="~/scripts/site_script.js" asp-append-version="true"></script>
+		<script src="~/js/events.js" asp-append-version="true"></script>
+		<script src="~/js/site.js" asp-append-version="true"></script>
+	</environment>
+
+	@RenderSection("Scripts", required: false)
+</body>
+</html>

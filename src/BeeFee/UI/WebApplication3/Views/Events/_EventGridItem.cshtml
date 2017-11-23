@@ -1,0 +1,10 @@
+﻿@using BeeFee.ClientApp.Projections.Event
+@using WebApplication3.Infrastructure
+@inject ImagesHelper Images
+@model EventGridItem
+
+<div class="col-xs-4 col-md-4">
+	<div class="grid--item">
+		<a class="item" href="/event/@Model.Parent.Url/@Model.Url"><span class="item--poster" style="background-image: url('@Images.GetImageUrl(Model.Parent.Url, Model.Url, Model.Page.Cover, 368, 190)');"></span><span class="item--date"><span>@Model.Page.Date</span></span><span class="item--title">@Model.Page.Caption</span></a>
+	</div>
+</div>

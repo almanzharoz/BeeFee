@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Sharp7Func;
+using System.Threading.Tasks;
 
 namespace SharpFuncExt
 {
@@ -102,6 +102,12 @@ namespace SharpFuncExt
 		{
 			if (arg)
 				ifTrue();
+			return arg;
+		}
+		public static async Task<bool> IfTrue(this bool arg, Func<Task> ifTrue)
+		{
+			if (arg)
+				await ifTrue();
 			return arg;
 		}
 		public static bool IfFalse(this bool arg, Action ifTrue)

@@ -20,6 +20,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using BeeFee.ModeratorApp;
 using BeeFee.WebApplication.Infrastructure.Middleware;
+using BeeFee.WebApplication.Infrastructure.ViewRendering;
 
 namespace BeeFee.WebApplication
 {

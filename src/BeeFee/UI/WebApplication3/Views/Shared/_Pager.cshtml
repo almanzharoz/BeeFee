@@ -1,0 +1,10 @@
+﻿@model Core.ElasticSearch.IPager
+@if (Model.Pages > 1)
+{
+	<ul class="pager">
+		@for (var i = 0; i < Model.Pages; i++)
+		{
+			<li class="@(Model.Page == i ? "active" : null)"><a href="?page=@i">@(i + 1)</a></li>
+		}
+	</ul>
+}

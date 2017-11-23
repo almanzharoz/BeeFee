@@ -27,7 +27,27 @@ namespace Core.ElasticSearch
 								.IfNotNull(sort, y => y.Sort(sort))
 								.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())
 								.IfNotNull(take, y => y.Take(take).Skip(page * take))),
-						r => r.Hits.Select(x => new KeyValuePair<TProjection, int>(x.Source, (int)(x.Score>1 && x.Score<2?0:x.Score))).ToArray().If(load, Load),
+						r => r.Hits.Select(x => new KeyValuePair<TProjection, int>(x.Source, (int)(x.Score ?? 0))).ToArray().If(load, Load),
+						RepositoryLoggingEvents.ES_SEARCH));
+
+		protected Task<KeyValuePair<TProjection, int>[]> SearchWithScoreAsync<T, TProjection>(
+			Func<QueryContainerDescriptor<T>, QueryContainer> query,
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, int page = 0, int take = 100, bool load = true)
+			where TProjection : class, IProjection<T>, ISearchProjection
+			where T : class, IModel
+			=> _mapping.GetProjectionItem<TProjection>()
+				.Convert(
+					projection => TryAsync(
+						c => c.SearchAsync<T, TProjection>(
+							x => x
+								.Index(projection.MappingItem.IndexName)
+								.Type(projection.MappingItem.TypeName)
+								.Source(s => s.Includes(f => f.Fields(projection.Fields)))
+								.Query(query)
+								.IfNotNull(sort, y => y.Sort(sort))
+								.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())
+								.IfNotNull(take, y => y.Take(take).Skip(page * take))),
+						r => r.Hits.Select(x => new KeyValuePair<TProjection, int>(x.Source, (int)(x.Score ?? 0))).ToArray().If(load, Load),
 						RepositoryLoggingEvents.ES_SEARCH));
 
 		protected int FilterCount<T>(Func<QueryContainerDescriptor<T>, QueryContainer> query) where T : class, IEntity

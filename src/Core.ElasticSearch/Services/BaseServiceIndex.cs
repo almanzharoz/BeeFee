@@ -61,6 +61,19 @@ namespace Core.ElasticSearch
 				r => r.Created,
 				RepositoryLoggingEvents.ES_INSERT);
 
+		protected Task<bool> InsertAsync<T, TParent>(T entity, bool refresh)
+			where T : BaseNewEntityWithParent<TParent>
+			where TParent : IProjection, IJoinProjection
+			=> TryAsync(
+				c => c.IndexAsync(entity.HasNotNullArg(nameof(entity)), s => s
+						.Index(_mapping.GetIndexName<T>())
+						.Type(_mapping.GetTypeName<T>())
+						.Parent(entity.Parent.Id)
+						.If(_mapping.ForTests || refresh, a => a.Refresh(Refresh.True)))
+					.Fluent(x => entity.Id = x.Id),
+				r => r.Created,
+				RepositoryLoggingEvents.ES_INSERT);
+
 		protected bool InsertWithId<T, TParent>(T entity, bool refresh)
 			where T : BaseNewEntityWithIdAndParent<TParent>
 			where TParent : IProjection, IJoinProjection
@@ -122,6 +135,17 @@ namespace Core.ElasticSearch
 			where T : BaseEntityWithVersion, IProjection, IGetProjection
 			=> Try(
 				c => c.Index(entity.HasNotNullArg(nameof(entity)), s => s
+						.Index(_mapping.GetIndexName<T>())
+						.Type(_mapping.GetTypeName<T>())
+						.Refresh(Refresh.True))
+					.Fluent(x => entity.Id = x.Id),
+				r => r.Created ? GetWithVersionById<T>(entity.Id) : null,
+				RepositoryLoggingEvents.ES_INSERT);
+
+		protected Task<T> InsertWithVersionAsync<TNew, T>(TNew entity) where TNew : BaseNewEntity, IProjection
+			where T : BaseEntityWithVersion, IProjection, IGetProjection
+			=> TryAsync(
+				c => c.IndexAsync(entity.HasNotNullArg(nameof(entity)), s => s
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
 						.Refresh(Refresh.True))

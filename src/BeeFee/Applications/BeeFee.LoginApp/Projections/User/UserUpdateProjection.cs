@@ -21,12 +21,6 @@ namespace BeeFee.LoginApp.Projections.User
 			return this;
 		}
 
-		internal UserUpdateProjection Change(string name)
-		{
-			Name = name.HasNotNullArg(nameof(name));
-			return this;
-		}
-
 		internal UserUpdateProjection Recover()
 		{
 			VerifyEmail = Guid.NewGuid().ToString();

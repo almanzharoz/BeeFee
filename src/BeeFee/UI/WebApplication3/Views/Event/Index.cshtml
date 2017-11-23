@@ -1,0 +1,11 @@
+﻿@using BeeFee.Model.Interfaces
+@model WebApplication3.Models.Event.EventPageModel
+@{
+	ViewBag.Title = Model.Event.Page.Title;
+}
+
+@Html.Partial("_EventPage", Tuple.Create<IEventPageProjection, object>(Model.Event, Model))
+
+@section after_footer{
+	<div class="hidden-xs" style="height: 156px;"></div>
+}

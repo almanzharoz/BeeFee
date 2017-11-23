@@ -6,7 +6,7 @@ using Nest;
 
 namespace BeeFee.Model.Models
 {
-	public abstract class Event : IModel, IWithVersion, IWithParent<BaseCompanyProjection>, IWithName, IWithUrl, IWithHidden
+	public abstract class Event : IModel, IWithVersion, IWithParent<BaseCompanyProjection>, IWithName, IWithUrl, IWithHidden, IDublicate
 	{
 		public string Id { get; set; }
 		public int Version { get; set; }
@@ -30,9 +30,6 @@ namespace BeeFee.Model.Models
 		/// </summary>
 		public EventPage Page { get; set; }
 
-		[Nested]
-		public TicketPrice[] Prices { get; set; }
-
 		public bool Hidden { get; set; }
 
 		[Keyword(Index = false)]
@@ -42,5 +39,8 @@ namespace BeeFee.Model.Models
 		public User Moderator { get; set; }
 		[Keyword(Index = false)]
 		public string[] Comments { get; set; }
+
+		[Keyword]
+		public string Md5 { get; set; }
 	}
 }

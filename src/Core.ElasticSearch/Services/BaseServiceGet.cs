@@ -42,6 +42,20 @@ namespace Core.ElasticSearch
 						RepositoryLoggingEvents.ES_GET,
 						$"Get (Id: {id})"));
 
+		protected Task<T> GetWithVersionByIdAsync<T>(string id, bool load = true)
+			where T : BaseEntityWithVersion, IProjection, IGetProjection
+			=> id.IsNull() ? null : _mapping.GetProjectionItem<T>()
+				.Convert(
+					projection => TryAsync(
+						c => c.GetAsync(
+							DocumentPath<T>.Id(id)
+								.Index(projection.MappingItem.IndexName)
+								.Type(projection.MappingItem.TypeName),
+							x => x.SourceInclude(projection.Fields).VersionType(VersionType.Force)),
+						r => r.Source.If(load, Load),
+						RepositoryLoggingEvents.ES_GET,
+						$"Get (Id: {id})"));
+
 		protected T GetById<T>(string id, int version, bool load = true)
 			where T : BaseEntityWithVersion, IProjection, IGetProjection
 			=> _mapping.GetProjectionItem<T>()
@@ -214,6 +228,25 @@ namespace Core.ElasticSearch
 						RepositoryLoggingEvents.ES_GET,
 						$"Get with query (Id: {id})"));
 
+		protected Task<TProjection> GetWithVersionByIdAndQueryAsync<T, TProjection>(string id,
+			Func<QueryContainerDescriptor<T>, QueryContainer> query,
+			bool load = true)
+			where TProjection : BaseEntityWithVersion, IProjection<T>, IGetProjection
+			where T : class, IModel
+			=> id.IsNull() ? null : _mapping.GetProjectionItem<TProjection>()
+				.Convert(
+					projection => TryAsync(
+						c => c.SearchAsync<T, TProjection>(x => x
+							.Index(projection.MappingItem.IndexName)
+							.Type(projection.MappingItem.TypeName)
+							.Query(q => q.Bool(b => b.Filter(Query<T>.Ids(i => i.Values(id)) &&
+															query(new QueryContainerDescriptor<T>()))))
+							.Take(1)
+							.Version()
+							.Source(s => s.Includes(f => f.Fields(projection.Fields)))),
+						r => r.Documents.FirstOrDefault().If(load, Load),
+						RepositoryLoggingEvents.ES_GET,
+						$"Get with query (Id: {id})"));
 		#endregion
 
 		#region GetByIdAndQuery WithParent
@@ -246,6 +279,24 @@ namespace Core.ElasticSearch
 				.Convert(
 					projection => Try(
 						c => c.Search<TProjection>(x => x
+							.Index(projection.MappingItem.IndexName)
+							.Type(projection.MappingItem.TypeName)
+							.Query(q => q.Bool(b => b.Filter(Query<T>.Ids(i => i.Values(id.HasNotNullArg("id"))) &&
+															Query<T>.ParentId(p => p.Id(parent.HasNotNullArg("parent"))) && query(new QueryContainerDescriptor<T>()))))
+							.Take(1)
+							.Source(s => s.Includes(f => f.Fields(projection.Fields)))),
+						r => r.Documents.FirstOrDefault().If(load, Load),
+						RepositoryLoggingEvents.ES_GETWITHQUERY,
+						$"Get with query (Id: {id}, Parent: {parent})"));
+
+		protected Task<TProjection> GetByIdAndQueryAsync<T, TProjection, TParent>(string id, string parent, Func<QueryContainerDescriptor<T>, QueryContainer> query, bool load = true)
+			where TProjection : BaseEntityWithParent<TParent>, IProjection<T>, IGetProjection
+			where TParent : class, IProjection, IJoinProjection
+			where T : class, IModel
+			=> _mapping.GetProjectionItem<TProjection>()
+				.Convert(
+					projection => TryAsync(
+						c => c.SearchAsync<TProjection>(x => x
 							.Index(projection.MappingItem.IndexName)
 							.Type(projection.MappingItem.TypeName)
 							.Query(q => q.Bool(b => b.Filter(Query<T>.Ids(i => i.Values(id.HasNotNullArg("id"))) &&
@@ -318,6 +369,24 @@ namespace Core.ElasticSearch
 						RepositoryLoggingEvents.ES_GET,
 						$"Get with query (Id: {id}, Parent: {parent})"));
 
+		protected Task<TProjection> GetWithVersionByIdAndQueryAsync<T, TProjection, TParent>(string id, string parent, Func<QueryContainerDescriptor<T>, QueryContainer> query, bool load = true)
+			where TProjection : BaseEntityWithParentAndVersion<TParent>, IProjection<T>, IGetProjection
+			where TParent : class, IProjection, IJoinProjection
+			where T : class, IModel
+			=> _mapping.GetProjectionItem<TProjection>()
+				.Convert(
+					projection => TryAsync(
+						c => c.SearchAsync<TProjection>(x => x
+							.Index(projection.MappingItem.IndexName)
+							.Type(projection.MappingItem.TypeName)
+							.Query(q => q.Bool(b => b.Filter(Query<T>.Ids(i => i.Values(id.HasNotNullArg("id"))) &&
+															Query<T>.ParentId(p => p.Id(parent.HasNotNullArg("parent"))) && query(new QueryContainerDescriptor<T>()))))
+							.Take(1)
+							.Version()
+							.Source(s => s.Includes(f => f.Fields(projection.Fields)))),
+						r => r.Documents.FirstOrDefault().If(load, Load),
+						RepositoryLoggingEvents.ES_GET,
+						$"Get with query (Id: {id}, Parent: {parent})"));
 		#endregion
 
 	}

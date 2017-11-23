@@ -1,0 +1,65 @@
+﻿@using WebApplication3.Areas.Org.Models.Event
+@using EventRequestModel = WebApplication3.Areas.Org.Models.Event.EventRequestModel
+@model IEventEditModel
+@{
+	ViewBag.Title = "Редактировать мероприяти";
+	var requestModel = ViewBag.RequestModel as EventRequestModel;
+}
+<div class="create">
+	<div class="create--step">
+		<div class="create--head">
+			<div class="create--number">1 / 4</div>
+			<div class="create--title">Основная информация</div>
+			@if (!(Model is EventEditModel))
+			{
+				<a asp-action="Edit" asp-controller="Event" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version">редактировать</a>
+			}
+		</div>
+		@if (Model is EventEditModel)
+		{
+			@Html.Partial("_EditEvent")
+		}
+	</div>
+	<div class="create--step">
+		<div class="create--head">
+			<div class="create--number">2 / 4</div>
+			<div class="create--title">Подробное описание</div>
+			@if (!(Model is EventDescriptionModel))
+			{
+				<a asp-action="EditDescription" asp-controller="Event" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version">редактировать</a>
+			}
+		</div>
+		@if (Model is EventDescriptionModel)
+		{
+			@Html.Partial("_EditDescription")
+		}
+	</div>
+	<div class="create--step">
+		<div class="create--head">
+			<div class="create--number">3 / 4</div>
+			<div class="create--title">Настройки билетов</div>
+			@if (!(Model is EventPricesModel))
+			{
+				<a asp-action="Prices" asp-controller="Event" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version">редактировать</a>
+			}
+		</div>
+		@if (Model is EventPricesModel)
+		{
+			@Html.Partial("_EditPrices")
+		}
+	</div>
+	<div class="create--step">
+		<div class="create--head">
+			<div class="create--number">4 / 4</div>
+			<div class="create--title">Предпросмотр</div>
+			@if (!(Model is EventPreviewModel))
+			{
+				<a asp-action="Preview" asp-controller="Event" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version">редактировать</a>
+			}
+		</div>
+		@if (Model is EventPreviewModel)
+		{
+			@Html.Partial("_Preview")
+		}
+	</div>
+</div>

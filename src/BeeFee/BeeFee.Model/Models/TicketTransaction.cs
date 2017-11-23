@@ -12,6 +12,8 @@ namespace BeeFee.Model.Models
 		[Keyword]
 		public Guid PriceId { get; }
 		[Keyword]
+		public User User { get; }
+		[Keyword]
 		public DateTime Date { get; }
 		public Contact Contact { get; }
 		public float Sum { get; }
@@ -19,8 +21,6 @@ namespace BeeFee.Model.Models
 		public ETransactionType Type { get; }
 		[Keyword]
 		public ETransactionState State { get; }
-		[Keyword]
-		public Ticket Ticket { get; }
 
 	}
 }

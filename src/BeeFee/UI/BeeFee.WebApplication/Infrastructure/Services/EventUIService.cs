@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BeeFee.ClientApp.Services;
+using BeeFee.WebApplication.Infrastructure.ViewRendering;
 using BeeFee.WebApplication.Models.Event;
 
 namespace BeeFee.WebApplication.Infrastructure.Services

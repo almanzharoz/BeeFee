@@ -85,7 +85,7 @@ namespace BeeFee.ImageApp.Services
 					.Convert(x => x != null && x.Directory == Path.Combine(companyName, eventName)) ||
 				_cacheManager.Get<MemoryCacheKeyObject>(MakeKey(key, companyName))
 					.Convert(x => x != null && x.Directory == companyName && x.HasAccessToSubdirectories) ||
-				_cacheManager.Get<MemoryCacheKeyObject>(key)
+				_cacheManager.Get<MemoryCacheKeyObject>(key) // TODO: Для сервера проверять не через кэш
 					.Convert(x => x != null && x.IsAdminKey);
 
 		private bool IsKeyValid(string key, string companyName)

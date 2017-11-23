@@ -1,0 +1,49 @@
+﻿@using BeeFee.Model.Embed
+@model WebApplication3.Models.Events.EventsFilter
+@{
+	ViewData["Title"] = "Home Page";
+	Layout = "_LayoutMain";
+	var startUrl = Url.Action("Register", "Account");
+	if (User.Identity != null && User.Identity.IsAuthenticated)
+	{
+		if (User.IsInRole(RoleNames.MultiOrganizer))
+		{
+			startUrl = Url.Action("Index", "Companies", new {area = "Org"});
+		}
+		else if (User.IsInRole(RoleNames.Organizer))
+		{
+			startUrl = Url.Action("CreateEvent", "Company", new { area = "Org" });
+		}
+		else if (User.IsInRole(RoleNames.User))
+		{
+			startUrl = Url.Action("Create", "Companies", new { area = "Org" });
+		}
+	}
+}
+
+@section fixed_header
+{
+	<div class="fixed-box--r" data-fixed="filter">
+		<div class="container"><a class="filter--head in-fixed" href="#" data-goto="filter">Все события в городе Екатеринбург в ближайшее время</a></div>
+	</div>
+}
+<div class="intro hidden-xs" style="background-image: url(/images/intro.jpg);">
+	<div class="intro--box">
+		<div class="container">
+			<div class="intro--title">Создай своё событие</div>
+			<div class="intro--text">И расскажи о нём всем</div>
+			<div class="intro--btn"><a class="btn is-block is-sm" href="@startUrl">Начать</a></div>
+		</div>
+	</div>
+</div>
+@Html.Partial("_Filter")
+<div class="page--in">
+	<div class="container">
+		<div class="grid">
+			<div class="row">
+				@Html.Partial("_EventGrid", Model.Items)
+			</div>
+		</div>
+		@*<div class="loader"></div>*@
+	</div>
+</div>
