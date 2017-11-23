@@ -2,7 +2,7 @@
 @model IEventEditModel
 @{
     ViewBag.Title = "Редактировать мероприятие";
-    var requestModel = ViewBag.RequestModel as WebApplication3.Areas.Org.Models.Event.EventRequestModel;
+    //var requestModel = ViewBag.RequestModel as WebApplication3.Areas.Org.Models.Event.EventRequestModel;
 }
 <div class="create">
     <div class="create--step">
@@ -11,7 +11,7 @@
             <div class="create--title">Основная информация</div>
             @if (!(Model is EventEditModel))
             {
-                <a asp-action="Edit" asp-controller="Event" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version" class="create--edit">редактировать</a>}
+                <a asp-action="Edit" asp-controller="Event" asp-route-id="@Id" asp-route-parentId="@ParentId" asp-route-version="@Version" class="create--edit">редактировать</a>}
         </div>
         @if (Model is EventEditModel)
         {
@@ -24,10 +24,10 @@
             <div class="create--title">Подробное описание</div>
             @if (!(Model is EventDescriptionModel))
             {
-                <a asp-action="EditDescription" asp-controller="Event" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version" class="create--edit">редактировать</a>}
+                <a asp-action="EditDescription" asp-controller="Event" asp-route-id="@Id" asp-route-parentId="@ParentId" asp-route-version="@Version" class="create--edit">редактировать</a>}
             else
             {
-                <a class="create--skip" asp-action="Prices" asp-controller="Event" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version">пропустить описание</a>
+                <a class="create--skip" asp-action="Prices" asp-controller="Event" asp-route-id="@Id" asp-route-parentId="@ParentId" asp-route-version="@Version">пропустить описание</a>
             }
         </div>
         @if (Model is EventDescriptionModel)
@@ -41,7 +41,7 @@
             <div class="create--title">Настройки билетов</div>
             @if (!(Model is EventPricesModel))
             {
-                <a asp-action="Prices" asp-controller="Event" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version" class="create--edit">редактировать</a>}
+                <a asp-action="Prices" asp-controller="Event" asp-route-id="@Id" asp-route-parentId="@ParentId" asp-route-version="@Version" class="create--edit">редактировать</a>}
         </div>
         @if (Model is EventPricesModel)
         {
@@ -54,7 +54,7 @@
             <div class="create--title">Предпросмотр</div>
             @if (!(Model is EventPreviewModel))
             {
-                <a asp-action="Preview" asp-controller="Event" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version" class="create--edit">просмотр</a>}
+                <a asp-action="Preview" asp-controller="Event" asp-route-id="@Id" asp-route-parentId="@ParentId" asp-route-version="@Version" class="create--edit">просмотр</a>}
         </div>
         @if (Model is EventPreviewModel)
         {
