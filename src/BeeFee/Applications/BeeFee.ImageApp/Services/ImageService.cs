@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -154,6 +155,56 @@ namespace BeeFee.ImageApp.Services
 			}
 
 			return new ImageOperationResult(EImageOperationResult.Ok, fileName);
+		}
+
+		public async Task<Guid> AddTempImage(Stream stream, string fileName, string key)
+		{
+			//TODO: сделать проверку доступа
+
+			var extension = Path.GetExtension(fileName);
+			var name = new Guid();
+			var directory = _pathHandler.GetPathToTempDirectory();
+			using (var image = Image.Load(stream))
+			{
+				await ImageHandlingHelper.SaveImage(image, Path.Combine(directory, $"{name}.{extension}"));
+			}
+			return name;
+		}
+
+		public async Task AcceptEventImages(IEnumerable<Guid> files, string companyName, string eventName, string filename,
+			string settingName, string key)
+		{
+			if(!IsAdminKey(key))
+				throw new AccessDeniedException();
+
+			foreach (var file in files)
+			{
+				var directory = _pathHandler.GetPathToTempDirectory();
+				var fileName = Directory.EnumerateFiles(directory).First(x => x.Contains(file.ToString()));
+				await AddEventImage(File.OpenRead(Path.Combine(directory, fileName)), companyName,
+					eventName, _pathHandler.GetUniqueFileName(companyName, eventName), settingName, key);
+				File.Delete(Path.Combine(directory, fileName));
+			}
+		}
+
+		public async Task AcceptAvatar(Guid file, string userName, string key)
+		{
+			if(!IsAdminKey(key))
+				throw new AccessDeniedException();
+
+			var directory = _pathHandler.GetPathToTempDirectory();
+			var fileName = Directory.EnumerateFiles(directory).First(x => x.Contains(file.ToString()));
+			await AddUserAvatar(File.OpenRead(Path.Combine(directory, fileName)), userName, key);
+		}
+
+		public async Task AcceptCompanyLogo(Guid file, string companyName, string key)
+		{
+			if(!IsAdminKey(key))
+				throw new AccessDeniedException();
+
+			var directory = _pathHandler.GetPathToTempDirectory();
+			var fileName = Directory.EnumerateFiles(directory).First(x => x.Contains(file.ToString()));
+			await AddCompanyLogo(File.OpenRead(Path.Combine(directory, fileName)), companyName, key);
 		}
 
 		//public void GetAccessToFolder(string key, string companyName, bool hasAccessToSubDirectories)
