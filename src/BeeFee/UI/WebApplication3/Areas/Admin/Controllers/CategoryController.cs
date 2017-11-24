@@ -27,13 +27,13 @@ namespace WebApplication3.Areas.Admin.Controllers
 		public Task<IActionResult> Edit(CategoryEditModel model)
 			=> ModelStateIsValid(model, 
 				m => Service.Rename(Model.Id, Model.Version, m.Name, m.Url),
-				m => RedirectToActionPermanent("Index", "Categories"),
+				m => RedirectToAction("Index", "Categories"),
 				View);
 
 		public async Task<IActionResult> Remove()
 		{
 			await Service.Remove(Model.Id, Model.Version);
-			return RedirectToActionPermanent("Index", "Categories");
+			return RedirectToAction("Index", "Categories");
 		}
 	}
 }

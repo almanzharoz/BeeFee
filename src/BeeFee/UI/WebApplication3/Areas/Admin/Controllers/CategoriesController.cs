@@ -27,7 +27,7 @@ namespace WebApplication3.Areas.Admin.Controllers
 		public Task<IActionResult> Create(CategoryCreateModel model)
 			=> ModelStateIsValid(model,
 				m => Service.Add(m.Name, m.Url),
-				m => RedirectToActionPermanent("Index"),
+				m => RedirectToAction("Index"),
 				View);
 	}
 }

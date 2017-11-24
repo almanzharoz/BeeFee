@@ -31,7 +31,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		public ActionResult Remove()
 		{
 			Service.RemoveEvent(Model.Id, Model.ParentId, Model.Version);
-			return RedirectToActionPermanent("Events", "Company");
+			return RedirectToAction("Events", "Company");
 		}
 		#endregion
 
@@ -39,7 +39,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		public ActionResult Close()
 		{
 			Service.CloseEvent(Model.Id, Model.ParentId, Model.Version);
-			return RedirectToActionPermanent("Events", "Company");
+			return RedirectToAction("Events", "Company");
 		}
 		#endregion
 
@@ -47,7 +47,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		[HttpGet]
 		public Task<IActionResult> Edit()
 			=> View("Edit",
-				m => Service.GetEventAsync(m.Id, m.ParentId),
+				m => Service.GetEventAsync(m.Id, m.ParentId, m.Version),
 				c => new EventEditModel(c.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost)), _categoryService.GetAllCategories<BaseCategoryProjection>()));
 
 		[HttpPost]
@@ -55,7 +55,7 @@ namespace WebApplication3.Areas.Org.Controllers
 			=> ModelStateIsValid(model,
 				async m => await Service.UpdateEventAsync(Model.Id, Model.ParentId, Model.Version, m.Name, m.Label, m.Url,
 					m.Cover, m.Email, new EventDateTime(m.StartDateTime, m.FinishDateTime), new Address(m.City, m.Address), m.CategoryId),
-				m => RedirectToActionPermanent("EditDescription", "Event",
+				m => RedirectToAction("EditDescription", "Event",
 					new {area = "Org", Model.Id, Model.ParentId, version = Model.Version + 1}),
 				(m, c) => c
 					.Catch<EntityAccessException<Company>>((e, r) =>
@@ -70,15 +70,15 @@ namespace WebApplication3.Areas.Org.Controllers
 		[HttpGet]
 		public Task<IActionResult> EditDescription()
 			=> View("Edit",
-				m => Service.GetEventAsync(m.Id, m.ParentId),
+				m => Service.GetEventAsync(m.Id, m.ParentId, m.Version),
 				c => new EventDescriptionModel(c.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost))));
 
 		[HttpPost]
 		public Task<IActionResult> EditDescription(EventDescriptionModel model)
 			=> ModelStateIsValid(model,
 				m => Service.UpdateEventDescriptionAsync(Model.Id, Model.ParentId, Model.Version, model.Html),
-				m => RedirectToActionPermanent("Prices", "Event", new {area="Org", Model.Id, Model.ParentId, version=Model.Version+1}),
-				View);
+				m => RedirectToAction("Prices", "Event", new {area="Org", Model.Id, Model.ParentId, version=Model.Version+1}),
+				m => View("Edit", m));
 
 		#endregion
 
@@ -95,7 +95,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		public Task<IActionResult> AddPrice(TicketPriceCreateModel model)
 			=> ModelStateIsValid(model,
 				m => Service.AddEventTicketPriceAsync(Model.Id, Model.ParentId, m.Name, m.Description, m.Price, m.Count, m.Template),
-				m => RedirectToActionPermanent("Prices", "Event", new { area = "Org", Model.Id, Model.ParentId }),
+				m => RedirectToAction("Prices", "Event", new { area = "Org", Model.Id, Model.ParentId, version = Model.Version }),
 				View);
 
 		#endregion
@@ -103,7 +103,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		#region Preview
 
 		public async Task<IActionResult> Preview()
-			=> View("Edit", new EventPreviewModel(await Service.GetPreviewEventAsync(Model.Id, Model.ParentId)));
+			=> new EventPreviewModel(await Service.GetPreviewEventAsync(Model.Id, Model.ParentId)).Convert(x => View(x.Event.State != EEventState.Open ? "Edit" : "Preview", x));
 		
 		#endregion
 

@@ -41,7 +41,8 @@
             <div class="create--title">Настройки билетов</div>
             @if (!(Model is EventPricesModel))
             {
-                <a asp-action="Prices" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version" class="create--edit">редактировать</a>}
+                <a asp-action="Prices" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version" class="create--edit">редактировать</a>
+            }
         </div>
         @if (Model is EventPricesModel)
         {

@@ -26,9 +26,9 @@ namespace WebApplication3.Areas.Org.Controllers
 		#endregion
 
 		public ActionResult First() //hack
-			=> RedirectToActionPermanent("Edit", "Company", new {area = "Org", id = Service.GetCompany(null).Id});
+			=> RedirectToAction("Edit", "Company", new {area = "Org", id = Service.GetCompany(null).Id});
 		public ActionResult FirstEvents() //hack
-			=> RedirectToActionPermanent("Events", "Company", new { area = "Org", id = Service.GetCompany(null).Id });
+			=> RedirectToAction("Events", "Company", new { area = "Org", id = Service.GetCompany(null).Id });
 
 		#region Create
 		[HttpGet]
@@ -47,8 +47,8 @@ namespace WebApplication3.Areas.Org.Controllers
 						await _imagesService.AddCompanyLogo(c.Url, m.File.OpenReadStream());
 
 					if (await Service.StartOrgAsync())
-						return RedirectToActionPermanent("Relogin", "Account", new {area = "", returnUrl = "/Org/Company/CreateEvent/" + c.Id});
-					return RedirectToActionPermanent("Index");
+						return RedirectToAction("Relogin", "Account", new {area = "", returnUrl = "/Org/Company/CreateEvent/" + c.Id});
+					return RedirectToAction("Index");
 				});
 
 		#endregion
