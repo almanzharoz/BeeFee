@@ -2,7 +2,7 @@
 
 namespace WebApplication3.Areas.Org.Models.TicketPrice
 {
-	public class TicketPriceRequestModel : IRequestModelWithId, IRequestModelWithParent, IRequestModelWithVersion
+	public class TicketPriceRequestModel : IRequestModel, IRequestModelWithId, IRequestModelWithParent, IRequestModelWithVersion
 	{
 		public string Tid { get; set; }
 		public string Id { get; set; }

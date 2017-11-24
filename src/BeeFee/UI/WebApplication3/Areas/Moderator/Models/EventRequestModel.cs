@@ -2,7 +2,7 @@
 
 namespace WebApplication3.Areas.Moderator.Models
 {
-    public class EventRequestModel : IRequestModelWithId, IRequestModelWithParent, IRequestModelWithVersion
+    public class EventRequestModel : IRequestModel, IRequestModelWithId, IRequestModelWithParent, IRequestModelWithVersion
     {
 		public string Id { get; set; }
 		public string ParentId { get; set; }

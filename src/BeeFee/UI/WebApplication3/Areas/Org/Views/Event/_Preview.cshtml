@@ -1,14 +1,13 @@
 ﻿@using BeeFee.Model.Embed
 @using BeeFee.Model.Interfaces
+@inject WebApplication3.Areas.Org.Models.Event.EventRequestModel RequestModel
 @model WebApplication3.Areas.Org.Models.Event.EventPreviewModel
-@{ 
-	var requestModel = ViewBag.RequestModel as WebApplication3.Areas.Org.Models.Event.EventRequestModel;
-}
+
 @Html.Partial("_EventPage", Tuple.Create<IEventPageProjection, object>(Model.Event, null))
 
 @if ((Model.Event.State == EEventState.Created || Model.Event.State == EEventState.NotModerated))
 {
 	<div class="create--btn">
-		<a asp-action="Publicate" asp-controller="Event" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version" class="btn-blue">Опубликовать</a>
+		<a asp-action="Publicate" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version" class="btn-blue">Опубликовать</a>
 	</div>
 }

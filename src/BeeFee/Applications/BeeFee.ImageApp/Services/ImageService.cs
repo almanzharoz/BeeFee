@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +11,6 @@ using BeeFee.ImageApp.Helpers;
 using Microsoft.Extensions.Logging;
 using SharpFuncExt;
 using SixLabors.ImageSharp;
-using Sharp7Func;
 
 namespace BeeFee.ImageApp.Services
 {

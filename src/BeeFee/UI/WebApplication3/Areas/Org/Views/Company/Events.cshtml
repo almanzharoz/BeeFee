@@ -1,9 +1,9 @@
 ﻿@using BeeFee.Model.Embed
 @using WebApplication3.Areas.Org.Models.Company
-@model WebApplication3.Areas.Org.Models.Company.EventsFilter
+@inject CompanyRequestModel RequestModel
+@model EventsFilter
 @{
 	ViewBag.Header = "Мои события";
-	var requestModel = ViewBag.RequestModel as CompanyRequestModel;
 }
 @functions{
 
@@ -73,6 +73,6 @@
 	}
 
 	<br /><br />
-	<a asp-action="CreateEvent" asp-route-id="@requestModel.Id">Добавить новое событие</a>
+	<a asp-action="CreateEvent" asp-route-id="@RequestModel.Id">Добавить новое событие</a>
 	<a asp-action="Create" asp-controller="Companies">добавить еще организацию</a>
 </div>

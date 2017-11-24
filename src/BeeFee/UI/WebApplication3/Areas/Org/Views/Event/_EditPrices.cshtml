@@ -1,8 +1,6 @@
 ﻿@using BeeFee.Model.Embed
+@inject WebApplication3.Areas.Org.Models.Event.EventRequestModel RequestModel
 @model WebApplication3.Areas.Org.Models.Event.EventPricesModel
-@{
-	var requestModel = ViewBag.RequestModel as WebApplication3.Areas.Org.Models.Event.EventRequestModel;
-}
 <table width="100%">
 	<thead>
 	<tr>
@@ -22,11 +20,11 @@
 			<td>@p.Count</td>
 			<td>@p.Left</td>
 			<td>
-				<a asp-action="Edit" asp-controller="TicketPrice"  asp-route-tid="@p.Id" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version">редактировать</a>
-				<a asp-action="Remove" asp-controller="TicketPrice" asp-route-tid="@p.Id" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version" onclick="confirm('Удалить цену?')">удалить</a>
+				<a asp-action="Edit" asp-controller="TicketPrice"  asp-route-tid="@p.Id" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version">редактировать</a>
+				<a asp-action="Remove" asp-controller="TicketPrice" asp-route-tid="@p.Id" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version" onclick="confirm('Удалить цену?')">удалить</a>
 			</td>
 		</tr>
 	}
 	</tbody>
 </table>
-<a asp-action="AddPrice" asp-controller="Event" asp-route-id="@requestModel.Id" asp-route-parentId="@requestModel.ParentId" asp-route-version="@requestModel.Version">добавить цену</a>
+<a asp-action="AddPrice" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version">добавить цену</a>

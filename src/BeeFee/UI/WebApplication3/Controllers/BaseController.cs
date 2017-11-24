@@ -201,7 +201,9 @@ namespace WebApplication3.Controllers
 
 	}
 
-	public abstract class BaseController<TService, TModel> : BaseController<TService> where TService : BaseBeefeeService where TModel : class
+	public abstract class BaseController<TService, TModel> : BaseController<TService> 
+		where TService : BaseBeefeeService 
+		where TModel : class, IRequestModel
 	{
 		protected readonly TModel Model;
 
@@ -213,13 +215,6 @@ namespace WebApplication3.Controllers
 			Model = model;
 			Model.As<TModel, IRequestModelWithId>(m => m.Id.HasNotNullArg("Id"));
 			Model.As<TModel, IRequestModelWithParent>(m => m.ParentId.HasNotNullArg("ParentId"));
-			ViewBag.RequestModel = Model; // TODO: Приколь было бы, если эта модель попадала во вьюшку типизированной
-		}
-
-		public override void OnActionExecuted(ActionExecutedContext context)
-		{
-			base.OnActionExecuted(context);
-			ViewBag.RequestModel = Model;
 		}
 
 		protected IActionResult View<TProjection, TViewModel>(string viewName, Func<TModel, TProjection> getFunc, Func<TProjection, TViewModel> createModel)

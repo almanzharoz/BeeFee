@@ -2,7 +2,7 @@
 
 namespace WebApplication3.Areas.Org.Models.Event
 {
-	public class EventRequestModel : IRequestModelWithId, IRequestModelWithParent, IRequestModelWithVersion
+	public class EventRequestModel : IRequestModel, IRequestModelWithId, IRequestModelWithParent, IRequestModelWithVersion
 	{
 		public string Id { get; set; }
 		public string ParentId { get; set; }

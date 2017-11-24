@@ -1,12 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using BeeFee.Model.Embed;
 using BeeFee.Model.Exceptions;
 using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
 using BeeFee.Model.Services;
-using BeeFee.OrganizerApp.Projections.Company;
 using BeeFee.OrganizerApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -88,7 +86,6 @@ namespace WebApplication3.Areas.Org.Controllers
 
 		public async Task<IActionResult> Prices()
 			=> View("Edit", new EventPricesModel((await Service.GetEventTransactionByIdAsync(Model.Id, Model.ParentId)).Prices));
-
 
 		[HttpGet]
 		public IActionResult AddPrice()

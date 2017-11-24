@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using WebApplication3.Areas.Org.Models.Event;
 using WebApplication3.Infrastructure;
 
 namespace WebApplication3
@@ -31,8 +32,8 @@ namespace WebApplication3
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc()
-				.AddControllersWithRequestModel();
+            services.AddMvc();
+				//.AddControllersWithRequestModel();
 
 			services.Configure<BeeFeeWebAppSettings>(Configuration.GetSection("Settings"));
 			services.AddSingleton(cfg => cfg.GetService<IOptions<BeeFeeWebAppSettings>>().Value);
@@ -62,6 +63,9 @@ namespace WebApplication3
 			});
 
 			services.AddSingleton(x => new ImagesService(x.GetService<BeeFeeWebAppSettings>().ImagesUrl));
+			services.AddRequestModels();
+
+			//services.AddScoped(ModelBinderExtensions.СreateModel<EventRequestModel>);
 
 			services
 				.AddBeefeeModel(new Uri("http://localhost:9200/"), s => s
