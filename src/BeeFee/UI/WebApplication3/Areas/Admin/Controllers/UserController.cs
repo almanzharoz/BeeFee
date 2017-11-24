@@ -7,7 +7,7 @@ using WebApplication3.Controllers;
 
 namespace WebApplication3.Areas.Admin.Controllers
 {
-	[Area("Moderator")]
+	[Area("Admin")]
 	[Authorize(Roles = RoleNames.Admin)]
 	public class UserController : BaseController<UserService, UserRequestModel>
     {

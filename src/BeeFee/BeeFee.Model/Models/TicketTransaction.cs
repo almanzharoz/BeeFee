@@ -21,6 +21,8 @@ namespace BeeFee.Model.Models
 		public ETransactionType Type { get; }
 		[Keyword]
 		public ETransactionState State { get; }
+		[Keyword]
+		public string SessionId { get; }
 
 	}
 }

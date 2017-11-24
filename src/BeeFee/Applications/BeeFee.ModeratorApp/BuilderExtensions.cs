@@ -19,6 +19,7 @@ namespace BeeFee.ModeratorApp
 		public static IElasticProjections<BeefeeElasticConnection> UseBeefeeModeratorApp(this IElasticProjections<BeefeeElasticConnection> services)
 		{
 			return services
+				.AddProjection<EventPreviewProjection, Event>()
 				.AddProjection<EventModeratorGridItem, Event>()
 				.AddProjection<EventModeratorProjection, Event>();
 		}

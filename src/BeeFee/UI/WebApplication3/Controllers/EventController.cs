@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BeeFee.ClientApp.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SharpFuncExt;
 using WebApplication3.Models;
@@ -28,7 +29,7 @@ namespace WebApplication3.Controllers
 					await Service.GetEventTransaction(e.Id),
 					User.Identity.Name /* TODO: Доставать юзера из БД */,
 					User.Claims.Where(c => c.Type.Equals(ClaimTypes.Email, StringComparison.Ordinal)).Select(c => c.Value)
-						.FirstOrDefault(), "", Service.CanRegister(e.Id, e.Parent.Id, HttpContext.Session?.Id) ? null : (bool?)false));
+						.FirstOrDefault(), "", Service.CanRegister(e.Id, e.Parent.Id, HttpContext.Session.Fluent(x => x.SetString("1", "1")/*TODO: Hack. Иначе сессия всегда новая будет*/)?.Id) ? null : (bool?)false));
 
 		#region Register
 

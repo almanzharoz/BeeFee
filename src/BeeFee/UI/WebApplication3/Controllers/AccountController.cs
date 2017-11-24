@@ -103,7 +103,7 @@ namespace WebApplication3.Controllers
 		[ValidateAntiForgeryToken]
 		public Task<IActionResult> Register(RegisterModel model)
 			=> ModelStateIsValid(model, 
-				m => Service.RegisterAsync(m.Email, m.Name, m.Password),
+				async m => await Service.RegisterAsync(m.Email, m.Name, m.Password) && await Login(await Service.TryLoginAsync(m.Email, m.Password)) != null,
 				m => View("RegisterDone"),
 				View);
 		#endregion

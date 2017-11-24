@@ -47,7 +47,7 @@ namespace WebApplication3.Areas.Org.Controllers
 						await _imagesService.AddCompanyLogo(c.Url, m.File.OpenReadStream());
 
 					if (await Service.StartOrgAsync())
-						return RedirectToActionPermanent("Relogin", "Account", new {area = "", returnUrl = "/Org/Company/Create/" + c.Id});
+						return RedirectToActionPermanent("Relogin", "Account", new {area = "", returnUrl = "/Org/Company/CreateEvent/" + c.Id});
 					return RedirectToActionPermanent("Index");
 				});
 

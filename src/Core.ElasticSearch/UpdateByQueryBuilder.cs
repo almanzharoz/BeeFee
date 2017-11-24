@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Text;
 using Core.ElasticSearch.Domain;
 using Nest;
+using Newtonsoft.Json;
 using SharpFuncExt;
 
 namespace Core.ElasticSearch

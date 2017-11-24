@@ -42,8 +42,14 @@ namespace WebApplication3
 			//services.AddBindedModel<UserModel>();
 
 			services.AddLogging();
+			//services.AddMemoryCache();
 			services.AddDistributedMemoryCache();
-			services.AddSession();
+			services.AddSession(options =>
+			{
+				options.Cookie.Name = ".Session";
+				options.IdleTimeout = TimeSpan.FromDays(365);
+				options.Cookie.HttpOnly = true;
+			});
 
 			services.AddAuthentication("MyCookieAuthenticationScheme")
 				.AddCookie("MyCookieAuthenticationScheme", options =>

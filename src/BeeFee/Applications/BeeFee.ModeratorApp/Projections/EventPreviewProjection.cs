@@ -16,17 +16,15 @@ namespace BeeFee.ModeratorApp.Projections
 
 		public EEventState State { get; }
 
-		public TicketPrice[] Prices { get; }
-
 		public EventPage Page { get; }
 
-		public EventPreviewProjection(string id, BaseCompanyProjection company, string url, string name, BaseCategoryProjection category, EEventState state, TicketPrice[] prices, EventPage page) : base(id, company)
+		public EventPreviewProjection(string id, BaseCompanyProjection company, string url, string name, BaseCategoryProjection category, EEventState state, EventPage page, int version)
+			: base(id, company, version)
 		{
 			Url = url;
 			Name = name;
 			Category = category;
 			State = state;
-			Prices = prices;
 			Page = page;
 		}
 	}
