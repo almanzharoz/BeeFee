@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using BeeFee.ImageApp2.Embed;
 using BeeFee.ImageApp2.Exceptions;
 using BeeFee.ImageApp2.Services;
 using Microsoft.AspNetCore.Http;
@@ -6,11 +8,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeeFee.ImagesWebApplication2.Controllers
 {
-	public class Model
+	public class PostModel
 	{
 		public IFormFile File { get; set; }
 		public string Filename { get; set; }
 		public string Directory { get; set; }
+	}
+
+	public class AcceptModel
+	{
+		public List<ImageSettings> Images { get; set; }
 	}
 
 	[Route("api/[controller]")]
@@ -27,39 +34,33 @@ namespace BeeFee.ImagesWebApplication2.Controllers
 
 		[HttpPost]
 		[RequestSizeLimit(5000000)]
-		public async Task<JsonResult> Post(Model model)
+		public async Task<JsonResult> Post(PostModel postModel)
 		{
-			return Json(await _service.Add(model.Directory, Request.HttpContext.Connection.RemoteIpAddress.ToString(), "",
-				(model.File ?? Request.Form.Files[0]).OpenReadStream(), model.Filename ?? (model.File ?? Request.Form.Files[0]).FileName));
+			return Json(await _service.Add(postModel.Directory, Request.HttpContext.Connection.RemoteIpAddress.ToString(), "",
+				(postModel.File ?? Request.Form.Files[0]).OpenReadStream(), postModel.Filename ?? (postModel.File ?? Request.Form.Files[0]).FileName));
 		}
 
 		[HttpGet("getaccess/{directory}/{remoteIp}/token}")]
-		public void Get(string remoteIp, string directory, string token, string host)
+		public void Get(string remoteIp, string directory, string token)
 		{
 			if(_registratorHost != Request.HttpContext.Connection.RemoteIpAddress.ToString())
 				throw new AccessDeniedException();
-			_service.GetAccess(directory, remoteIp, token, host);
+			_service.GetAccess(directory, remoteIp, token, Request.HttpContext.Connection.RemoteIpAddress.ToString());
 		}
 
-		[HttpGet("accept/")] //TODO
+		[HttpPost("accept")] //TODO
+		public async Task Accept(AcceptModel acceptModel)
+		{
+			if(_registratorHost != Request.HttpContext.Connection.RemoteIpAddress.ToString())
+				throw new AccessDeniedException();
+			await _service.AcceptFiles(acceptModel.Images, Request.HttpContext.Connection.RemoteIpAddress.ToString());
+		}
 		
 
 		[HttpGet("getlist/{directory}")]
 		public JsonResult Get(string directory)
 		{
 			return Json(_service.GetListOfFiles(directory, Request.HttpContext.Connection.RemoteIpAddress.ToString(), ""));
-		}
-
-		[HttpGet("rename/{directory}/{oldFileName}/{newFileName}")]
-		public void Get(string directory, string oldFileName, string newFileName)
-		{
-			_service.Rename(directory, Request.HttpContext.Connection.RemoteIpAddress.ToString(), "", oldFileName, newFileName);
-		}
-
-		[HttpGet("remove/{directory}/{fileName}")]
-		public void Get(string directory, string fileName)
-		{
-			_service.Remove(directory, Request.HttpContext.Connection.RemoteIpAddress.ToString(), "", fileName);
 		}
 	}
 }
