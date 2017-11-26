@@ -26,10 +26,11 @@ namespace BeeFee.ImageApp2.Services
 
 		/// <exception cref="FileNotSupportedException"></exception>
 		/// <exception cref="SizeTooSmallException"></exception>
-		public string Add(string directory, string ip, string token, Stream stream, string filename)
-			=> directory.If(d => UserHasAccessToDirectory(d, ip, token, EOperationType.Add),
-				d => SaveFile(LoadImage(stream).Result, Path.Combine(d, new Guid().ToString() + Path.GetExtension(filename))).Result,
-				d => throw new AccessDeniedException());
+		public Task<string> Add(string directory, string ip, string token, Stream stream, string filename)
+			=> new Task<string>(() => directory.If(d => UserHasAccessToDirectory(d, ip, token, EOperationType.Add),
+				d => SaveFile(LoadImage(stream).Result,
+					Path.Combine(_settings.TempDirectory, new Guid().ToString() + Path.GetExtension(filename))).Result,
+				d => throw new AccessDeniedException()));
 
 		public IEnumerable<string> GetListOfFiles(string directory, string ip, string token)
 			=> directory.If(d => UserHasAccessToDirectory(d, ip, token, EOperationType.GetList),
