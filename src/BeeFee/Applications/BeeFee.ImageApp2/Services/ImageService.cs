@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using BeeFee.ImageApp.Caching;
+using BeeFee.ImageApp2.Caching;
 using BeeFee.ImageApp2.Embed;
 using BeeFee.ImageApp2.Exceptions;
 using SharpFuncExt;
@@ -57,10 +57,11 @@ namespace BeeFee.ImageApp2.Services
 
 		public bool GetAccess(string directory, string ip, string token, string requestIp)
 		{
-			if(!IsAdminIp(requestIp)) throw new AccessDeniedException();
-			_cacheManager.Set(GetKey(directory, ip, token), 
-				new MemoryCacheValueObject(EOperationType.Add, EOperationType.GetList, EOperationType.Remove, EOperationType.Rename),
-				(int) _settings.TimeForCachingKeys.TotalMinutes);
+			if (!IsAdminIp(requestIp)) throw new AccessDeniedException();
+			_cacheManager.Set(GetKey(directory, ip, token),
+				new MemoryCacheValueObject(EOperationType.Add, EOperationType.GetList, EOperationType.Remove,
+					EOperationType.Rename),
+				_settings.TimeForCachingKeys);
 			return true;
 		}
 
@@ -73,17 +74,17 @@ namespace BeeFee.ImageApp2.Services
 				var img = await LoadImage(File.OpenRead(file.TempPath));
 				foreach (var size in file.Sizes)
 				{
-					SaveFile(ResizeImage(img, size), file.NewPath).Start();
+					await SaveFile(ResizeImage(img, size), file.NewPath);
 				}
 			}
 			return true;
 		}
 
 		private bool IsAdminIp(string ip)
-			=> _settings.AdminIps.Contains(ip);
+			=> _settings.AdminHosts.Contains(ip);
 
 		private static string GetKey(string directory, string ip, string token)
-			=> directory + ip + token;
+			=> String.Concat(directory, ip, token);
 
 		private bool UserHasAccessToDirectory(string directory, string ip, string token, EOperationType type)
 		{
@@ -98,7 +99,7 @@ namespace BeeFee.ImageApp2.Services
 			{
 				image.Save(path);
 				return path;
-			});
+			}); // TODO: Добавить обработку ошибок в асинхронном режиме
 			
 		}
 
@@ -111,6 +112,6 @@ namespace BeeFee.ImageApp2.Services
 			=> new Task<Image<Rgba32>>(() => Image.Load(stream).If(
 				img => img.Size().Width < _settings.MinimalSize.Width || img.Size().Height < _settings.MinimalSize.Height,
 				img => throw new SizeTooSmallException(),
-				img => ResizeImage(img, _settings.MaximalSize)));
+				img => ResizeImage(img, _settings.MaximalSize)));// TODO: Добавить обработку ошибок в асинхронном режиме
 	}
 }

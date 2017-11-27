@@ -5,11 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0001" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Sharp7Func\Sharp7Func.csproj" />
+    <ProjectReference Include="..\..\..\Sharp7Func\Sharp7Func.csproj" />
   </ItemGroup>
 
 </Project>

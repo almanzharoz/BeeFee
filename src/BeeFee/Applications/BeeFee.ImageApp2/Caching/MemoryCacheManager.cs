@@ -5,7 +5,7 @@ using System.Threading;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 
-namespace BeeFee.ImageApp.Caching
+namespace BeeFee.ImageApp2.Caching
 {
     public class MemoryCacheManager
     {

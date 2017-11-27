@@ -2,7 +2,7 @@
 using System.Linq;
 using BeeFee.ImageApp2.Embed;
 
-namespace BeeFee.ImageApp.Caching
+namespace BeeFee.ImageApp2.Caching
 {
 	public class MemoryCacheValueObject
 	{
