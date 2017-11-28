@@ -22,6 +22,7 @@ namespace BeeFee.ImageApp2.Services
 		{
 			_settings = settings;
 			_cacheManager = cacheManager;
+			Directory.CreateDirectory(settings.TempDirectory);
 		}
 
 		/// <exception cref="FileNotSupportedException"></exception>
@@ -29,8 +30,16 @@ namespace BeeFee.ImageApp2.Services
 		public Task<string> Add(string directory, string ip, string token, Stream stream, string filename)
 			=> new Task<string>(() => directory.If(d => UserHasAccessToDirectory(d, ip, token, EOperationType.Add),
 				d => SaveFile(LoadImage(stream).Result,
-					Path.Combine(_settings.TempDirectory, new Guid().ToString() + Path.GetExtension(filename))).Result,
+					Path.Combine(_settings.TempDirectory, string.Concat(Guid.NewGuid().ToString(), Path.GetExtension(filename)))).Result,
 				d => throw new AccessDeniedException()));
+
+		public string AddSynchronously(string directory, string ip, string token, Stream stream, string fileName)
+		{
+			if (UserHasAccessToDirectory(directory, ip, token, EOperationType.Add))
+				return SaveFileSynchronously(LoadImageSynchronously(stream),
+					Path.Combine(_settings.TempDirectory, string.Concat(Guid.NewGuid(), Path.GetExtension(fileName))));
+			throw new AccessDeniedException();
+		}
 
 		public IEnumerable<string> GetListOfFiles(string directory, string ip, string token)
 			=> directory.If(d => UserHasAccessToDirectory(d, ip, token, EOperationType.GetList),
@@ -71,11 +80,21 @@ namespace BeeFee.ImageApp2.Services
 			if(!IsAdminIp(requestIp)) throw new AccessDeniedException();
 			foreach (var file in settings)
 			{
+				if (File.Exists(file.NewPath)) return false;
 				var img = await LoadImage(File.OpenRead(file.TempPath));
-				foreach (var size in file.Sizes)
-				{
-					await SaveFile(ResizeImage(img, size), file.NewPath);
-				}
+				await SaveFile(ResizeImage(img, file.Size), file.NewPath);
+			}
+			return true;
+		}
+
+		public bool AcceptFileSynchronously(IEnumerable<ImageSettings> settings, string requestIp)
+		{
+			if (!IsAdminIp(requestIp)) throw new AccessDeniedException();
+			foreach (var file in settings)
+			{
+				if (File.Exists(file.NewPath)) return false;
+				var img = LoadImageSynchronously(File.OpenRead(file.TempPath));
+				SaveFileSynchronously(ResizeImage(img, file.Size), file.NewPath);
 			}
 			return true;
 		}
@@ -84,7 +103,7 @@ namespace BeeFee.ImageApp2.Services
 			=> _settings.AdminHosts.Contains(ip);
 
 		private static string GetKey(string directory, string ip, string token)
-			=> String.Concat(directory, ip, token);
+			=> string.Concat(directory, ip, token);
 
 		private bool UserHasAccessToDirectory(string directory, string ip, string token, EOperationType type)
 		{
@@ -97,10 +116,20 @@ namespace BeeFee.ImageApp2.Services
 		{
 			return new Task<string>(() =>
 			{
+				if (!Directory.Exists(Path.GetDirectoryName(path)))
+					Directory.CreateDirectory(Path.GetDirectoryName(path));
 				image.Save(path);
 				return path;
 			}); // TODO: Добавить обработку ошибок в асинхронном режиме
 			
+		}
+
+		private static string SaveFileSynchronously(Image<Rgba32> image, string path)
+		{
+			if (!Directory.Exists(Path.GetDirectoryName(path)))
+				Directory.CreateDirectory(Path.GetDirectoryName(path));
+			image.Save(path);
+			return path;
 		}
 
 		private static Image<Rgba32> ResizeImage(Image<Rgba32> image, Size size)
@@ -113,5 +142,14 @@ namespace BeeFee.ImageApp2.Services
 				img => img.Size().Width < _settings.MinimalSize.Width || img.Size().Height < _settings.MinimalSize.Height,
 				img => throw new SizeTooSmallException(),
 				img => ResizeImage(img, _settings.MaximalSize)));// TODO: Добавить обработку ошибок в асинхронном режиме
+
+		private Image<Rgba32> LoadImageSynchronously(Stream stream)
+		{
+			var img = Image.Load(stream);
+			if(img.Size().Width < _settings.MinimalSize.Width || img.Size().Height < _settings.MinimalSize.Height)
+				throw new SizeTooSmallException();
+			stream.Dispose();
+			return ResizeImage(img, _settings.MaximalSize);
+		}
 	}
 }
