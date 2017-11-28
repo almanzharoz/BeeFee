@@ -7,13 +7,13 @@ namespace BeeFee.ImageApp2.Embed
 	{
 		public string TempPath { get; }
 		public string NewPath { get; }
-		public List<Size> Sizes { get; }
+		public Size Size { get; }
 
-		public ImageSettings(string tempPath, string newPath, List<Size> sizes)
+		public ImageSettings(string tempPath, string newPath, Size size)
 		{
 			TempPath = tempPath;
 			NewPath = newPath;
-			Sizes = sizes;
+			Size = size;
 		}
 	}
 }
