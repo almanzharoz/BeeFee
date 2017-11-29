@@ -51,7 +51,9 @@ namespace BeeFee.ImageApp2.Services
 					{
 						var name = string.Concat(Guid.NewGuid().ToString(), Path.GetExtension(fileName));
 						var temp = SaveFileSynchronously(img, Path.Combine(_settings.TempDirectory, name));
-						var preview = SaveFileSynchronously(img, Path.Combine(_settings.PreviewDirectory, name));
+						string preview;
+						using(var resized = ResizeImage(img, _settings.PreviewSize))
+							preview = SaveFileSynchronously(resized, Path.Combine(_settings.PreviewDirectory, name));
 						return (temp, preview);
 					}
 				},
