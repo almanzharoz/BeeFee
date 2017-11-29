@@ -179,8 +179,8 @@ namespace BeeFee.ImageApp2.Services
 		/// <exception cref="SizeTooSmallException"></exception>
 		private Image<Rgba32> LoadImage(Stream stream)
 			=> stream.Using(Image.Load,
-				(s, i) => i.Using(img => ResizeImage(
+				(s, img) => ResizeImage(
 					img.ThrowIf(x => x.Size().Width < _settings.MinimalSize.Width || x.Size().Height < _settings.MinimalSize.Height,
-						x => new SizeTooSmallException()), _settings.MaximalSize)));
+						x => new SizeTooSmallException()), _settings.MaximalSize));
 	}
 }
