@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using BeeFee.ImageApp2.Caching;
 using BeeFee.ImageApp2.Embed;
+using BeeFee.ImageApp2.Exceptions;
 using BeeFee.ImageApp2.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -55,17 +56,24 @@ namespace BeeFee.ImageApp2.Tests
         [TestMethod]
         public void AddImage()
         {
-	        _service.GetAccess("test", "user", "", "test");
-	        var img = _service.AddSynchronously("test", "user", "", GetFirstImage(), "img.jpg");
+	        _service.GetAccess("test", "user", "123", "test");
+	        var img = _service.AddSynchronously("test", "user", "123", GetFirstImage(), "img.jpg");
 
 			Assert.IsTrue(File.Exists(img));
         }
 
 	    [TestMethod]
+	    public void AddImageTokenError()
+	    {
+		    _service.GetAccess("test", "user", "123", "test");
+		    Assert.ThrowsException<AccessDeniedException>(()=>_service.AddSynchronously("test", "user", "1234", GetFirstImage(), "img.jpg"));
+	    }
+
+		[TestMethod]
 	    public void AcceptFile()
 	    {
-			_service.GetAccess("test", "user", "", "test");
-		    var img = _service.AddSynchronously("test", "user", "", GetFirstImage(), "img.jpg");
+			_service.GetAccess("test", "user", "123", "test");
+		    var img = _service.AddSynchronously("test", "user", "123", GetFirstImage(), "img.jpg");
 
 		    var result = _service.AcceptFileSynchronously(new List<ImageSettings>
 		    {
@@ -81,8 +89,8 @@ namespace BeeFee.ImageApp2.Tests
 	    [TestMethod]
 	    public void RemoveFile()
 	    {
-			_service.GetAccess("test", "user", "", "test");
-		    var img = _service.AddSynchronously("test", "user", "", GetFirstImage(), "img.jpg");
+			_service.GetAccess("test", "user", "123", "test");
+		    var img = _service.AddSynchronously("test", "user", "123", GetFirstImage(), "img.jpg");
 
 		    _service.AcceptFileSynchronously(new List<ImageSettings>
 		    {
@@ -91,7 +99,7 @@ namespace BeeFee.ImageApp2.Tests
 
 			Assert.IsTrue(File.Exists(Path.Combine("test/img.jpg")));
 
-			_service.Remove("test", "user", "", "img.jpg");
+			_service.Remove("test", "user", "123", "img.jpg");
 
 			Assert.IsFalse(File.Exists(Path.Combine("test/img.jpg")));
 	    }
@@ -99,8 +107,8 @@ namespace BeeFee.ImageApp2.Tests
 	    [TestMethod]
 	    public void RenameFile()
 	    {
-			_service.GetAccess("test", "user", "", "test");
-		    var img = _service.AddSynchronously("test", "user", "", GetFirstImage(), "img.jpg");
+			_service.GetAccess("test", "user", "123", "test");
+		    var img = _service.AddSynchronously("test", "user", "123", GetFirstImage(), "img.jpg");
 
 		    _service.AcceptFileSynchronously(new List<ImageSettings>
 		    {
@@ -109,7 +117,7 @@ namespace BeeFee.ImageApp2.Tests
 
 		    Assert.IsTrue(File.Exists(Path.Combine("test/img.jpg")));
 
-		    _service.Rename("test", "user", "", "img.jpg", "newImg.jpg");
+		    _service.Rename("test", "user", "123", "img.jpg", "newImg.jpg");
 
 		    Assert.IsFalse(File.Exists(Path.Combine("test/img.jpg")));
 		    Assert.IsTrue(File.Exists(Path.Combine("test/newImg.jpg")));

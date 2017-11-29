@@ -11,5 +11,15 @@ namespace SharpFuncExt
 
 		public static bool ContainsExt(this string substring, string s) => s.Contains(substring);
 		public static int IndexOfExt(this string substring, string s) => s.IndexOf(substring, StringComparison.Ordinal);
+
+	    public static string ThrowIfNull<TException>(this string arg, Func<TException> func) where TException : Exception
+	    {
+		    if (arg.IsNull())
+			    throw func();
+		    return arg;
+	    }
+
+	    public static string HasNotNullArg(this string arg, string argName) => arg.ThrowIfNull(() => new ArgumentNullException(argName));
+
 	}
 }

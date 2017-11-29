@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Applications\BeeFee.ImageApp2\BeeFee.ImageApp2.csproj" />
+    <ProjectReference Include="..\..\Applications\BeeFee.ImageApp2\BeeFee.ImageApp2.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -103,7 +103,7 @@ namespace BeeFee.ImageApp2.Services
 			=> _settings.AdminHosts.Contains(ip);
 
 		private static string GetKey(string directory, string ip, string token)
-			=> string.Concat(directory, ip, token);
+			=> string.Concat(directory.HasNotNullArg(nameof(directory)), ip.HasNotNullArg(nameof(ip)), token.HasNotNullArg(nameof(token)));
 
 		private bool UserHasAccessToDirectory(string directory, string ip, string token, EOperationType type)
 		{

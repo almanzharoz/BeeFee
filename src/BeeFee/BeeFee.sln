@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sharp7Func", "..\Sharp7Func\Sharp7Func.csproj", "{DD9ADD0E-9376-4673-B78E-15B56D589056}"
 EndProject
@@ -65,6 +65,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.ImagesWebApplication2", "UI\BeeFee.ImagesWebApplication2\BeeFee.ImagesWebApplication2.csproj", "{BDF160DB-E991-48D2-896C-8B53D8EE372D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.ImageApp2", "Applications\BeeFee.ImageApp2\BeeFee.ImageApp2.csproj", "{6461C2F7-CE37-4CBE-B6B8-94EDB8E98F2E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeeFee.ImageApp2.Tests", "Tests\BeeFee.ImageApp2.Tests\BeeFee.ImageApp2.Tests.csproj", "{E14C3D23-DB4E-4E10-8B73-010CA2F80F61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -172,6 +174,10 @@ Global
 		{6461C2F7-CE37-4CBE-B6B8-94EDB8E98F2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6461C2F7-CE37-4CBE-B6B8-94EDB8E98F2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6461C2F7-CE37-4CBE-B6B8-94EDB8E98F2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E14C3D23-DB4E-4E10-8B73-010CA2F80F61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E14C3D23-DB4E-4E10-8B73-010CA2F80F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E14C3D23-DB4E-4E10-8B73-010CA2F80F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E14C3D23-DB4E-4E10-8B73-010CA2F80F61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -201,6 +207,7 @@ Global
 		{060CA0BC-3941-4BAD-9359-15D3BEE12281} = {B8E11930-34BA-4585-BC87-0FC519EAEC23}
 		{BDF160DB-E991-48D2-896C-8B53D8EE372D} = {B8E11930-34BA-4585-BC87-0FC519EAEC23}
 		{6461C2F7-CE37-4CBE-B6B8-94EDB8E98F2E} = {264231BC-2B1E-4DFC-9E5F-C6BB9442FA26}
+		{E14C3D23-DB4E-4E10-8B73-010CA2F80F61} = {24455C41-3567-41CF-8E06-938E56280229}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E8287FBF-0FC4-4441-BE8B-CA1E25292B1B}
