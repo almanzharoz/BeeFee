@@ -29,7 +29,9 @@ namespace BeeFee.ImageApp2.Tests
 				MaximalSize = new Size(2000, 2000),
 				MinimalSize = new Size(32, 32),
 				TempDirectory = "temp",
-				TimeForCachingKeys = 10
+				TimeForCachingKeys = 10,
+				PreviewDirectory = "preview",
+				PreviewSize = new Size(600, 600)
 		    };
 
 		    _service = new ImageService(settings, new MemoryCacheManager(new MemoryCache(new MemoryCacheOptions())));
@@ -73,7 +75,8 @@ namespace BeeFee.ImageApp2.Tests
 	        _service.GetAccess("test", "user", "123", "test");
 	        var img = _service.AddSynchronously("test", "user", "123", GetFirstImage(), "img.jpg");
 
-			Assert.IsTrue(File.Exists(img));
+			Assert.IsTrue(File.Exists(img.TempPath));
+			Assert.IsTrue(File.Exists(img.PreviewPath));
         }
 
 	    [TestMethod]
@@ -93,7 +96,7 @@ namespace BeeFee.ImageApp2.Tests
 		    {
 			    //   new ImageSettings(img, "test/400_400/img.jpg", new Size(400,400)),
 			    //new ImageSettings(img, "test/200_200/img.jpg", new Size(200, 200))
-			    new ImageSettings(img,
+			    new ImageSettings(img.TempPath,
 				    new ImageSaveSetting(new Size(400, 400), "test/400_400/img.jpg"),
 				    new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg"))
 		    }, "test");
@@ -112,7 +115,7 @@ namespace BeeFee.ImageApp2.Tests
 		    _service.AcceptFileSynchronously(new List<ImageSettings>
 		    {
 			    //new ImageSettings(img, "test/img.jpg", new Size(300, 300))
-			    new ImageSettings(img,
+			    new ImageSettings(img.TempPath,
 				    new ImageSaveSetting(new Size(300, 300), "test/img.jpg"))
 		    }, "test");
 
@@ -132,7 +135,7 @@ namespace BeeFee.ImageApp2.Tests
 		    _service.AcceptFileSynchronously(new List<ImageSettings>
 		    {
 			    //new ImageSettings(img, "test/img.jpg", new Size(300, 300))
-			    new ImageSettings(img,
+			    new ImageSettings(img.TempPath,
 				    new ImageSaveSetting(new Size(300, 300), "test/img.jpg"))
 		    }, "test");
 
@@ -152,7 +155,7 @@ namespace BeeFee.ImageApp2.Tests
 
 		    _service.AcceptFileSynchronously(new[]
 		    {
-				new ImageSettings(img, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")), 
+				new ImageSettings(img.TempPath, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")), 
 		    }, "test", true);
 
 		    var firstDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");
@@ -160,7 +163,7 @@ namespace BeeFee.ImageApp2.Tests
 		    var newImg = _service.AddSynchronously("test", "user", "123", GetSecondImage(), "img.jpg");
 		    _service.AcceptFileSynchronously(new[]
 		    {
-			    new ImageSettings(newImg, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")),
+			    new ImageSettings(newImg.TempPath, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")),
 		    }, "test", true);
 
 		    var secondDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");

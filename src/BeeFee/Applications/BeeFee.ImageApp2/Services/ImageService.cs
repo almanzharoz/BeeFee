@@ -28,16 +28,33 @@ namespace BeeFee.ImageApp2.Services
 		/// <exception cref="FileNotSupportedException"></exception>
 		/// <exception cref="SizeTooSmallException"></exception>
 		/// <exception cref="NotSupportedException"></exception>
-		public Task<string> Add(string directory, string ip, string token, Stream stream, string filename)
-			=> new Task<string>(() => directory.If(d => UserHasAccessToDirectory(d, ip, token, EOperationType.Add),
-				d => SaveFile(LoadImage(stream).Result,
-					Path.Combine(_settings.TempDirectory, string.Concat(Guid.NewGuid().ToString(), Path.GetExtension(filename)))).Result,
+		public Task<(string TempPath, string PreviewPath)> Add(string directory, string ip, string token, Stream stream, string fileName)
+			=> new Task<(string, string)>(() => directory.If(d => UserHasAccessToDirectory(d, ip, token, EOperationType.Add),
+				d =>
+				{
+					using (var img = LoadImage(stream).Result)
+					{
+						var name = string.Concat(Guid.NewGuid().ToString(), Path.GetExtension(fileName));
+						var temp = SaveFile(img, Path.Combine(_settings.TempDirectory, name)).Result;
+						string preview;
+						using(var resized = ResizeImage(img, _settings.PreviewSize))
+							preview = SaveFile(resized, name).Result;
+						return (temp, preview);
+					}
+				},
 				d => throw new AccessDeniedException()));
 
-		public string AddSynchronously(string directory, string ip, string token, Stream stream, string fileName)
-			=> UserHasAccessToDirectory(directory, ip, token, EOperationType.Add).IfNot(x => x, x =>
-					SaveFileSynchronously(LoadImageSynchronously(stream),
-						Path.Combine(_settings.TempDirectory, string.Concat(Guid.NewGuid(), Path.GetExtension(fileName)))),
+		public (string TempPath, string PreviewPath) AddSynchronously(string directory, string ip, string token, Stream stream, string fileName)
+			=> UserHasAccessToDirectory(directory, ip, token, EOperationType.Add).If(x => x, x =>
+				{
+					using (var img = LoadImageSynchronously(stream))
+					{
+						var name = string.Concat(Guid.NewGuid().ToString(), Path.GetExtension(fileName));
+						var temp = SaveFileSynchronously(img, Path.Combine(_settings.TempDirectory, name));
+						var preview = SaveFileSynchronously(img, Path.Combine(_settings.PreviewDirectory, name));
+						return (temp, preview);
+					}
+				},
 				x => throw new AccessDeniedException());
 
 		public IEnumerable<string> GetListOfFiles(string directory, string ip, string token)
@@ -79,12 +96,15 @@ namespace BeeFee.ImageApp2.Services
 			if(!IsAdminIp(requestIp)) throw new AccessDeniedException();
 			foreach (var setting in settings)
 			{
-				var img = await LoadImage(File.OpenRead(setting.TempPath));
-				foreach (var newFile in setting.ImageSaveSettings)
+				using (var img = await LoadImage(File.OpenRead(setting.TempPath)))
 				{
-					if (!overrideExistingFiles && File.Exists(newFile.Path))
-						continue;
-					await SaveFile(ResizeImage(img, newFile.Size), newFile.Path);
+					foreach (var newFile in setting.ImageSaveSettings)
+					{
+						if (!overrideExistingFiles && File.Exists(newFile.Path))
+							continue;
+						using(var resized = ResizeImage(img, newFile.Size))
+							await SaveFile(resized, newFile.Path);
+					}
 				}
 			}
 			return true;
@@ -95,12 +115,15 @@ namespace BeeFee.ImageApp2.Services
 			if (!IsAdminIp(requestIp)) throw new AccessDeniedException();
 			foreach (var setting in settings)
 			{
-				var img = LoadImageSynchronously(File.OpenRead(setting.TempPath));
-				foreach (var newFile in setting.ImageSaveSettings)
+				using (var img = LoadImageSynchronously(File.OpenRead(setting.TempPath)))
 				{
-					if (!overrideExistingFiles && File.Exists(newFile.Path))
-						continue;
-					SaveFileSynchronously(ResizeImage(img, newFile.Size), newFile.Path);
+					foreach (var newFile in setting.ImageSaveSettings)
+					{
+						if (!overrideExistingFiles && File.Exists(newFile.Path))
+							continue;
+						using(var resized = ResizeImage(img, newFile.Size))
+							SaveFileSynchronously(resized, newFile.Path);
+					}
 				}
 			}
 			return true;
@@ -146,7 +169,7 @@ namespace BeeFee.ImageApp2.Services
 				img => ResizeImage(img, _settings.MaximalSize)));// TODO: Добавить обработку ошибок в асинхронном режиме
 
 		private Image<Rgba32> LoadImageSynchronously(Stream stream)
-			=> stream.Using(s => Image.Load(s),
+			=> stream.Using(Image.Load,
 				(s, img) => ResizeImage(
 					img.ThrowIf(x => x.Size().Width < _settings.MinimalSize.Width || x.Size().Height < _settings.MinimalSize.Height,
 						x => new SizeTooSmallException()), _settings.MaximalSize));
