@@ -27,6 +27,7 @@ namespace BeeFee.ImageApp2.Services
 
 		/// <exception cref="FileNotSupportedException"></exception>
 		/// <exception cref="SizeTooSmallException"></exception>
+		/// <exception cref="NotSupportedException"></exception>
 		public Task<string> Add(string directory, string ip, string token, Stream stream, string filename)
 			=> new Task<string>(() => directory.If(d => UserHasAccessToDirectory(d, ip, token, EOperationType.Add),
 				d => SaveFile(LoadImage(stream).Result,
@@ -158,6 +159,6 @@ namespace BeeFee.ImageApp2.Services
 				throw new SizeTooSmallException();
 			stream.Dispose();
 			return ResizeImage(img, _settings.MaximalSize);
-		}
+		} 
 	}
 }

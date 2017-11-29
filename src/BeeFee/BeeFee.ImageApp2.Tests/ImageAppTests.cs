@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using BeeFee.ImageApp2.Caching;
 using BeeFee.ImageApp2.Embed;
+using BeeFee.ImageApp2.Exceptions;
 using BeeFee.ImageApp2.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -59,6 +60,12 @@ namespace BeeFee.ImageApp2.Tests
 
 	    public static FileStream GetSecondImage()
 		    => File.OpenRead(SecondImageName);
+
+	    public static FileStream GetIcon()
+		    => File.OpenRead("3d30b5kz.bmp");
+
+	    public static FileStream GetNotImage()
+		    => File.OpenRead("wdh.chm");
 
         [TestMethod]
         public void AddImage()
@@ -152,6 +159,25 @@ namespace BeeFee.ImageApp2.Tests
 		    var secondDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");
 
 			Assert.AreNotEqual(firstDate, secondDate);
+	    }
+
+	    [TestMethod]
+	    public void SmallSize()
+	    {
+			_service.GetAccess("test", "user", "", "test");
+
+		    Assert.ThrowsException<SizeTooSmallException>(() =>
+			    _service.AddSynchronously("test", "user", "", GetIcon(), "img.bmp"));
+	    }
+
+	    [TestMethod]
+	    public void NotImage()
+	    {
+			_service.GetAccess("test", "user", "", "test");
+
+		    Assert.ThrowsException<NotSupportedException>(() =>
+			    _service.AddSynchronously("test", "user", "", GetNotImage(), "wdh.chm"));
+
 	    }
 	}
 }
