@@ -73,7 +73,7 @@ namespace BeeFee.ImageApp2.Tests
         public void AddImage()
         {
 	        _service.GetAccess("test", "user", "123", "test");
-	        var img = _service.AddSynchronously("test", "user", "123", GetFirstImage(), "img.jpg");
+	        var img = _service.Add("test", "user", "123", GetFirstImage(), "img.jpg");
 
 			Assert.IsTrue(File.Exists(img.TempPath));
 			Assert.IsTrue(File.Exists(img.PreviewPath));
@@ -83,16 +83,16 @@ namespace BeeFee.ImageApp2.Tests
 	    public void AddImageTokenError()
 	    {
 		    _service.GetAccess("test", "user", "123", "test");
-		    Assert.ThrowsException<AccessDeniedException>(()=>_service.AddSynchronously("test", "user", "1234", GetFirstImage(), "img.jpg"));
+		    Assert.ThrowsException<AccessDeniedException>(()=>_service.Add("test", "user", "1234", GetFirstImage(), "img.jpg"));
 	    }
 
 		[TestMethod]
 	    public void AcceptFile()
 	    {
 			_service.GetAccess("test", "user", "123", "test");
-		    var img = _service.AddSynchronously("test", "user", "123", GetFirstImage(), "img.jpg");
+		    var img = _service.Add("test", "user", "123", GetFirstImage(), "img.jpg");
 
-		    var result = _service.AcceptFileSynchronously(new List<ImageSettings>
+		    var result = _service.AcceptFile(new List<ImageSettings>
 		    {
 			    //   new ImageSettings(img, "test/400_400/img.jpg", new Size(400,400)),
 			    //new ImageSettings(img, "test/200_200/img.jpg", new Size(200, 200))
@@ -110,9 +110,9 @@ namespace BeeFee.ImageApp2.Tests
 	    public void RemoveFile()
 	    {
 			_service.GetAccess("test", "user", "123", "test");
-		    var img = _service.AddSynchronously("test", "user", "123", GetFirstImage(), "img.jpg");
+		    var img = _service.Add("test", "user", "123", GetFirstImage(), "img.jpg");
 
-		    _service.AcceptFileSynchronously(new List<ImageSettings>
+		    _service.AcceptFile(new List<ImageSettings>
 		    {
 			    //new ImageSettings(img, "test/img.jpg", new Size(300, 300))
 			    new ImageSettings(img.TempPath,
@@ -130,9 +130,9 @@ namespace BeeFee.ImageApp2.Tests
 	    public void RenameFile()
 	    {
 			_service.GetAccess("test", "user", "123", "test");
-		    var img = _service.AddSynchronously("test", "user", "123", GetFirstImage(), "img.jpg");
+		    var img = _service.Add("test", "user", "123", GetFirstImage(), "img.jpg");
 
-		    _service.AcceptFileSynchronously(new List<ImageSettings>
+		    _service.AcceptFile(new List<ImageSettings>
 		    {
 			    //new ImageSettings(img, "test/img.jpg", new Size(300, 300))
 			    new ImageSettings(img.TempPath,
@@ -151,17 +151,17 @@ namespace BeeFee.ImageApp2.Tests
 	    public void OverrideFile()
 	    {
 			_service.GetAccess("test", "user", "123", "test");
-		    var img = _service.AddSynchronously("test", "user", "123", GetFirstImage(), "img.jpg");
+		    var img = _service.Add("test", "user", "123", GetFirstImage(), "img.jpg");
 
-		    _service.AcceptFileSynchronously(new[]
+		    _service.AcceptFile(new[]
 		    {
 				new ImageSettings(img.TempPath, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")), 
 		    }, "test", true);
 
 		    var firstDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");
 
-		    var newImg = _service.AddSynchronously("test", "user", "123", GetSecondImage(), "img.jpg");
-		    _service.AcceptFileSynchronously(new[]
+		    var newImg = _service.Add("test", "user", "123", GetSecondImage(), "img.jpg");
+		    _service.AcceptFile(new[]
 		    {
 			    new ImageSettings(newImg.TempPath, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")),
 		    }, "test", true);
@@ -177,7 +177,7 @@ namespace BeeFee.ImageApp2.Tests
 			_service.GetAccess("test", "user", "123", "test");
 
 		    Assert.ThrowsException<SizeTooSmallException>(() =>
-			    _service.AddSynchronously("test", "user", "123", GetIcon(), "img.bmp"));
+			    _service.Add("test", "user", "123", GetIcon(), "img.bmp"));
 	    }
 
 	    [TestMethod]
@@ -186,7 +186,7 @@ namespace BeeFee.ImageApp2.Tests
 			_service.GetAccess("test", "user", "123", "test");
 
 		    Assert.ThrowsException<NotSupportedException>(() =>
-			    _service.AddSynchronously("test", "user", "123", GetNotImage(), "wdh.chm"));
+			    _service.Add("test", "user", "123", GetNotImage(), "wdh.chm"));
 
 	    }
 	}

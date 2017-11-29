@@ -35,14 +35,14 @@ namespace BeeFee.ImagesWebApplication2.Controllers
 		//[RequestSizeLimit(5000000)]
 		//public async Task<JsonResult> Post(PostModel model)
 		//{
-		//	return Json(await _service.Add(model.Directory, RequestHost, model.Token,
+		//	return Json(await _service.AddAsync(model.Directory, RequestHost, model.Token,
 		//		(model.File ?? Request.Form.Files[0]).OpenReadStream(), model.Filename ?? (model.File ?? Request.Form.Files[0]).FileName));
 		//}
 
 		[RequestSizeLimit(5000000)]
 		public JsonResult Post(PostModel model)
 		{
-			return Json(_service.AddSynchronously(model.Directory, RequestHost, model.Token,
+			return Json(_service.Add(model.Directory, RequestHost, model.Token,
 				(model.File ?? Request.Form.Files[0]).OpenReadStream(), model.Filename ?? (model.File ?? Request.Form.Files[0]).FileName));
 		}
 
@@ -51,7 +51,7 @@ namespace BeeFee.ImagesWebApplication2.Controllers
 			=> _service.GetAccess(directory, remoteIp, token, RequestHost);
 
 		public Task<bool> Put(AcceptModel acceptModel)
-			=> _service.AcceptFiles(acceptModel.Images, RequestHost);
+			=> _service.AcceptFilesAsync(acceptModel.Images, RequestHost);
 		
 
 		[HttpGet("list")]
