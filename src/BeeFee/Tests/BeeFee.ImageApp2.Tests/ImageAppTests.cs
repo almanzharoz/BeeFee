@@ -147,8 +147,8 @@ namespace BeeFee.ImageApp2.Tests
 	    [TestMethod]
 	    public void OverrideFile()
 	    {
-			_service.GetAccess("test", "user", "", "test");
-		    var img = _service.AddSynchronously("test", "user", "", GetFirstImage(), "img.jpg");
+			_service.GetAccess("test", "user", "123", "test");
+		    var img = _service.AddSynchronously("test", "user", "123", GetFirstImage(), "img.jpg");
 
 		    _service.AcceptFileSynchronously(new[]
 		    {
@@ -157,7 +157,7 @@ namespace BeeFee.ImageApp2.Tests
 
 		    var firstDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");
 
-		    var newImg = _service.AddSynchronously("test", "user", "", GetSecondImage(), "img.jpg");
+		    var newImg = _service.AddSynchronously("test", "user", "123", GetSecondImage(), "img.jpg");
 		    _service.AcceptFileSynchronously(new[]
 		    {
 			    new ImageSettings(newImg, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")),
@@ -171,19 +171,19 @@ namespace BeeFee.ImageApp2.Tests
 	    [TestMethod]
 	    public void SmallSize()
 	    {
-			_service.GetAccess("test", "user", "", "test");
+			_service.GetAccess("test", "user", "123", "test");
 
 		    Assert.ThrowsException<SizeTooSmallException>(() =>
-			    _service.AddSynchronously("test", "user", "", GetIcon(), "img.bmp"));
+			    _service.AddSynchronously("test", "user", "123", GetIcon(), "img.bmp"));
 	    }
 
 	    [TestMethod]
 	    public void NotImage()
 	    {
-			_service.GetAccess("test", "user", "", "test");
+			_service.GetAccess("test", "user", "123", "test");
 
 		    Assert.ThrowsException<NotSupportedException>(() =>
-			    _service.AddSynchronously("test", "user", "", GetNotImage(), "wdh.chm"));
+			    _service.AddSynchronously("test", "user", "123", GetNotImage(), "wdh.chm"));
 
 	    }
 	}
