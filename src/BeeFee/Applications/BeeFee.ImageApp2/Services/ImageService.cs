@@ -35,12 +35,10 @@ namespace BeeFee.ImageApp2.Services
 				d => throw new AccessDeniedException()));
 
 		public string AddSynchronously(string directory, string ip, string token, Stream stream, string fileName)
-		{
-			if (UserHasAccessToDirectory(directory, ip, token, EOperationType.Add))
-				return SaveFileSynchronously(LoadImageSynchronously(stream),
-					Path.Combine(_settings.TempDirectory, string.Concat(Guid.NewGuid(), Path.GetExtension(fileName))));
-			throw new AccessDeniedException();
-		}
+			=> UserHasAccessToDirectory(directory, ip, token, EOperationType.Add).IfNot(x => x, x =>
+					SaveFileSynchronously(LoadImageSynchronously(stream),
+						Path.Combine(_settings.TempDirectory, string.Concat(Guid.NewGuid(), Path.GetExtension(fileName)))),
+				x => throw new AccessDeniedException());
 
 		public IEnumerable<string> GetListOfFiles(string directory, string ip, string token)
 			=> directory.If(d => UserHasAccessToDirectory(d, ip, token, EOperationType.GetList),
@@ -115,10 +113,8 @@ namespace BeeFee.ImageApp2.Services
 			=> string.Concat(directory.HasNotNullArg(nameof(directory)), ip.HasNotNullArg(nameof(ip)), token.HasNotNullArg(nameof(token)));
 
 		private bool UserHasAccessToDirectory(string directory, string ip, string token, EOperationType type)
-		{
-			var value = _cacheManager.Get<MemoryCacheValueObject>(GetKey(directory, ip, token));
-			return value != null && value.OperationTypes.Contains(type);
-		}
+			=> _cacheManager.Get<MemoryCacheValueObject>(GetKey(directory, ip, token))
+				.IfNotNull(x => x.OperationTypes.Contains(type), () => false);
 
 		/// <exception cref="FileNotSupportedException"></exception>
 		private static Task<string> SaveFile(Image<Rgba32> image, string path)
@@ -134,12 +130,9 @@ namespace BeeFee.ImageApp2.Services
 		}
 
 		private static string SaveFileSynchronously(Image<Rgba32> image, string path)
-		{
-			if (!Directory.Exists(Path.GetDirectoryName(path)))
-				Directory.CreateDirectory(Path.GetDirectoryName(path));
-			image.Save(path);
-			return path;
-		}
+			=> path.HasNotNullArg(nameof(path))
+				.Fluent(x => x.IfNot(p => Directory.Exists(Path.GetDirectoryName(p)), p => Directory.CreateDirectory(Path.GetDirectoryName(p))))
+				.Fluent(x => image.Save(x));
 
 		private static Image<Rgba32> ResizeImage(Image<Rgba32> image, Size size)
 			=> image.Clone().Fluent(z =>
@@ -153,12 +146,9 @@ namespace BeeFee.ImageApp2.Services
 				img => ResizeImage(img, _settings.MaximalSize)));// TODO: Добавить обработку ошибок в асинхронном режиме
 
 		private Image<Rgba32> LoadImageSynchronously(Stream stream)
-		{
-			var img = Image.Load(stream);
-			if(img.Size().Width < _settings.MinimalSize.Width || img.Size().Height < _settings.MinimalSize.Height)
-				throw new SizeTooSmallException();
-			stream.Dispose();
-			return ResizeImage(img, _settings.MaximalSize);
-		} 
+			=> stream.Using(s => Image.Load(s),
+				(s, img) => ResizeImage(
+					img.ThrowIf(x => x.Size().Width < _settings.MinimalSize.Width || x.Size().Height < _settings.MinimalSize.Height,
+						x => new SizeTooSmallException()), _settings.MaximalSize));
 	}
 }

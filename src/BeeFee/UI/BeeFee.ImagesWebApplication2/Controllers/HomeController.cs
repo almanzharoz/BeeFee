@@ -32,10 +32,17 @@ namespace BeeFee.ImagesWebApplication2.Controllers
 			_service = service;
 		}
 
+		//[RequestSizeLimit(5000000)]
+		//public async Task<JsonResult> Post(PostModel model)
+		//{
+		//	return Json(await _service.Add(model.Directory, RequestHost, model.Token,
+		//		(model.File ?? Request.Form.Files[0]).OpenReadStream(), model.Filename ?? (model.File ?? Request.Form.Files[0]).FileName));
+		//}
+
 		[RequestSizeLimit(5000000)]
-		public async Task<JsonResult> Post(PostModel model)
+		public JsonResult Post(PostModel model)
 		{
-			return Json(await _service.Add(model.Directory, RequestHost, model.Token,
+			return Json(_service.AddSynchronously(model.Directory, RequestHost, model.Token,
 				(model.File ?? Request.Form.Files[0]).OpenReadStream(), model.Filename ?? (model.File ?? Request.Form.Files[0]).FileName));
 		}
 
