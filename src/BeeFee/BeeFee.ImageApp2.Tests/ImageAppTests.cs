@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace BeeFee.ImageApp2.Tests
 	    [TestInitialize]
 	    public void Setup()
 	    {
-		    var settings = new ImageAppStartSettings()
+		    var settings = new ImageAppStartSettings
 		    {
 			    AdminHosts = new List<string> { "test" },
 				MaximalSize = new Size(2000, 2000),
@@ -39,10 +40,17 @@ namespace BeeFee.ImageApp2.Tests
 		    try
 		    {
 				Directory.Delete("temp", true);
-				Directory.Delete("test", true);
 		    }
 		    catch (DirectoryNotFoundException)
 		    {
+		    }
+
+		    try
+		    {
+			    Directory.Delete("test", true);
+			}
+			catch (DirectoryNotFoundException)
+			{ 
 		    }
 	    }
 
@@ -69,8 +77,11 @@ namespace BeeFee.ImageApp2.Tests
 
 		    var result = _service.AcceptFileSynchronously(new List<ImageSettings>
 		    {
-			    new ImageSettings(img, "test/400_400/img.jpg", new Size(400,400)),
-				new ImageSettings(img, "test/200_200/img.jpg", new Size(200, 200))
+			    //   new ImageSettings(img, "test/400_400/img.jpg", new Size(400,400)),
+			    //new ImageSettings(img, "test/200_200/img.jpg", new Size(200, 200))
+			    new ImageSettings(img,
+				    new ImageSaveSetting(new Size(400, 400), "test/400_400/img.jpg"),
+				    new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg"))
 		    }, "test");
 
 			Assert.IsTrue(result);
@@ -86,7 +97,9 @@ namespace BeeFee.ImageApp2.Tests
 
 		    _service.AcceptFileSynchronously(new List<ImageSettings>
 		    {
-			    new ImageSettings(img, "test/img.jpg", new Size(300, 300))
+			    //new ImageSettings(img, "test/img.jpg", new Size(300, 300))
+			    new ImageSettings(img,
+				    new ImageSaveSetting(new Size(300, 300), "test/img.jpg"))
 		    }, "test");
 
 			Assert.IsTrue(File.Exists(Path.Combine("test/img.jpg")));
@@ -104,7 +117,9 @@ namespace BeeFee.ImageApp2.Tests
 
 		    _service.AcceptFileSynchronously(new List<ImageSettings>
 		    {
-			    new ImageSettings(img, "test/img.jpg", new Size(300, 300))
+			    //new ImageSettings(img, "test/img.jpg", new Size(300, 300))
+			    new ImageSettings(img,
+				    new ImageSaveSetting(new Size(300, 300), "test/img.jpg"))
 		    }, "test");
 
 		    Assert.IsTrue(File.Exists(Path.Combine("test/img.jpg")));
@@ -114,5 +129,29 @@ namespace BeeFee.ImageApp2.Tests
 		    Assert.IsFalse(File.Exists(Path.Combine("test/img.jpg")));
 		    Assert.IsTrue(File.Exists(Path.Combine("test/newImg.jpg")));
 		}
+
+	    [TestMethod]
+	    public void OverrideFile()
+	    {
+			_service.GetAccess("test", "user", "", "test");
+		    var img = _service.AddSynchronously("test", "user", "", GetFirstImage(), "img.jpg");
+
+		    _service.AcceptFileSynchronously(new[]
+		    {
+				new ImageSettings(img, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")), 
+		    }, "test", true);
+
+		    var firstDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");
+
+		    var newImg = _service.AddSynchronously("test", "user", "", GetSecondImage(), "img.jpg");
+		    _service.AcceptFileSynchronously(new[]
+		    {
+			    new ImageSettings(newImg, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")),
+		    }, "test", true);
+
+		    var secondDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");
+
+			Assert.AreNotEqual(firstDate, secondDate);
+	    }
 	}
 }

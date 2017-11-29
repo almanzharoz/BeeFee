@@ -75,26 +75,34 @@ namespace BeeFee.ImageApp2.Services
 		}
 
 		///<exception cref="SizeTooSmallException"></exception>
-		public async Task<bool> AcceptFiles(IEnumerable<ImageSettings> settings, string requestIp)
+		public async Task<bool> AcceptFiles(IEnumerable<ImageSettings> settings, string requestIp, bool overrideExistingFiles = false)
 		{
 			if(!IsAdminIp(requestIp)) throw new AccessDeniedException();
-			foreach (var file in settings)
+			foreach (var setting in settings)
 			{
-				if (File.Exists(file.NewPath)) return false;
-				var img = await LoadImage(File.OpenRead(file.TempPath));
-				await SaveFile(ResizeImage(img, file.Size), file.NewPath);
+				var img = await LoadImage(File.OpenRead(setting.TempPath));
+				foreach (var newFile in setting.ImageSaveSettings)
+				{
+					if (!overrideExistingFiles && File.Exists(newFile.Path))
+						continue;
+					await SaveFile(ResizeImage(img, newFile.Size), newFile.Path);
+				}
 			}
 			return true;
 		}
 
-		public bool AcceptFileSynchronously(IEnumerable<ImageSettings> settings, string requestIp)
+		public bool AcceptFileSynchronously(IEnumerable<ImageSettings> settings, string requestIp, bool overrideExistingFiles = false)
 		{
 			if (!IsAdminIp(requestIp)) throw new AccessDeniedException();
-			foreach (var file in settings)
+			foreach (var setting in settings)
 			{
-				if (File.Exists(file.NewPath)) return false;
-				var img = LoadImageSynchronously(File.OpenRead(file.TempPath));
-				SaveFileSynchronously(ResizeImage(img, file.Size), file.NewPath);
+				var img = LoadImageSynchronously(File.OpenRead(setting.TempPath));
+				foreach (var newFile in setting.ImageSaveSettings)
+				{
+					if (!overrideExistingFiles && File.Exists(newFile.Path))
+						continue;
+					SaveFileSynchronously(ResizeImage(img, newFile.Size), newFile.Path);
+				}
 			}
 			return true;
 		}
