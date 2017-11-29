@@ -9,6 +9,7 @@ using BeeFee.ImageApp2.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SharpFuncExt;
 using SixLabors.Primitives;
 
 namespace BeeFee.ImageApp2.Tests
@@ -57,137 +58,150 @@ namespace BeeFee.ImageApp2.Tests
 		    }
 	    }
 
-	    public static FileStream GetFirstImage()
-		    => File.OpenRead(TestImageName);
+	    public static void GetFirstImage(Action<Stream> action)
+		    => TestImageName.Using(File.OpenRead, (x, s) => action(s));
 
-	    public static FileStream GetSecondImage()
-		    => File.OpenRead(SecondImageName);
+	    public static void GetSecondImage(Action<Stream> action)
+		    => SecondImageName.Using(File.OpenRead, (x, s) => action(s));
 
-	    public static FileStream GetIcon()
-		    => File.OpenRead("3d30b5kz.bmp");
+	    public static void GetIcon(Action<Stream> action)
+		    => "3d30b5kz.bmp".Using(File.OpenRead, (x, s) => action(s));
 
-	    public static FileStream GetNotImage()
-		    => File.OpenRead("wdh.chm");
+	    public static void GetNotImage(Action<Stream> action)
+		    => "wdh.chm".Using(File.OpenRead, (x, s) => action(s));
 
-        [TestMethod]
-        public void AddImage()
-        {
-	        _service.GetAccess("test", "user", "123", "test");
-	        var img = _service.Add("test", "user", "123", GetFirstImage(), "img.jpg");
+	    [TestMethod]
+	    public void AddImage()
+		    => GetFirstImage(x =>
+		    {
+			    _service.GetAccess("test", "user", "123", "test");
+			    var img = _service.Add("test", "user", "123", x, "img.jpg");
 
-			Assert.IsTrue(File.Exists(img.TempPath));
-			Assert.IsTrue(File.Exists(img.PreviewPath));
-        }
+			    Assert.IsTrue(File.Exists(img.TempPath));
+			    Assert.IsTrue(File.Exists(img.PreviewPath));
+		    });
+
 
 	    [TestMethod]
 	    public void AddImageTokenError()
-	    {
-		    _service.GetAccess("test", "user", "123", "test");
-		    Assert.ThrowsException<AccessDeniedException>(()=>_service.Add("test", "user", "1234", GetFirstImage(), "img.jpg"));
-	    }
-
-		[TestMethod]
-	    public void AcceptFile()
-	    {
-			_service.GetAccess("test", "user", "123", "test");
-		    var img = _service.Add("test", "user", "123", GetFirstImage(), "img.jpg");
-
-		    var result = _service.AcceptFile(new List<ImageSettings>
+		    => GetFirstImage(x =>
 		    {
-			    //   new ImageSettings(img, "test/400_400/img.jpg", new Size(400,400)),
-			    //new ImageSettings(img, "test/200_200/img.jpg", new Size(200, 200))
-			    new ImageSettings(img.TempPath,
-				    new ImageSaveSetting(new Size(400, 400), "test/400_400/img.jpg"),
-				    new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg"))
-		    }, "test");
+			    _service.GetAccess("test", "user", "123", "test");
+			    Assert.ThrowsException<AccessDeniedException>(() => _service.Add("test", "user", "1234", x, "img.jpg"));
+		    });
 
-			Assert.IsTrue(result);
-			Assert.IsTrue(File.Exists("test/400_400/img.jpg"));
-			Assert.IsTrue(File.Exists("test/200_200/img.jpg"));
-	    }
+	    [TestMethod]
+	    public void AcceptFile()
+		    => GetFirstImage(x =>
+		    {
+			    _service.GetAccess("test", "user", "123", "test");
+			    var img = _service.Add("test", "user", "123", x, "img.jpg");
+
+			    var result = _service.AcceptFile(new List<ImageSettings>
+			    {
+				    //   new ImageSettings(img, "test/400_400/img.jpg", new Size(400,400)),
+				    //new ImageSettings(img, "test/200_200/img.jpg", new Size(200, 200))
+				    new ImageSettings(img.TempPath,
+					    new ImageSaveSetting(new Size(400, 400), "test/400_400/img.jpg"),
+					    new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg"))
+			    }, "test");
+
+			    Assert.IsTrue(result);
+			    Assert.IsTrue(File.Exists("test/400_400/img.jpg"));
+			    Assert.IsTrue(File.Exists("test/200_200/img.jpg"));
+		    });
 
 	    [TestMethod]
 	    public void RemoveFile()
-	    {
-			_service.GetAccess("test", "user", "123", "test");
-		    var img = _service.Add("test", "user", "123", GetFirstImage(), "img.jpg");
-
-		    _service.AcceptFile(new List<ImageSettings>
+		    => GetFirstImage(x =>
 		    {
-			    //new ImageSettings(img, "test/img.jpg", new Size(300, 300))
-			    new ImageSettings(img.TempPath,
-				    new ImageSaveSetting(new Size(300, 300), "test/img.jpg"))
-		    }, "test");
+			    _service.GetAccess("test", "user", "123", "test");
+			    var img = _service.Add("test", "user", "123", x, "img.jpg");
 
-			Assert.IsTrue(File.Exists(Path.Combine("test/img.jpg")));
+			    _service.AcceptFile(new List<ImageSettings>
+			    {
+				    //new ImageSettings(img, "test/img.jpg", new Size(300, 300))
+				    new ImageSettings(img.TempPath,
+					    new ImageSaveSetting(new Size(300, 300), "test/img.jpg"))
+			    }, "test");
 
-			_service.Remove("test", "user", "123", "img.jpg");
+			    Assert.IsTrue(File.Exists(Path.Combine("test/img.jpg")));
 
-			Assert.IsFalse(File.Exists(Path.Combine("test/img.jpg")));
-	    }
+			    _service.Remove("test", "user", "123", "img.jpg");
+
+			    Assert.IsFalse(File.Exists(Path.Combine("test/img.jpg")));
+		    });
 
 	    [TestMethod]
 	    public void RenameFile()
-	    {
-			_service.GetAccess("test", "user", "123", "test");
-		    var img = _service.Add("test", "user", "123", GetFirstImage(), "img.jpg");
-
-		    _service.AcceptFile(new List<ImageSettings>
+		    => GetFirstImage(x =>
 		    {
-			    //new ImageSettings(img, "test/img.jpg", new Size(300, 300))
-			    new ImageSettings(img.TempPath,
-				    new ImageSaveSetting(new Size(300, 300), "test/img.jpg"))
-		    }, "test");
+			    _service.GetAccess("test", "user", "123", "test");
+			    var img = _service.Add("test", "user", "123", x, "img.jpg");
 
-		    Assert.IsTrue(File.Exists(Path.Combine("test/img.jpg")));
+			    _service.AcceptFile(new List<ImageSettings>
+			    {
+				    //new ImageSettings(img, "test/img.jpg", new Size(300, 300))
+				    new ImageSettings(img.TempPath,
+					    new ImageSaveSetting(new Size(300, 300), "test/img.jpg"))
+			    }, "test");
 
-		    _service.Rename("test", "user", "123", "img.jpg", "newImg.jpg");
+			    Assert.IsTrue(File.Exists(Path.Combine("test/img.jpg")));
 
-		    Assert.IsFalse(File.Exists(Path.Combine("test/img.jpg")));
-		    Assert.IsTrue(File.Exists(Path.Combine("test/newImg.jpg")));
-		}
+			    _service.Rename("test", "user", "123", "img.jpg", "newImg.jpg");
+
+			    Assert.IsFalse(File.Exists(Path.Combine("test/img.jpg")));
+			    Assert.IsTrue(File.Exists(Path.Combine("test/newImg.jpg")));
+		    });
 
 	    [TestMethod]
 	    public void OverrideFile()
-	    {
-			_service.GetAccess("test", "user", "123", "test");
-		    var img = _service.Add("test", "user", "123", GetFirstImage(), "img.jpg");
-
-		    _service.AcceptFile(new[]
+		    => GetFirstImage(x =>
 		    {
-				new ImageSettings(img.TempPath, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")), 
-		    }, "test", true);
+			    _service.GetAccess("test", "user", "123", "test");
+			    var img = _service.Add("test", "user", "123", x, "img.jpg");
 
-		    var firstDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");
+			    _service.AcceptFile(new[]
+			    {
+				    new ImageSettings(img.TempPath, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")),
+			    }, "test", true);
 
-		    var newImg = _service.Add("test", "user", "123", GetSecondImage(), "img.jpg");
-		    _service.AcceptFile(new[]
-		    {
-			    new ImageSettings(newImg.TempPath, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")),
-		    }, "test", true);
+			    var firstDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");
 
-		    var secondDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");
+			    GetSecondImage(y =>
+			    {
 
-			Assert.AreNotEqual(firstDate, secondDate);
-	    }
+				    var newImg = _service.Add("test", "user", "123", y, "img.jpg");
+				    _service.AcceptFile(new[]
+				    {
+					    new ImageSettings(newImg.TempPath, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")),
+				    }, "test", true);
+
+				    var secondDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");
+
+				    Assert.AreNotEqual(firstDate, secondDate);
+			    });
+		    });
 
 	    [TestMethod]
 	    public void SmallSize()
-	    {
-			_service.GetAccess("test", "user", "123", "test");
+		    => GetIcon(x =>
+		    {
+			    _service.GetAccess("test", "user", "123", "test");
 
-		    Assert.ThrowsException<SizeTooSmallException>(() =>
-			    _service.Add("test", "user", "123", GetIcon(), "img.bmp"));
-	    }
+			    Assert.ThrowsException<SizeTooSmallException>(() =>
+				    _service.Add("test", "user", "123", x, "img.bmp"));
+		    });
 
 	    [TestMethod]
 	    public void NotImage()
-	    {
-			_service.GetAccess("test", "user", "123", "test");
+		    => GetNotImage(x =>
+		    {
+			    _service.GetAccess("test", "user", "123", "test");
 
-		    Assert.ThrowsException<NotSupportedException>(() =>
-			    _service.Add("test", "user", "123", GetNotImage(), "wdh.chm"));
+			    Assert.ThrowsException<NotSupportedException>(() =>
+				    _service.Add("test", "user", "123", x, "wdh.chm"));
 
-	    }
-	}
+		    });
+    }
 }

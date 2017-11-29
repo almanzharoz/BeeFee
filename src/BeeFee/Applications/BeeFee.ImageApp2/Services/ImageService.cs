@@ -121,13 +121,14 @@ namespace BeeFee.ImageApp2.Services
 			if (!IsAdminIp(requestIp)) throw new AccessDeniedException();
 			foreach (var setting in settings)
 			{
-				using (var img = LoadImage(File.OpenRead(setting.TempPath)))
+				using (var file = File.OpenRead(setting.TempPath))
+				using (var img = LoadImage(file))
 				{
 					foreach (var newFile in setting.ImageSaveSettings)
 					{
 						if (!overrideExistingFiles && File.Exists(newFile.Path))
 							continue;
-						using(var resized = ResizeImage(img, newFile.Size))
+						using (var resized = ResizeImage(img, newFile.Size))
 							SaveFile(resized, newFile.Path);
 					}
 				}
@@ -178,8 +179,8 @@ namespace BeeFee.ImageApp2.Services
 		/// <exception cref="SizeTooSmallException"></exception>
 		private Image<Rgba32> LoadImage(Stream stream)
 			=> stream.Using(Image.Load,
-				(s, img) => ResizeImage(
+				(s, i) => i.Using(img => ResizeImage(
 					img.ThrowIf(x => x.Size().Width < _settings.MinimalSize.Width || x.Size().Height < _settings.MinimalSize.Height,
-						x => new SizeTooSmallException()), _settings.MaximalSize));
+						x => new SizeTooSmallException()), _settings.MaximalSize)));
 	}
 }
