@@ -116,9 +116,11 @@ namespace BeeFee.ClientApp.Services
 								/*GetUser<BaseUserProjection>(),*/ 0, ETransactionType.Registrition, sessionId)), true) > 0
 				&&
 				await AddJobAsync(
-					base.GetById<EventProjection, BaseCompanyProjection>(id, companyId).Convert(x =>
-						new CreateTicket(x.Name, name, x.Page.Date, email, imagesUrl + x.Page.Cover, x.Page.Label,
-							Guid.NewGuid().ToString())), DateTime.UtcNow);
+					GetById<EventProjection, BaseCompanyProjection>(id, companyId).Extend(await GetEventTransaction(id))
+						.Convert(x =>
+							new CreateTicket(id, companyId, x.Item2.Id, ticketId, x.Item1.Name, name, x.Item1.Page.Date, email,
+								imagesUrl + x.Item1.Page.Cover, x.Item1.Page.Label,
+								Guid.NewGuid().ToString())), DateTime.UtcNow);
 
 		//TODO сделать агргегацию посредством эластика+кеширование
 		// скорее всего сделаем справочник городов

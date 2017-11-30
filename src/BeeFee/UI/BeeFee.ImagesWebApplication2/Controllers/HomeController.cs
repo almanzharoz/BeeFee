@@ -51,7 +51,7 @@ namespace BeeFee.ImagesWebApplication2.Controllers
 			=> _service.GetAccess(directory, remoteIp, token, RequestHost);
 
 		public Task<bool> Put(AcceptModel acceptModel)
-			=> _service.AcceptFilesAsync(acceptModel.Images, RequestHost);
+			=> _service.AcceptFile(acceptModel.Images, RequestHost);
 		
 
 		[HttpGet("list")]

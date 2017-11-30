@@ -6,6 +6,7 @@ using BeeFee.ClientApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SharpFuncExt;
+using WebApplication3.Infrastructure;
 using WebApplication3.Models;
 using WebApplication3.Models.Event;
 
@@ -13,11 +14,11 @@ namespace WebApplication3.Controllers
 {
     public class EventController : BaseController<EventService, EventRequestModel>
     {
-		private readonly BeeFeeWebAppSettings _settings;
+		private readonly ImagesHelper _imagesHelper;
 
-		public EventController(EventService service, BeeFeeWebAppSettings settings, EventRequestModel model) : base(service, model)
+		public EventController(EventService service, ImagesHelper imagesHelper, EventRequestModel model) : base(service, model)
 		{
-			_settings = settings;
+			_imagesHelper = imagesHelper;
 		}
 
 		[Route("event/{parentid}/{id}")]
@@ -38,10 +39,10 @@ namespace WebApplication3.Controllers
 			=> ModelStateIsValid(model, async m =>
 					await (await Service.GetEventByUrl(Model.ParentId, Model.Id)).Convert(e =>
 						Service.RegisterToEventAsync(e.Id, e.Parent.Id, m.Email, m.Name, m.Phone, m.TicketId,
-							String.Concat(_settings.ImagesUrl, "/min/", e.Parent.Url, "/", e.Url, "/1162x600/") /* TODO: Выпилить */, HttpContext.Session?.Id)),
-				m => View("Index", M => Service.GetEventByUrl(M.ParentId, M.Id),
+							_imagesHelper.GetImageUrl(e.Parent.Url, e.Url, e.Page.Cover, 1162, 600), HttpContext.Session?.Id)),
+				m => View("Index", vm => Service.GetEventByUrl(vm.ParentId, vm.Id),
 					async e => new EventPageModel(e, await Service.GetEventTransaction(e.Id), true)),
-				m => View("Index", M => Service.GetEventByUrl(M.ParentId, M.Id),
+				m => View("Index", vm => Service.GetEventByUrl(vm.ParentId, vm.Id),
 					async e => new EventPageModel(e, await Service.GetEventTransaction(e.Id), false)));
 
 		#endregion

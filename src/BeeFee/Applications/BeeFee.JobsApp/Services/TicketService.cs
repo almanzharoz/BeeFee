@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using BeeFee.JobsApp.Projections;
 using BeeFee.Model;
@@ -27,6 +28,8 @@ namespace BeeFee.JobsApp.Services
 		{
 			try
 			{
+				var @event = GetById<EventTicketProjection>(data.EventTransactionId);
+				var price = @event.Prices.First(x => x.Id == data.PriceId);
 				var client = new jsreport.Client.ReportingService(_ticketSettings.Url);
 				var report = await client.RenderAsync(new RenderRequest()
 				{
@@ -34,9 +37,9 @@ namespace BeeFee.JobsApp.Services
 					{
 						Recipe = Recipe.PhantomPdf,
 						Engine = Engine.Handlebars,
-						Content = File.ReadAllText("ticket.html")
+						Content = price.TicketTemplate
 					},
-					Data = data
+					Data = data /*TODO: Сделать полноценную ViewModel */
 				});
 				using (var file = File.OpenWrite(Path.Combine(_ticketSettings.Folder, data.Filename+".pdf")))
 					report.Content.CopyTo(file);

@@ -89,7 +89,7 @@ namespace WebApplication3.Areas.Org.Controllers
 
 		[HttpGet]
 		public IActionResult AddPrice()
-			=> View(new TicketPriceCreateModel());
+			=> View(new TicketPriceCreateModel(){Template = System.IO.File.ReadAllText("ticket.html") /*TODO: Брать не из файла*/});
 
 		[HttpPost]
 		public Task<IActionResult> AddPrice(TicketPriceCreateModel model)
@@ -103,7 +103,8 @@ namespace WebApplication3.Areas.Org.Controllers
 		#region Preview
 
 		public async Task<IActionResult> Preview()
-			=> new EventPreviewModel(await Service.GetPreviewEventAsync(Model.Id, Model.ParentId)).Convert(x => View(x.Event.State != EEventState.Open ? "Edit" : "Preview", x));
+			=> new EventPreviewModel(await Service.GetPreviewEventAsync(Model.Id, Model.ParentId))
+				.Convert(x => View(x.Event.State != EEventState.Open ? "Edit" : "Preview", x));
 		
 		#endregion
 

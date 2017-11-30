@@ -10,13 +10,13 @@ namespace WebApplication3.Infrastructure
 			=> _settings = settings;
 
 		public string GetImageUrl(string companyUrl, string url, string filename)
-			=> String.Concat(_settings.ImagesUrl, "/min/", companyUrl, "/", url, "/", filename);
+			=> String.Concat(_settings.ImagesUrl, "/", companyUrl, "/", url, "/", filename);
 
 		public string GetImageUrl(string companyUrl, string url, string filename, int width, int height)
-			=> String.Concat(_settings.ImagesUrl, "/min/", companyUrl, "/", url, "/", width, "x", height, "/", filename);
+			=> String.Concat(_settings.ImagesUrl, "/", companyUrl, "/", url, "/", width, "x", height, "/", filename);
 
 		public string GetImageUrl(string companyUrl, string filename)
-			=> String.Concat(_settings.ImagesUrl, "/public/companies/", companyUrl, "/", filename);
+			=> String.Concat(_settings.ImagesUrl, "/", companyUrl, "/", filename);
 
 		public string GetImageUrl() => _settings.ImagesUrl;
 

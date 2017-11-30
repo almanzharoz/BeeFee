@@ -3,6 +3,7 @@ using BeeFee.JobsApp.Services;
 using BeeFee.Model;
 using BeeFee.Model.Jobs;
 using BeeFee.Model.Jobs.Data;
+using BeeFee.Model.Models;
 using BeeFee.Model.Projections.Jobs;
 using Core.ElasticSearch;
 using Core.ElasticSearch.Mapping;
@@ -23,6 +24,7 @@ namespace BeeFee.JobsApp
 			return services 
                 .AddProjection<NewJob<SendMail>, Job<SendMail>>()
 				.AddProjection<SendMailJob, Job<SendMail>>()
+				.AddProjection<EventTicketProjection, EventTransaction>()
 				.AddProjection<CreateTicketJob, Job<CreateTicket>>();
 
 		}
