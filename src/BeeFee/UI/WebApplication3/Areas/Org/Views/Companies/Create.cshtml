@@ -1,10 +1,13 @@
-﻿@model WebApplication3.Areas.Org.Models.Companies.CreateCompanyModel
+﻿@inject ImagesHelper Images
+@using WebApplication3.Infrastructure
+@model WebApplication3.Areas.Org.Models.Companies.CreateCompanyModel
 @{
 	ViewBag.Title = "Добавить организатора";
 }
 <div class="profile">
 	<form method="post" enctype="multipart/form-data">
 		<div class="validation" asp-validation-summary="ModelOnly"></div>
+		<input asp-for="File" type="hidden" />
 
 		<div class="create--field is-big">
 			<input class="create--field-i" asp-for="Name" placeholder="Название компании" />
@@ -12,7 +15,7 @@
 		</div>
 
 		<div class="create--file">
-			<input class="create--file-i" name="file" type="file" />
+			<input class="create--file-i" type="file" />
 			<div class="create--file-b">Загрузить логотип</div>
 		</div>
 
@@ -34,3 +37,12 @@
 		</div>
 	</form>
 </div>
+
+@section Scripts{
+	<script src="~/js/fileUpload.js"></script>
+	<script>
+		$(function() {
+			$(".create--file-i").fileUpload({url:"@Images.GetImageUrl()", dir:"/logo", for:"#File"});
+		});
+	</script>
+}

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using BeeFee.Model.Embed;
 using BeeFee.OrganizerApp.Services;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication3.Areas.Org.Models.Companies;
@@ -13,10 +14,12 @@ namespace WebApplication3.Areas.Org.Controllers
 	public class CompaniesController : BaseController<CompanyService>
 	{
 		private readonly ImagesService _imagesService;
+		private readonly IAntiforgery _antiforgery;
 
-		public CompaniesController(CompanyService service, ImagesService imagesService) : base(service)
+		public CompaniesController(CompanyService service, ImagesService imagesService, IAntiforgery antiforgery) : base(service)
 		{
 			_imagesService = imagesService;
+			_antiforgery = antiforgery;
 		}
 
 		#region List
@@ -31,21 +34,29 @@ namespace WebApplication3.Areas.Org.Controllers
 			=> RedirectToAction("Events", "Company", new { area = "Org", id = Service.GetCompany(null).Id });
 
 		#region Create
+
 		[HttpGet]
 		public ActionResult Create()
-			=> View(new CreateCompanyModel());
+		{
+			_imagesService.GetAccess("/logo", _antiforgery.GetAndStoreTokens(HttpContext).RequestToken, UserHost);
+			return View(new CreateCompanyModel());
+		}
 
 		[HttpPost]
 		[AutoValidateAntiforgeryToken]
 		public Task<IActionResult> Create(CreateCompanyModel model)
 			=> ModelStateIsValid(model,
-				m => Service.AddCompanyAsync(m.Name, m.Url, m.Email,
-					"company.jpg" /*m.File != null && m.File.Length > 0 ? m.File.FileName : null*/),
+				async m =>
+				{
+					await _imagesService.Accept(new AcceptModel
+					{
+						TempPath = model.File,
+						Images = new[] {new ImageSaveSetting("/logo", 200, 200)}
+					});
+					return await Service.AddCompanyAsync(m.Name, m.Url, m.Email, model.File);
+				},
 				async (m, c) =>
 				{
-					if (m.File != null && m.File.Length > 0)
-						await _imagesService.AddCompanyLogo(c.Url, m.File.OpenReadStream());
-
 					if (await Service.StartOrgAsync())
 						return RedirectToAction("Relogin", "Account", new {area = "", returnUrl = "/Org/Company/CreateEvent/" + c.Id});
 					return RedirectToAction("Index");

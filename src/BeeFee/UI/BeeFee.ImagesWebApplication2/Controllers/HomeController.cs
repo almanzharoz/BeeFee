@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BeeFee.ImageApp2.Embed;
 using BeeFee.ImageApp2.Exceptions;
 using BeeFee.ImageApp2.Services;
+using BeeFee.ImagesWebApplication2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +16,6 @@ namespace BeeFee.ImagesWebApplication2.Controllers
 		public string Filename { get; set; }
 		public string Directory { get; set; }
 		public string Token { get; set; }
-	}
-
-	public class AcceptModel
-	{
-		public List<ImageSettings> Images { get; set; }
 	}
 
 	[Route("api/[controller]")]
@@ -39,6 +36,7 @@ namespace BeeFee.ImagesWebApplication2.Controllers
 		//		(model.File ?? Request.Form.Files[0]).OpenReadStream(), model.Filename ?? (model.File ?? Request.Form.Files[0]).FileName));
 		//}
 
+		[HttpPost]
 		[RequestSizeLimit(5000000)]
 		public JsonResult Post(PostModel model)
 		{
@@ -50,8 +48,9 @@ namespace BeeFee.ImagesWebApplication2.Controllers
 		public bool Get(string remoteIp, string directory, string token)
 			=> _service.GetAccess(directory, remoteIp, token, RequestHost);
 
+		[HttpPut]
 		public bool Put(AcceptModel acceptModel)
-			=> _service.AcceptFile(acceptModel.Images, RequestHost);
+			=> _service.AcceptFile(new []{acceptModel.CreateImageSettings()}, RequestHost);
 		
 
 		[HttpGet("list")]

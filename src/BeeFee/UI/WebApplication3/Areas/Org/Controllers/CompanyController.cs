@@ -47,7 +47,7 @@ namespace WebApplication3.Areas.Org.Controllers
         public Task<IActionResult> Edit()
             => View("Edit",
                 m => Service.GetCompanyAsync(m.Id),
-                c => new CompanyEditModel(c.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost))));
+                c => new CompanyEditModel(c/*.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost))*/));
 
         [HttpPost]
         public Task<IActionResult> Edit(CompanyEditModel model)
@@ -83,11 +83,11 @@ namespace WebApplication3.Areas.Org.Controllers
                     var newEventTask = _eventService.GetEventAsync(r, Model.Id, 1);
                     var company = await companyTask;
                     var newEvent = await newEventTask;
-                    var e = await _imagesService.RegisterEvent(company.Url, newEvent.Url, UserHost);
-                    if (e && model.File != null && model.File.Length > 0)
-                        await _imagesService.AddEventCover(company.Url, newEvent.Url,
-                            Path.GetFileName(model.File.FileName),
-                            model.File.OpenReadStream());
+                    //var e = await _imagesService.RegisterEvent(company.Url, newEvent.Url, UserHost);
+                    //if (e && model.File != null && model.File.Length > 0)
+                    //    await _imagesService.AddEventCover(company.Url, newEvent.Url,
+                    //        Path.GetFileName(model.File.FileName),
+                    //        model.File.OpenReadStream());
                     return (IActionResult)RedirectToAction("EditDescription", "Event", new { area = "Org", id = r, parentId = company.Id, version=1 });
                 },
                 // обработка исключений

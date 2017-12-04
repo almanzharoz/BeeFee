@@ -87,6 +87,7 @@ namespace BeeFee.ImageApp2.Services
 
 		public bool GetAccess(string directory, string ip, string token, string requestIp)
 		{
+			Console.WriteLine($"Access: dir: '{directory}', ip: {ip}, token: '{token}', requestId: '{requestIp}'");
 			if (!IsAdminIp(requestIp)) throw new AccessDeniedException();
 			_cacheManager.Set(GetKey(directory, ip, token),
 				new MemoryCacheValueObject(EOperationType.Add, EOperationType.GetList, EOperationType.Remove,
@@ -143,8 +144,11 @@ namespace BeeFee.ImageApp2.Services
 			=> string.Concat(directory.HasNotNullArg(nameof(directory)), ip.HasNotNullArg(nameof(ip)), token.HasNotNullArg(nameof(token)));
 
 		private bool UserHasAccessToDirectory(string directory, string ip, string token, EOperationType type)
-			=> _cacheManager.Get<MemoryCacheValueObject>(GetKey(directory, ip, token))
+		{
+			Console.WriteLine($"Get Access: dir: '{directory}', ip: {ip}, token: '{token}', type: '{type}'");
+			return _cacheManager.Get<MemoryCacheValueObject>(GetKey(directory, ip, token))
 				.IfNotNull(x => x.OperationTypes.Contains(type), () => false);
+		}
 
 		/// <exception cref="FileNotSupportedException"></exception>
 		//private static Task<string> SaveFileAsync(Image<Rgba32> image, string path)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using BeeFee.ImageApp2;
 using BeeFee.ImageApp2.Embed;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,6 +34,7 @@ namespace BeeFee.ImagesWebApplication2
 			services.AddMvc();
 			services.AddCors(x => x.AddPolicy("cors", z => z.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().Build()));
 
+			services.AddImageApp();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,8 +47,7 @@ namespace BeeFee.ImagesWebApplication2
 
 			app.UseFileServer(new FileServerOptions()
 			{
-				FileProvider = new PhysicalFileProvider(
-					Path.Combine(Directory.GetCurrentDirectory(), @"images")),
+				FileProvider = new PhysicalFileProvider(app.ApplicationServices.GetService< IOptions<ImageAppStartSettings>>().Value.PreviewDirectory),
 				RequestPath = new PathString(""),
 				EnableDirectoryBrowsing = false
 			});

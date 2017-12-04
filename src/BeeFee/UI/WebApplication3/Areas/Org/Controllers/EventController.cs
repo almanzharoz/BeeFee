@@ -48,7 +48,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		public Task<IActionResult> Edit()
 			=> View("Edit",
 				m => Service.GetEventAsync(m.Id, m.ParentId, m.Version),
-				c => new EventEditModel(c.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost)), _categoryService.GetAllCategories<BaseCategoryProjection>()));
+				c => new EventEditModel(c/*.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost))*/, _categoryService.GetAllCategories<BaseCategoryProjection>()));
 
 		[HttpPost]
 		public Task<IActionResult> Edit(EventEditModel model)
@@ -71,7 +71,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		public Task<IActionResult> EditDescription()
 			=> View("Edit",
 				m => Service.GetEventAsync(m.Id, m.ParentId, m.Version),
-				c => new EventDescriptionModel(c.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost))));
+				c => new EventDescriptionModel(c/*.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost))*/));
 
 		[HttpPost]
 		public Task<IActionResult> EditDescription(EventDescriptionModel model)

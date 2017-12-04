@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
 
 namespace WebApplication3.Areas.Org.Models.Companies
 {
@@ -15,6 +14,6 @@ namespace WebApplication3.Areas.Org.Models.Companies
 		[EmailAddress]
 		public string Email { get; set; }
 
-		public IFormFile File { get; set; }
+		public string File { get; set; }
 	}
 }
