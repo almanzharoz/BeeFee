@@ -50,7 +50,7 @@ namespace BeeFee.ImagesWebApplication2.Controllers
 		public bool Get(string remoteIp, string directory, string token)
 			=> _service.GetAccess(directory, remoteIp, token, RequestHost);
 
-		public Task<bool> Put(AcceptModel acceptModel)
+		public bool Put(AcceptModel acceptModel)
 			=> _service.AcceptFile(acceptModel.Images, RequestHost);
 		
 

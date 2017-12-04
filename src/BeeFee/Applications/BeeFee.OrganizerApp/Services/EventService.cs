@@ -85,6 +85,9 @@ namespace BeeFee.OrganizerApp.Services
 		{
 			// TODO: Проверять и вставлять одним запросом
 			// Вставить одним запросов не получится, пологаю лучшим вариантом будет, после вставки проверить нет ли другого документа с таким url и откатить этот
+			// При вставке документа мы гарантируем, что он сразу попадет в индекс. Таким образом, если ранее был вставлен документ с таким же id, 
+			// но не успел попасть в индекс, до первой провекри, то вторая это покажет. В случае же, когда такой документ может быть вставлен без обновления индекса, все сломается!
+			// Введем интерфейс IInsertWithRefresh для модели, гарантирующий, что документ сразу попадет в индекс.
 
 			var newEvent = new NewEvent(
 				companyId.ThrowIfNull(GetCompany<CompanyJoinProjection>, x => new EntityAccessException<Company>(User, x)),
@@ -99,9 +102,9 @@ namespace BeeFee.OrganizerApp.Services
 
 			return new BoolResult<string>(await
 					newEvent.Rollback(
-						async e => await InsertAsync<NewEvent, CompanyJoinProjection>(e, true) &&
-									!ExistsByUrl<EventProjection>(e.Id, e.Url) &&
-									await InsertAsync(newEventTransaction = new NewEventTransaction(e), true),
+						async e => await InsertAsync<NewEvent, CompanyJoinProjection>(e, true) && // вставляем текущий документ
+									!ExistsByUrl<EventProjection>(e.Id, e.Url) && // проверяем, что других теперь нет
+									await InsertAsync(newEventTransaction = new NewEventTransaction(e), true), // вставляем второй документ
 						e => e.Id.NotNullOrDefault(id =>
 							Remove<EventProjection, CompanyJoinProjection>(e.Id, e.Parent.Id, 1, false) &&
 							Remove<EventTransactionProjection>(newEventTransaction.Id, false))),

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using BeeFee.ImageApp2.Caching;
@@ -203,5 +204,83 @@ namespace BeeFee.ImageApp2.Tests
 				    _service.Add("test", "user", "123", x, "wdh.chm"));
 
 		    });
-    }
+
+		[TestMethod]
+		public void ArrayTest()
+		{
+			var a = new int[1000000];
+			var sw = new Stopwatch();
+			sw.Start();
+			for (var i = 0; i < a.Length; i++)
+				a[i] = i;
+			sw.Stop();
+			Console.WriteLine("Write: "+sw.ElapsedMilliseconds);
+
+			sw.Restart();
+			var j = 0;
+			for (var i = 0; i < a.Length; i++)
+				j += a[i];
+			sw.Stop();
+			Console.WriteLine("Read: " + sw.ElapsedMilliseconds);
+
+			sw.Restart();
+			j = 0;
+			foreach (var i in a)
+				j += i;
+			sw.Stop();
+			Console.WriteLine("Each: " + sw.ElapsedMilliseconds);
+
+			sw.Restart();
+			j = 0;
+			IEnumerable<int> b = a;
+			foreach (var i in b)
+				j += i;
+			sw.Stop();
+			Console.WriteLine("Each (IE): " + sw.ElapsedMilliseconds);
+			Console.WriteLine(j+", "+a.Length);
+		}
+
+		[TestMethod]
+		public void ListTest()
+		{
+			var a = new List<int>();
+			var sw = new Stopwatch();
+			sw.Start();
+			for (var i = 0; i < 1000000; i++)
+				a.Add(i);
+			sw.Stop();
+			Console.WriteLine("Add: " + sw.ElapsedMilliseconds);
+
+			sw.Restart();
+			for (var i = 0; i < 1000000; i++)
+				a[i] = i;
+			sw.Stop();
+			Console.WriteLine("Write: " + sw.ElapsedMilliseconds);
+
+			sw.Restart();
+			var j = 0;
+			for (var i = 0; i < 1000000; i++)
+				j += a[i];
+			sw.Stop();
+			Console.WriteLine("Read: " + sw.ElapsedMilliseconds);
+
+			sw.Restart();
+			j = 0;
+			foreach (var i in a)
+				j += i;
+			sw.Stop();
+			Console.WriteLine("Each: " + sw.ElapsedMilliseconds);
+
+			sw.Restart();
+			j = 0;
+			IEnumerable<int> b = a;
+			foreach (var i in b)
+				j += i;
+			sw.Stop();
+			Console.WriteLine("Each (IE): " + sw.ElapsedMilliseconds);
+
+			Console.WriteLine(j+", "+a.Count);
+		}
+
+	}
 }
