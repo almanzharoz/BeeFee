@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Security.Claims;
 using BeeFee.AdminApp;
 using BeeFee.ClientApp;
@@ -15,7 +16,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using WebApplication3.Areas.Org.Models.Event;
 using WebApplication3.Infrastructure;
 
 namespace WebApplication3

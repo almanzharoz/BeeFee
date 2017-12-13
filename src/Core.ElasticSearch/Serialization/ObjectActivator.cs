@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using SharpFuncExt;
 
 namespace Core.ElasticSearch.Serialization
 {
-	internal struct ActivatorData<T>
+	public struct ActivatorData<T>
 	{
 		public ObjectActivator<T> Creator { get; }
 		public KeyValuePair<string, Type>[] Parameters { get; }
@@ -19,8 +17,8 @@ namespace Core.ElasticSearch.Serialization
 			Parameters = parameters;
 		}
 	}
-	internal delegate T ObjectActivator<T>(params object[] args);
-	internal static class ObjectActivator
+	public delegate T ObjectActivator<T>(params object[] args);
+	public static class ObjectActivator
 	{
 		public static ActivatorData<T> GetActivator<T>(ConstructorInfo ctor)
 		{

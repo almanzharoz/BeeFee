@@ -110,5 +110,39 @@ namespace SharpFuncExt
 			var r = await func(arg);
 			return r.Success || await rollbackFunc(arg, r.Result) && false;
 		}
+
+		/// <summary>
+		/// Вместо или.
+		/// </summary>
+		/// <example>(func1() && func2()).Always(Loging) && func3()</example>
+		/// <param name="arg"></param>
+		/// <param name="action"></param>
+		/// <returns></returns>
+		public static bool Always(this bool arg, Action action)
+		{
+			action();
+			return arg;
+		}
+
+		public static BoolResult<TResult> Always<TResult>(this BoolResult<TResult> arg, Action<BoolResult<TResult>> action)
+		{
+			action(arg);
+			return arg;
+		}
+
+		public static BoolResult IfThrow(this BoolResult arg, Action<BoolResult> action)
+		{
+			if (arg.Exception != null)
+				action(arg);
+			return arg;
+		}
+
+		public static BoolResult<TResult> IfThrow<TResult>(this BoolResult<TResult> arg, Action<BoolResult<TResult>> action)
+		{
+			if (arg.Exception != null)
+				action(arg);
+			return arg;
+		}
+
 	}
 }

@@ -47,7 +47,7 @@ namespace BeeFee.ImagesWebApplication2
 
 			app.UseFileServer(new FileServerOptions()
 			{
-				FileProvider = new PhysicalFileProvider(app.ApplicationServices.GetService< IOptions<ImageAppStartSettings>>().Value.PreviewDirectory),
+				FileProvider = new PhysicalFileProvider(app.ApplicationServices.GetService<IOptions<ImageAppStartSettings>>().Value.PreviewDirectory),
 				RequestPath = new PathString(""),
 				EnableDirectoryBrowsing = false
 			});

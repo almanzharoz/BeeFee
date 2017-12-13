@@ -6,5 +6,11 @@ namespace WebApplication3
 	{
 		public string ImagesUrl { get; set; }
 		public string WebAppUrl { get; set; }
+
+		public BeeFeeWebAppSettings()
+		{
+			Console.WriteLine("BeeFeeWebAppSettings init");
+		}
+
 	}
 }

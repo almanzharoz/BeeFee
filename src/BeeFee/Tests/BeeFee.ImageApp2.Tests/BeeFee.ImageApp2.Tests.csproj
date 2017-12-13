@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Core.ElasticSearch\Core.ElasticSearch.csproj" />
     <ProjectReference Include="..\..\Applications\BeeFee.ImageApp2\BeeFee.ImageApp2.csproj" />
   </ItemGroup>
 
