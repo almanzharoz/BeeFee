@@ -79,8 +79,8 @@ namespace BeeFee.ImageApp2.Tests
 				_service.GetAccess("test", "user", "123", "test");
 				var img = _service.Add("test", "user", "123", x, "img.jpg");
 
-				Assert.IsTrue(File.Exists(img.TempPath));
-				Assert.IsTrue(File.Exists(img.PreviewPath));
+				Assert.IsTrue(File.Exists(Path.Combine("temp", img)));
+				Assert.IsTrue(File.Exists(Path.Combine("preview", img)));
 			});
 
 
@@ -103,7 +103,7 @@ namespace BeeFee.ImageApp2.Tests
 				{
 					//   new ImageSettings(img, "test/400_400/img.jpg", new Size(400,400)),
 					//new ImageSettings(img, "test/200_200/img.jpg", new Size(200, 200))
-					new ImageSettings(img.TempPath,
+					new ImageSettings(Path.Combine("temp", img),
 						new ImageSaveSetting(new Size(400, 400), "test/400_400/img.jpg"),
 						new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg"))
 				}, "test");
@@ -123,7 +123,7 @@ namespace BeeFee.ImageApp2.Tests
 				_service.AcceptFile(new List<ImageSettings>
 				{
 					//new ImageSettings(img, "test/img.jpg", new Size(300, 300))
-					new ImageSettings(img.TempPath,
+					new ImageSettings(Path.Combine("temp", img),
 						new ImageSaveSetting(new Size(300, 300), "test/img.jpg"))
 				}, "test");
 
@@ -144,7 +144,7 @@ namespace BeeFee.ImageApp2.Tests
 				_service.AcceptFile(new List<ImageSettings>
 				{
 					//new ImageSettings(img, "test/img.jpg", new Size(300, 300))
-					new ImageSettings(img.TempPath,
+					new ImageSettings(Path.Combine("temp", img),
 						new ImageSaveSetting(new Size(300, 300), "test/img.jpg"))
 				}, "test");
 
@@ -165,7 +165,7 @@ namespace BeeFee.ImageApp2.Tests
 
 				_service.AcceptFile(new[]
 				{
-					new ImageSettings(img.TempPath, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")),
+					new ImageSettings(Path.Combine("temp", img), new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")),
 				}, "test", true);
 
 				var firstDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");
@@ -176,7 +176,7 @@ namespace BeeFee.ImageApp2.Tests
 					var newImg = _service.Add("test", "user", "123", y, "img.jpg");
 					_service.AcceptFile(new[]
 					{
-						new ImageSettings(newImg.TempPath, new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")),
+						new ImageSettings(Path.Combine("temp", img), new ImageSaveSetting(new Size(200, 200), "test/200_200/img.jpg")),
 					}, "test", true);
 
 					var secondDate = File.GetLastWriteTimeUtc("test/200_200/img.jpg");
