@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using BeeFee.ImageApp2.Caching;
 using BeeFee.ImageApp2.Embed;
 using BeeFee.ImageApp2.Exceptions;
@@ -47,17 +46,19 @@ namespace BeeFee.ImageApp2.Services
 		/// <exception cref="FileNotSupportedException"></exception>
 		/// <exception cref="SizeTooSmallException"></exception>
 		/// <exception cref="NotSupportedException"></exception>
-		public (string TempPath, string PreviewPath) Add(string directory, string ip, string token, Stream stream, string fileName)
+		public string Add(string directory, string ip, string token, Stream stream, string fileName)
 			=> UserHasAccessToDirectory(directory, ip, token, EOperationType.Add).If(x => x, x =>
 				{
 					using (var img = LoadImage(stream))
 					{
 						var name = string.Concat(Guid.NewGuid().ToString(), Path.GetExtension(fileName));
-						var temp = SaveFile(img, Path.Combine(_settings.TempDirectory, name));
-						string preview;
-						using(var resized = ResizeImage(img, _settings.PreviewSize))
-							preview = SaveFile(resized, Path.Combine(_settings.PreviewDirectory, name));
-						return (temp, preview);
+						SaveFile(img, Path.Combine(_settings.TempDirectory, name));
+						if (img.Size().Width <= _settings.PreviewSize.Width && img.Size().Height <= _settings.PreviewSize.Height)
+							using (var resized = ResizeImage(img, _settings.PreviewSize))
+								SaveFile(resized, Path.Combine(_settings.PreviewDirectory, name));
+						else
+							SaveFile(img, Path.Combine(_settings.PreviewDirectory, name));
+						return name;
 					}
 				},
 				x => throw new AccessDeniedException());

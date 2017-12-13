@@ -208,9 +208,14 @@ namespace BeeFee.ImageApp2.Tests
 		[TestMethod]
 		public void ArrayTest()
 		{
-			var a = new int[1000000];
 			var sw = new Stopwatch();
+
 			sw.Start();
+			var a = new int[100000000];
+			sw.Stop();
+			Console.WriteLine("Create: " + sw.ElapsedMilliseconds);
+
+			sw.Restart();
 			for (var i = 0; i < a.Length; i++)
 				a[i] = i;
 			sw.Stop();
@@ -243,23 +248,29 @@ namespace BeeFee.ImageApp2.Tests
 		[TestMethod]
 		public void ListTest()
 		{
-			var a = new List<int>();
 			var sw = new Stopwatch();
+			var iterations = 100000000;
+
 			sw.Start();
-			for (var i = 0; i < 1000000; i++)
+			var a = new List<int>();
+			sw.Stop();
+			Console.WriteLine("Create: " + sw.ElapsedMilliseconds);
+
+			sw.Restart();
+			for (var i = 0; i < iterations; i++)
 				a.Add(i);
 			sw.Stop();
 			Console.WriteLine("Add: " + sw.ElapsedMilliseconds);
 
 			sw.Restart();
-			for (var i = 0; i < 1000000; i++)
+			for (var i = 0; i < iterations; i++)
 				a[i] = i;
 			sw.Stop();
 			Console.WriteLine("Write: " + sw.ElapsedMilliseconds);
 
 			sw.Restart();
 			var j = 0;
-			for (var i = 0; i < 1000000; i++)
+			for (var i = 0; i < iterations; i++)
 				j += a[i];
 			sw.Stop();
 			Console.WriteLine("Read: " + sw.ElapsedMilliseconds);
@@ -271,9 +282,9 @@ namespace BeeFee.ImageApp2.Tests
 			sw.Stop();
 			Console.WriteLine("Each: " + sw.ElapsedMilliseconds);
 
+			IEnumerable<int> b = a;
 			sw.Restart();
 			j = 0;
-			IEnumerable<int> b = a;
 			foreach (var i in b)
 				j += i;
 			sw.Stop();
