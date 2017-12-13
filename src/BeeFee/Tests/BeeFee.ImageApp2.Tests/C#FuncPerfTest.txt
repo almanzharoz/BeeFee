@@ -1,0 +1,559 @@
+ClassActionTest with 10000000 iter. and 100 times:
+Average Empty for: 26,24 ms, 69367,15 ticks
+Average: 51,45 ms, 134918,18 ticks
+Clear: 25,21 ms, 65551,03 ticks
+
+ClassActionWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,13 ms, 69258,97 ticks
+Average: 169,96 ms, 442786,38 ticks
+Clear: 143,83 ms, 373527,41 ticks
+
+ClassActionWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,8 ms, 68324,63 ticks
+Average: 54,61 ms, 143171,96 ticks
+Clear: 28,81 ms, 74847,33 ticks
+
+ClassActionWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,76 ms, 68270,05 ticks
+Average: 55,89 ms, 146589,03 ticks
+Clear: 30,13 ms, 78318,98 ticks
+
+ClassActionWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,07 ms, 68952,49 ticks
+Average: 54,4 ms, 142480,02 ticks
+Clear: 28,33 ms, 73527,53 ticks
+
+ClassActionWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,78 ms, 68264,56 ticks
+Average: 55,01 ms, 144217,91 ticks
+Clear: 29,23 ms, 75953,35 ticks
+
+ClassActionWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,52 ms, 70107,5 ticks
+Average: 64,06 ms, 167777,59 ticks
+Clear: 37,54 ms, 97670,09 ticks
+
+ClassFuncClassTest with 10000000 iter. and 100 times:
+Average Empty for: 29,43 ms, 77776,92 ticks
+Average: 61,04 ms, 159952,48 ticks
+Clear: 31,61 ms, 82175,56 ticks
+
+ClassFuncClassWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 32,03 ms, 84538,51 ticks
+Average: 198,95 ms, 518058,19 ticks
+Clear: 166,92 ms, 433519,68 ticks
+
+ClassFuncClassWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,61 ms, 80878,16 ticks
+Average: 68,01 ms, 177916,73 ticks
+Clear: 37,4 ms, 97038,57 ticks
+
+ClassFuncClassWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,69 ms, 83582,65 ticks
+Average: 69,06 ms, 180673,81 ticks
+Clear: 37,37 ms, 97091,16 ticks
+
+ClassFuncClassWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,56 ms, 83306,66 ticks
+Average: 69,47 ms, 181678,48 ticks
+Clear: 37,91 ms, 98371,82 ticks
+
+ClassFuncClassWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 36,14 ms, 95245,25 ticks
+Average: 78,47 ms, 205061,31 ticks
+Clear: 42,33 ms, 109816,06 ticks
+
+ClassFuncClassWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,41 ms, 82912,51 ticks
+Average: 77,85 ms, 203263,17 ticks
+Clear: 46,44 ms, 120350,66 ticks
+
+ClassFuncIntTest with 10000000 iter. and 100 times:
+Average Empty for: 26,19 ms, 69492,97 ticks
+Average: 51,76 ms, 135846,11 ticks
+Clear: 25,57 ms, 66353,14 ticks
+
+ClassFuncIntWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,06 ms, 68993,38 ticks
+Average: 178,44 ms, 464842,35 ticks
+Clear: 152,38 ms, 395848,97 ticks
+
+ClassFuncIntWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,3 ms, 69581,73 ticks
+Average: 62,49 ms, 163675,31 ticks
+Clear: 36,19 ms, 94093,58 ticks
+
+ClassFuncIntWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,5 ms, 70135,37 ticks
+Average: 55,44 ms, 145245,85 ticks
+Clear: 28,94 ms, 75110,48 ticks
+
+ClassFuncIntWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,31 ms, 69635,29 ticks
+Average: 54,47 ms, 142857,7 ticks
+Clear: 28,16 ms, 73222,41 ticks
+
+ClassFuncIntWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,9 ms, 68527,86 ticks
+Average: 54,74 ms, 143577,98 ticks
+Clear: 28,84 ms, 75050,12 ticks
+
+ClassFuncIntWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,19 ms, 69305,03 ticks
+Average: 63,74 ms, 166795,8 ticks
+Clear: 37,55 ms, 97490,77 ticks
+
+ClassFuncStructTest with 10000000 iter. and 100 times:
+Average Empty for: 26,11 ms, 69082,97 ticks
+Average: 80,9 ms, 211441,04 ticks
+Clear: 54,79 ms, 142358,07 ticks
+
+ClassFuncStructWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 28,97 ms, 76474 ticks
+Average: 182,8 ms, 476006,09 ticks
+Clear: 153,83 ms, 399532,09 ticks
+
+ClassFuncStructWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 27,51 ms, 72779,3 ticks
+Average: 65,26 ms, 170840,24 ticks
+Clear: 37,75 ms, 98060,94 ticks
+
+ClassFuncStructWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,42 ms, 69792,37 ticks
+Average: 61,9 ms, 162211,02 ticks
+Clear: 35,48 ms, 92418,65 ticks
+
+ClassFuncStructWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 27,16 ms, 71871,08 ticks
+Average: 62,75 ms, 164252,04 ticks
+Clear: 35,59 ms, 92380,96 ticks
+
+ClassFuncStructWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26 ms, 68900,1 ticks
+Average: 62,36 ms, 163233,19 ticks
+Clear: 36,36 ms, 94333,09 ticks
+
+ClassFuncStructWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 27,84 ms, 73593,37 ticks
+Average: 84,86 ms, 221818,92 ticks
+Clear: 57,02 ms, 148225,55 ticks
+
+StructActionTest with 10000000 iter. and 100 times:
+Average Empty for: 28,6 ms, 75529,79 ticks
+Average: 56,96 ms, 149209,96 ticks
+Clear: 28,36 ms, 73680,17 ticks
+
+StructActionWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,27 ms, 69598,54 ticks
+Average: 154,27 ms, 401922,42 ticks
+Clear: 128 ms, 332323,88 ticks
+
+StructActionWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 28,72 ms, 75713,94 ticks
+Average: 61,05 ms, 160058,02 ticks
+Clear: 32,33 ms, 84344,08 ticks
+
+StructActionWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 28,31 ms, 74719,07 ticks
+Average: 59,8 ms, 156792,48 ticks
+Clear: 31,49 ms, 82073,41 ticks
+
+StructActionWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 28 ms, 74137,87 ticks
+Average: 59,77 ms, 156572,76 ticks
+Clear: 31,77 ms, 82434,89 ticks
+
+StructActionWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 28,03 ms, 74250,52 ticks
+Average: 59,16 ms, 155065,73 ticks
+Clear: 31,13 ms, 80815,21 ticks
+
+StructActionWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 28,49 ms, 75320,64 ticks
+Average: 67,09 ms, 175510,1 ticks
+Clear: 38,6 ms, 100189,46 ticks
+
+StructFuncClassTest with 10000000 iter. and 100 times:
+Average Empty for: 25,99 ms, 68803,01 ticks
+Average: 55,28 ms, 145035,54 ticks
+Clear: 29,29 ms, 76232,53 ticks
+
+StructFuncClassWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,21 ms, 69374,33 ticks
+Average: 160,58 ms, 418533,25 ticks
+Clear: 134,37 ms, 349158,92 ticks
+
+StructFuncClassWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,03 ms, 68832,35 ticks
+Average: 58,73 ms, 153918,11 ticks
+Clear: 32,7 ms, 85085,76 ticks
+
+StructFuncClassWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,83 ms, 68430,02 ticks
+Average: 58,54 ms, 153213,87 ticks
+Clear: 32,71 ms, 84783,85 ticks
+
+StructFuncClassWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,71 ms, 68106,73 ticks
+Average: 64,68 ms, 169309,35 ticks
+Clear: 38,97 ms, 101202,62 ticks
+
+StructFuncClassWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26 ms, 68882,32 ticks
+Average: 59,36 ms, 155559,33 ticks
+Clear: 33,36 ms, 86677,01 ticks
+
+StructFuncClassWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,63 ms, 70422,12 ticks
+Average: 70,92 ms, 185575,52 ticks
+Clear: 44,29 ms, 115153,4 ticks
+
+StructFuncIntTest with 10000000 iter. and 100 times:
+Average Empty for: 25,33 ms, 67070,06 ticks
+Average: 50,27 ms, 131902,38 ticks
+Clear: 24,94 ms, 64832,32 ticks
+
+StructFuncIntWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,9 ms, 68567,38 ticks
+Average: 152,02 ms, 396189,89 ticks
+Clear: 126,12 ms, 327622,51 ticks
+
+StructFuncIntWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,89 ms, 68569,28 ticks
+Average: 56,67 ms, 148513,27 ticks
+Clear: 30,78 ms, 79943,99 ticks
+
+StructFuncIntWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,65 ms, 67788,45 ticks
+Average: 56,07 ms, 147075,24 ticks
+Clear: 30,42 ms, 79286,79 ticks
+
+StructFuncIntWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,26 ms, 66862,3 ticks
+Average: 55,58 ms, 145677,99 ticks
+Clear: 30,32 ms, 78815,69 ticks
+
+StructFuncIntWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 29,58 ms, 78089,9 ticks
+Average: 62,65 ms, 164042,77 ticks
+Clear: 33,07 ms, 85952,87 ticks
+
+StructFuncIntWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,05 ms, 68787,6 ticks
+Average: 61,97 ms, 162166,57 ticks
+Clear: 35,92 ms, 93378,97 ticks
+
+StructFuncStructTest with 10000000 iter. and 100 times:
+Average Empty for: 25,75 ms, 68183,96 ticks
+Average: 56,65 ms, 148469,06 ticks
+Clear: 30,9 ms, 80285,1 ticks
+
+StructFuncStructWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,24 ms, 69395,4 ticks
+Average: 162,89 ms, 424484,89 ticks
+Clear: 136,65 ms, 355089,49 ticks
+
+StructFuncStructWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,95 ms, 68563,02 ticks
+Average: 63,01 ms, 165083,28 ticks
+Clear: 37,06 ms, 96520,26 ticks
+
+StructFuncStructWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,92 ms, 68556,3 ticks
+Average: 62,14 ms, 162715,56 ticks
+Clear: 36,22 ms, 94159,26 ticks
+
+StructFuncStructWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 25,79 ms, 68359,05 ticks
+Average: 62,06 ms, 162590,76 ticks
+Clear: 36,27 ms, 94231,71 ticks
+
+StructFuncStructWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,79 ms, 70788,68 ticks
+Average: 72,81 ms, 190519,71 ticks
+Clear: 46,02 ms, 119731,03 ticks
+
+StructFuncStructWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 26,19 ms, 69318,85 ticks
+Average: 68,46 ms, 179134,03 ticks
+Clear: 42,27 ms, 109815,18 ticks
+
+ThisActionTest with 10000000 iter. and 100 times:
+Average Empty for: 30,89 ms, 81451,61 ticks
+Average: 59,33 ms, 155437,07 ticks
+Clear: 28,44 ms, 73985,46 ticks
+
+ThisActionWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,61 ms, 83404,78 ticks
+Average: 186,6 ms, 486018,61 ticks
+Clear: 154,99 ms, 402613,83 ticks
+
+ThisActionWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,57 ms, 80923,74 ticks
+Average: 58,71 ms, 153973,06 ticks
+Clear: 28,14 ms, 73049,32 ticks
+
+ThisActionWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31 ms, 81813,84 ticks
+Average: 59,21 ms, 155083,32 ticks
+Clear: 28,21 ms, 73269,48 ticks
+
+ThisActionWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,72 ms, 83701,8 ticks
+Average: 63,18 ms, 165462,78 ticks
+Clear: 31,46 ms, 81760,98 ticks
+
+ThisActionWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,14 ms, 82447,47 ticks
+Average: 55,48 ms, 145523,07 ticks
+Clear: 24,34 ms, 63075,6 ticks
+
+ThisActionWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,93 ms, 84151,6 ticks
+Average: 69,04 ms, 180725,61 ticks
+Clear: 37,11 ms, 96574,01 ticks
+
+ThisFuncClassTest with 10000000 iter. and 100 times:
+Average Empty for: 31,43 ms, 82909,96 ticks
+Average: 59,8 ms, 156694,29 ticks
+Clear: 28,37 ms, 73784,33 ticks
+
+ThisFuncClassWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,25 ms, 82498,97 ticks
+Average: 182,38 ms, 475140,49 ticks
+Clear: 151,13 ms, 392641,52 ticks
+
+ThisFuncClassWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,69 ms, 81045,35 ticks
+Average: 60,82 ms, 159287,47 ticks
+Clear: 30,13 ms, 78242,12 ticks
+
+ThisFuncClassWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,25 ms, 82445,18 ticks
+Average: 65,72 ms, 172141,86 ticks
+Clear: 34,47 ms, 89696,68 ticks
+
+ThisFuncClassWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,05 ms, 81910,55 ticks
+Average: 60,18 ms, 157635,35 ticks
+Clear: 29,13 ms, 75724,8 ticks
+
+ThisFuncClassWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,64 ms, 80802,69 ticks
+Average: 59,84 ms, 156746,95 ticks
+Clear: 29,2 ms, 75944,26 ticks
+
+ThisFuncClassWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,23 ms, 82342,16 ticks
+Average: 71,1 ms, 186051,09 ticks
+Clear: 39,87 ms, 103708,93 ticks
+
+ThisFuncIntTest with 10000000 iter. and 100 times:
+Average Empty for: 30,88 ms, 81515,55 ticks
+Average: 60,17 ms, 157560,69 ticks
+Clear: 29,29 ms, 76045,14 ticks
+
+ThisFuncIntWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,94 ms, 84277,28 ticks
+Average: 185,64 ms, 483546,83 ticks
+Clear: 153,7 ms, 399269,55 ticks
+
+ThisFuncIntWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,15 ms, 79725,79 ticks
+Average: 55,88 ms, 146470,45 ticks
+Clear: 25,73 ms, 66744,66 ticks
+
+ThisFuncIntWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,69 ms, 81086,83 ticks
+Average: 55,2 ms, 144689,63 ticks
+Clear: 24,51 ms, 63602,8 ticks
+
+ThisFuncIntWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,49 ms, 80479,46 ticks
+Average: 55,51 ms, 145567,7 ticks
+Clear: 25,02 ms, 65088,24 ticks
+
+ThisFuncIntWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,02 ms, 79225,9 ticks
+Average: 56,71 ms, 148736,18 ticks
+Clear: 26,69 ms, 69510,28 ticks
+
+ThisFuncIntWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,46 ms, 80405,3 ticks
+Average: 67,02 ms, 175424,95 ticks
+Clear: 36,56 ms, 95019,65 ticks
+
+ThisFuncStructTest with 10000000 iter. and 100 times:
+Average Empty for: 31,35 ms, 82664,37 ticks
+Average: 80,07 ms, 209304,21 ticks
+Clear: 48,72 ms, 126639,84 ticks
+
+ThisFuncStructWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 32,01 ms, 84534,1 ticks
+Average: 187,34 ms, 487981,01 ticks
+Clear: 155,33 ms, 403446,91 ticks
+
+ThisFuncStructWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,07 ms, 82027,4 ticks
+Average: 64,48 ms, 168770,45 ticks
+Clear: 33,41 ms, 86743,05 ticks
+
+ThisFuncStructWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,1 ms, 82108,77 ticks
+Average: 64,11 ms, 167949,04 ticks
+Clear: 33,01 ms, 85840,27 ticks
+
+ThisFuncStructWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,53 ms, 80562,06 ticks
+Average: 63,36 ms, 165869,78 ticks
+Clear: 32,83 ms, 85307,72 ticks
+
+ThisFuncStructWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,14 ms, 79598,48 ticks
+Average: 63,13 ms, 165189,89 ticks
+Clear: 32,99 ms, 85591,41 ticks
+
+ThisFuncStructWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,28 ms, 82586,83 ticks
+Average: 77,06 ms, 201464,63 ticks
+Clear: 45,78 ms, 118877,8 ticks
+
+StaticActionTest with 10000000 iter. and 100 times:
+Average Empty for: 30,5 ms, 80617,91 ticks
+Average: 54,97 ms, 143920,02 ticks
+Clear: 24,47 ms, 63302,11 ticks
+
+StaticActionWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,55 ms, 83289,17 ticks
+Average: 178,77 ms, 465563,62 ticks
+Clear: 147,22 ms, 382274,45 ticks
+
+StaticActionWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,16 ms, 79623,22 ticks
+Average: 55,37 ms, 145125,86 ticks
+Clear: 25,21 ms, 65502,64 ticks
+
+StaticActionWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,86 ms, 84096,4 ticks
+Average: 60,63 ms, 158797,3 ticks
+Clear: 28,77 ms, 74700,9 ticks
+
+StaticActionWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,88 ms, 81458,28 ticks
+Average: 55,21 ms, 144819,98 ticks
+Clear: 24,33 ms, 63361,7 ticks
+
+StaticActionWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 32,17 ms, 84722,13 ticks
+Average: 61,57 ms, 161211,76 ticks
+Clear: 29,4 ms, 76489,63 ticks
+
+StaticActionWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,59 ms, 80831,56 ticks
+Average: 58,4 ms, 152949,5 ticks
+Clear: 27,81 ms, 72117,94 ticks
+
+StaticFuncClassTest with 10000000 iter. and 100 times:
+Average Empty for: 31,66 ms, 83480,68 ticks
+Average: 61,72 ms, 161717,16 ticks
+Clear: 30,06 ms, 78236,48 ticks
+
+StaticFuncClassWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,92 ms, 84079,86 ticks
+Average: 186,52 ms, 485766,63 ticks
+Clear: 154,6 ms, 401686,77 ticks
+
+StaticFuncClassWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,64 ms, 83537,8 ticks
+Average: 60,98 ms, 159669,34 ticks
+Clear: 29,34 ms, 76131,54 ticks
+
+StaticFuncClassWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,75 ms, 81176,04 ticks
+Average: 58,87 ms, 154343,04 ticks
+Clear: 28,12 ms, 73167 ticks
+
+StaticFuncClassWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,68 ms, 80930,88 ticks
+Average: 55,35 ms, 145086,98 ticks
+Clear: 24,67 ms, 64156,1 ticks
+
+StaticFuncClassWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,37 ms, 80239,4 ticks
+Average: 59,09 ms, 154863,86 ticks
+Clear: 28,72 ms, 74624,46 ticks
+
+StaticFuncClassWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,31 ms, 80145,17 ticks
+Average: 54,94 ms, 143969,75 ticks
+Clear: 24,63 ms, 63824,58 ticks
+
+StaticFuncIntTest with 10000000 iter. and 100 times:
+Average Empty for: 32,48 ms, 85667,88 ticks
+Average: 62,72 ms, 164174,87 ticks
+Clear: 30,24 ms, 78506,99 ticks
+
+StaticFuncIntWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 32,2 ms, 84974,49 ticks
+Average: 182,89 ms, 476375,34 ticks
+Clear: 150,69 ms, 391400,85 ticks
+
+StaticFuncIntWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,95 ms, 81745,52 ticks
+Average: 59,68 ms, 156291,84 ticks
+Clear: 28,73 ms, 74546,32 ticks
+
+StaticFuncIntWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,84 ms, 81385,62 ticks
+Average: 55,64 ms, 145921,09 ticks
+Clear: 24,8 ms, 64535,47 ticks
+
+StaticFuncIntWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,95 ms, 84273,08 ticks
+Average: 57,17 ms, 149909,15 ticks
+Clear: 25,22 ms, 65636,07 ticks
+
+StaticFuncIntWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,76 ms, 81260,7 ticks
+Average: 59,18 ms, 155000,07 ticks
+Clear: 28,42 ms, 73739,37 ticks
+
+StaticFuncIntWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31 ms, 81727,75 ticks
+Average: 55,37 ms, 145221,3 ticks
+Clear: 24,37 ms, 63493,55 ticks
+
+StaticFuncStructTest with 10000000 iter. and 100 times:
+Average Empty for: 30,68 ms, 81075,2 ticks
+Average: 83,49 ms, 218160,51 ticks
+Clear: 52,81 ms, 137085,31 ticks
+
+StaticFuncStructWithClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,49 ms, 83062,36 ticks
+Average: 184,23 ms, 479921,41 ticks
+Clear: 152,74 ms, 396859,05 ticks
+
+StaticFuncStructWithConstClassParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,06 ms, 82055,69 ticks
+Average: 59,5 ms, 155881,26 ticks
+Clear: 28,44 ms, 73825,57 ticks
+
+StaticFuncStructWithConstStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,53 ms, 80792,53 ticks
+Average: 59,58 ms, 155998,9 ticks
+Clear: 29,05 ms, 75206,37 ticks
+
+StaticFuncStructWithIntParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,9 ms, 81595,21 ticks
+Average: 63,65 ms, 166455,71 ticks
+Clear: 32,75 ms, 84860,5 ticks
+
+StaticFuncStructWithStringParamTest with 10000000 iter. and 100 times:
+Average Empty for: 31,83 ms, 83928,87 ticks
+Average: 64,82 ms, 169602,55 ticks
+Clear: 32,99 ms, 85673,68 ticks
+
+StaticFuncStructWithStructParamTest with 10000000 iter. and 100 times:
+Average Empty for: 30,79 ms, 81225,31 ticks
+Average: 58,56 ms, 153335,35 ticks
+Clear: 27,77 ms, 72110,04 ticks

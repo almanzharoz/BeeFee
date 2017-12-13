@@ -318,7 +318,7 @@ namespace BeeFee.ImageApp2.Tests
 
 			sw.Restart();
 			for (int i = 0; i < 1000000; i++)
-				a = new TestStruct() {Value = i};
+				a = new TestStruct() { Value = i };
 			sw.Stop();
 			Console.WriteLine("Struct without constructor: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
 
@@ -330,7 +330,7 @@ namespace BeeFee.ImageApp2.Tests
 
 			sw.Restart();
 			for (int i = 0; i < 1000000; i++)
-				c = new TestClass() {Value = i};
+				c = new TestClass() { Value = i };
 			sw.Stop();
 			Console.WriteLine("Class without constructor: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
 
@@ -432,16 +432,197 @@ namespace BeeFee.ImageApp2.Tests
 			sw.Stop();
 			Console.WriteLine("Class with Activator: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
 		}
+
+		[TestMethod]
+		public void FuncTest()
+		{
+			var s = new TestStructField(10);
+			var c = new TestClassField(10);
+			var sw = new Stopwatch();
+
+			sw.Start();
+			for (var i = 0; i < 10000000; i++)
+				Func(s);
+			sw.Stop();
+			Console.WriteLine("Func with const struct: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				Func(new TestStructField(){Value = i});
+			sw.Stop();
+			Console.WriteLine("Func with struct: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Start();
+			for (var i = 0; i < 10000000; i++)
+				Func(c);
+			sw.Stop();
+			Console.WriteLine("Func with const class: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				Func(new TestClassField() { Value = i });
+			sw.Stop();
+			Console.WriteLine("Func with class: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				Func(i);
+			sw.Stop();
+			Console.WriteLine("Func with int: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				Func("123");
+			sw.Stop();
+			Console.WriteLine("Func with const string: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				Func();
+			sw.Stop();
+			Console.WriteLine("Func without param: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 1000000; i++) ;
+			sw.Stop();
+			Console.WriteLine("Empty for: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+		}
+
+		[TestMethod]
+		public void StructFuncTest()
+		{
+			var f = new TestStruct();
+			var s = new TestStructField(10);
+			var c = new TestClassField(10);
+			var sw = new Stopwatch();
+
+			sw.Start();
+			for (var i = 0; i < 10000000; i++)
+				f.Func(s);
+			sw.Stop();
+			Console.WriteLine("Func with const struct: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				f.Func(new TestStructField() { Value = i });
+			sw.Stop();
+			Console.WriteLine("Func with struct: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Start();
+			for (var i = 0; i < 10000000; i++)
+				f.Func(c);
+			sw.Stop();
+			Console.WriteLine("Func with const class: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				f.Func(new TestClassField() { Value = i });
+			sw.Stop();
+			Console.WriteLine("Func with class: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				f.Func(i);
+			sw.Stop();
+			Console.WriteLine("Func with int: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				f.Func("123");
+			sw.Stop();
+			Console.WriteLine("Func with const string: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				f.Func();
+			sw.Stop();
+			Console.WriteLine("Func without param: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 1000000; i++) ;
+			sw.Stop();
+			Console.WriteLine("Empty for: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+		}
+
+		[TestMethod]
+		public void ClassFuncTest()
+		{
+			var f = new TestClass();
+			var s = new TestStructField(10);
+			var c = new TestClassField(10);
+			var sw = new Stopwatch();
+
+			sw.Start();
+			for (var i = 0; i < 10000000; i++)
+				f.Func(s);
+			sw.Stop();
+			Console.WriteLine("Func with const struct: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				f.Func(new TestStructField() { Value = i });
+			sw.Stop();
+			Console.WriteLine("Func with struct: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Start();
+			for (var i = 0; i < 10000000; i++)
+				f.Func(c);
+			sw.Stop();
+			Console.WriteLine("Func with const class: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				f.Func(new TestClassField() { Value = i });
+			sw.Stop();
+			Console.WriteLine("Func with class: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				f.Func(i);
+			sw.Stop();
+			Console.WriteLine("Func with int: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				f.Func("123");
+			sw.Stop();
+			Console.WriteLine("Func with const string: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 10000000; i++)
+				f.Func();
+			sw.Stop();
+			Console.WriteLine("Func without param: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+
+			sw.Restart();
+			for (var i = 0; i < 1000000; i++) ;
+			sw.Stop();
+			Console.WriteLine("Empty for: " + sw.ElapsedMilliseconds + " Ticks: " + sw.ElapsedTicks);
+		}
+
+		private void Func(TestClassField s) {}
+		private void Func(TestStructField s) {}
+		private void Func(int i) {}
+		private void Func(string s) {}
+		private void Func() {}
+
 	}
 
 	public struct TestStruct
 	{
-		public int Value {get;set;}
+		public int Value { get; set; }
 
 		public TestStruct(int value)
 		{
 			Value = value;
 		}
+
+		public void Func(TestClassField s) { }
+		public void Func(TestStructField s) { }
+		public void Func(int i) { }
+		public void Func(string s) { }
+		public void Func() { }
+
 	}
 	public class TestClass
 	{
@@ -452,6 +633,13 @@ namespace BeeFee.ImageApp2.Tests
 		{
 			Value = value;
 		}
+
+		public void Func(TestClassField s) { }
+		public void Func(TestStructField s) { }
+		public void Func(int i) { }
+		public void Func(string s) { }
+		public void Func() { }
+
 	}
 
 	public struct TestStructField

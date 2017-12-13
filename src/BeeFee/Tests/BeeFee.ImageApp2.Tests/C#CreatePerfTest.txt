@@ -1,0 +1,70 @@
+CreateClassWithFieldAndDefaultConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 22,63 ms, 60094,84 ticks
+Average: 112,69 ms, 293907,44 ticks
+Clear: 90,06 ms, 233812,6 ticks				<---
+
+CreateClassWithFieldAndParamConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 23,44 ms, 62117,47 ticks
+Average: 122,48 ms, 319532,56 ticks
+Clear: 99,04 ms, 257415,09 ticks
+
+CreateClassWithPropertyAndDefaultConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 23,46 ms, 62193,73 ticks
+Average: 143,8 ms, 374907,65 ticks
+Clear: 120,34 ms, 312713,92 ticks
+
+CreateClassWithPropertyAndParamConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 25,13 ms, 66614,76 ticks
+Average: 164,11 ms, 427544,1 ticks
+Clear: 138,98 ms, 360929,34 ticks			<---
+
+CreateClassWithReadonlyFieldAndParamConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 28,22 ms, 74662,63 ticks
+Average: 156,27 ms, 407140,93 ticks
+Clear: 128,05 ms, 332478,3 ticks
+
+CreateClassWithReadonlyPrivateFieldAndParamConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 26,75 ms, 70618,68 ticks
+Average: 157,03 ms, 409307,39 ticks
+Clear: 130,28 ms, 338688,71 ticks
+
+CreateClassWithPrivateFieldAndParamConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 26,52 ms, 70177,19 ticks
+Average: 144,31 ms, 376200,46 ticks
+Clear: 117,79 ms, 306023,27 ticks
+
+CreateClassWithReadonlyPropertyAndParamConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 27,02 ms, 71464,98 ticks
+Average: 146,67 ms, 382271,01 ticks
+Clear: 119,65 ms, 310806,03 ticks
+
+CreateStructWithFieldAndDefaultConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 25,08 ms, 66531,7 ticks
+Average: 28,36 ms, 74764,83 ticks
+Clear: 3,28 ms, 8233,13 ticks				<---
+
+CreateStructWithFieldAndParamConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 24,95 ms, 66040,78 ticks
+Average: 48,28 ms, 126832,51 ticks
+Clear: 23,33 ms, 60791,73 ticks
+
+CreateStructWithPropertyAndDefaultConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 27,3 ms, 72143,33 ticks
+Average: 52,17 ms, 136892,77 ticks
+Clear: 24,87 ms, 64749,44 ticks
+
+CreateStructWithPropertyAndParamConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 25,48 ms, 67500,55 ticks
+Average: 76,46 ms, 199974,01 ticks
+Clear: 50,98 ms, 132473,46 ticks			<---
+
+CreateStructWithReadonlyFieldAndParamConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 25,34 ms, 67098,46 ticks
+Average: 48,82 ms, 128028,05 ticks
+Clear: 23,48 ms, 60929,59 ticks
+
+CreateStructWithReadonlyPropertyAndParamConstructorTest with 10000000 iter. and 100 times:
+Average Empty for: 28,12 ms, 74255,69 ticks
+Average: 53,96 ms, 141359,62 ticks
+Clear: 25,84 ms, 67103,93 ticks
+
