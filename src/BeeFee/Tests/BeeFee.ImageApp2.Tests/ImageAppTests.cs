@@ -205,10 +205,12 @@ namespace BeeFee.ImageApp2.Tests
 
 		    });
 
+		private static int GetElement(int[] array, int index) => array[index];
+
 		[TestMethod]
 		public void ArrayTest()
 		{
-			var a = new int[1000000];
+			var a = new int[10000000];
 			var sw = new Stopwatch();
 			sw.Start();
 			for (var i = 0; i < a.Length; i++)
@@ -230,13 +232,30 @@ namespace BeeFee.ImageApp2.Tests
 			sw.Stop();
 			Console.WriteLine("Each: " + sw.ElapsedMilliseconds);
 
-			sw.Restart();
 			j = 0;
 			IEnumerable<int> b = a;
+			var c = b.GetEnumerator();
+			sw.Restart();
 			foreach (var i in b)
 				j += i;
 			sw.Stop();
 			Console.WriteLine("Each (IE): " + sw.ElapsedMilliseconds);
+
+			j = 0;
+			sw.Restart();
+			while (c.MoveNext())
+				j += c.Current;
+			sw.Stop();
+			Console.WriteLine("Each (MoveNext): " + sw.ElapsedMilliseconds);
+			c.Dispose();
+
+			j = 0;
+			sw.Restart();
+			for (var i = 0; i < a.Length; i++)
+				j += GetElement(a, i);
+			sw.Stop();
+			Console.WriteLine("Each (GetElement): " + sw.ElapsedMilliseconds);
+
 			Console.WriteLine(j+", "+a.Length);
 		}
 
