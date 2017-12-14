@@ -72,6 +72,38 @@ namespace BeeFee.ImageApp2.Tests
 		public ReturnClass FuncClass() => ReturnClass;
 	}
 
+	public class ClassFuncExt { }
+
+	public static class ClassFuncExtensions
+	{
+		public static ReturnStruct ReturnStruct = new ReturnStruct() { Value = 1 };
+		public static ReturnClass ReturnClass = new ReturnClass() { Value = 1 };
+
+		public static void Action(this ClassFuncExt c, ReturnStruct s) { }
+		public static void Action(this ClassFuncExt c, ReturnClass s) { }
+		public static void Action(this ClassFuncExt c, int i) { }
+		public static void Action(this ClassFuncExt c, string s) { }
+		public static void Action(this ClassFuncExt c) { }
+
+		public static int FuncInt(this ClassFuncExt c, ReturnStruct s) => 1;
+		public static int FuncInt(this ClassFuncExt c, ReturnClass s) => 1;
+		public static int FuncInt(this ClassFuncExt c, int i) => 1;
+		public static int FuncInt(this ClassFuncExt c, string s) => 1;
+		public static int FuncInt(this ClassFuncExt c) => 1;
+
+		public static ReturnStruct FuncStruct(this ClassFuncExt c, ReturnStruct s) => ReturnStruct;
+		public static ReturnStruct FuncStruct(this ClassFuncExt c, ReturnClass s) => ReturnStruct;
+		public static ReturnStruct FuncStruct(this ClassFuncExt c, int i) => ReturnStruct;
+		public static ReturnStruct FuncStruct(this ClassFuncExt c, string s) => ReturnStruct;
+		public static ReturnStruct FuncStruct(this ClassFuncExt c) => ReturnStruct;
+
+		public static ReturnClass FuncClass(this ClassFuncExt c, ReturnStruct s) => ReturnClass;
+		public static ReturnClass FuncClass(this ClassFuncExt c, ReturnClass s) => ReturnClass;
+		public static ReturnClass FuncClass(this ClassFuncExt c, int i) => ReturnClass;
+		public static ReturnClass FuncClass(this ClassFuncExt c, string s) => ReturnClass;
+		public static ReturnClass FuncClass(this ClassFuncExt c) => ReturnClass;
+	}
+
 	public static class StaticClass
 	{
 		public static ReturnStruct ReturnStruct = new ReturnStruct() { Value = 1 };
@@ -1757,6 +1789,415 @@ namespace BeeFee.ImageApp2.Tests
 			sw.Start();
 			for (int i = 0; i < countOfInnerIterations; i++)
 				StaticClass.FuncClass(new ReturnClass() { Value = 1 });
+			sw.Stop();
+			return sw;
+		}
+
+		#endregion
+
+		#region ClassExt
+
+		private static ClassFuncExt extClass = new ClassFuncExt();
+
+		[TestMethod]
+		public void ClassExtActionTest()
+			=> RunTest(nameof(ClassExtActionTest), ClassExtAction);
+
+		public Stopwatch ClassExtAction()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.Action();
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtActionWithStringParamTest()
+			=> RunTest(nameof(ClassExtActionWithStringParamTest), ClassExtActionWithStringParam);
+
+		public Stopwatch ClassExtActionWithStringParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.Action("123");
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtActionWithIntParamTest()
+			=> RunTest(nameof(ClassExtActionWithIntParamTest), ClassExtActionWithIntParam);
+
+		public Stopwatch ClassExtActionWithIntParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.Action(i);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtActionWithConstStructParamTest()
+			=> RunTest(nameof(ClassExtActionWithConstStructParamTest), ClassExtActionWithConstStructParam);
+
+		public Stopwatch ClassExtActionWithConstStructParam()
+		{
+			var s = new ReturnStruct() { Value = 1 };
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.Action(s);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtActionWithStructParamTest()
+			=> RunTest(nameof(ClassExtActionWithStructParamTest), ClassExtActionWithStructParam);
+
+		public Stopwatch ClassExtActionWithStructParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.Action(new ReturnStruct() { Value = 1 });
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtActionWithConstClassParamTest()
+			=> RunTest(nameof(ClassExtActionWithConstClassParamTest), ClassExtActionWithConstClassParam);
+
+		public Stopwatch ClassExtActionWithConstClassParam()
+		{
+			var s = new ReturnClass() { Value = 1 };
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.Action(s);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtActionWithClassParamTest()
+			=> RunTest(nameof(ClassExtActionWithClassParamTest), ClassExtActionWithClassParam);
+
+		public Stopwatch ClassExtActionWithClassParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.Action(new ReturnClass() { Value = 1 });
+			sw.Stop();
+			return sw;
+		}
+
+
+		[TestMethod]
+		public void ClassExtFuncIntTest()
+			=> RunTest(nameof(ClassExtFuncIntTest), ClassExtFuncInt);
+
+		public Stopwatch ClassExtFuncInt()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncInt();
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncIntWithStringParamTest()
+			=> RunTest(nameof(ClassExtFuncIntWithStringParamTest), ClassExtFuncIntWithStringParam);
+
+		public Stopwatch ClassExtFuncIntWithStringParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncInt("123");
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncIntWithIntParamTest()
+			=> RunTest(nameof(ClassExtFuncIntWithIntParamTest), ClassExtFuncIntWithIntParam);
+
+		public Stopwatch ClassExtFuncIntWithIntParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncInt(i);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncIntWithConstStructParamTest()
+			=> RunTest(nameof(ClassExtFuncIntWithConstStructParamTest), ClassExtFuncIntWithConstStructParam);
+
+		public Stopwatch ClassExtFuncIntWithConstStructParam()
+		{
+			var s = new ReturnStruct() { Value = 1 };
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncInt(s);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncIntWithStructParamTest()
+			=> RunTest(nameof(ClassExtFuncIntWithStructParamTest), ClassExtFuncIntWithStructParam);
+
+		public Stopwatch ClassExtFuncIntWithStructParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncInt(new ReturnStruct() { Value = 1 });
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncIntWithConstClassParamTest()
+			=> RunTest(nameof(ClassExtFuncIntWithConstClassParamTest), ClassExtFuncIntWithConstClassParam);
+
+		public Stopwatch ClassExtFuncIntWithConstClassParam()
+		{
+			var s = new ReturnClass() { Value = 1 };
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncInt(s);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncIntWithClassParamTest()
+			=> RunTest(nameof(ClassExtFuncIntWithClassParamTest), ClassExtFuncIntWithClassParam);
+
+		public Stopwatch ClassExtFuncIntWithClassParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncInt(new ReturnClass() { Value = 1 });
+			sw.Stop();
+			return sw;
+		}
+
+
+		[TestMethod]
+		public void ClassExtFuncStructTest()
+			=> RunTest(nameof(ClassExtFuncStructTest), ClassExtFuncStruct);
+
+		public Stopwatch ClassExtFuncStruct()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncStruct();
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncStructWithStringParamTest()
+			=> RunTest(nameof(ClassExtFuncStructWithStringParamTest), ClassExtFuncStructWithStringParam);
+
+		public Stopwatch ClassExtFuncStructWithStringParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncStruct("123");
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncStructWithIntParamTest()
+			=> RunTest(nameof(ClassExtFuncStructWithIntParamTest), ClassExtFuncStructWithIntParam);
+
+		public Stopwatch ClassExtFuncStructWithIntParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncStruct(i);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncStructWithConstStructParamTest()
+			=> RunTest(nameof(ClassExtFuncStructWithConstStructParamTest), ClassExtFuncStructWithConstStructParam);
+
+		public Stopwatch ClassExtFuncStructWithConstStructParam()
+		{
+			var s = new ReturnStruct() { Value = 1 };
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncStruct(s);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncStructWithStructParamTest()
+			=> RunTest(nameof(ClassExtFuncStructWithStructParamTest), ClassExtFuncStructWithStructParam);
+
+		public Stopwatch ClassExtFuncStructWithStructParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncStruct(new ReturnStruct() { Value = 1 });
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncStructWithConstClassParamTest()
+			=> RunTest(nameof(ClassExtFuncStructWithConstClassParamTest), ClassExtFuncStructWithConstClassParam);
+
+		public Stopwatch ClassExtFuncStructWithConstClassParam()
+		{
+			var s = new ReturnClass() { Value = 1 };
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncStruct(s);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncStructWithClassParamTest()
+			=> RunTest(nameof(ClassExtFuncStructWithClassParamTest), ClassExtFuncStructWithClassParam);
+
+		public Stopwatch ClassExtFuncStructWithClassParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncStruct(new ReturnClass() { Value = 1 });
+			sw.Stop();
+			return sw;
+		}
+
+
+		[TestMethod]
+		public void ClassExtFuncClassTest()
+			=> RunTest(nameof(ClassExtFuncClassTest), ClassExtFuncClass);
+
+		public Stopwatch ClassExtFuncClass()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncClass();
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncClassWithStringParamTest()
+			=> RunTest(nameof(ClassExtFuncClassWithStringParamTest), ClassExtFuncClassWithStringParam);
+
+		public Stopwatch ClassExtFuncClassWithStringParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncClass("123");
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncClassWithIntParamTest()
+			=> RunTest(nameof(ClassExtFuncClassWithIntParamTest), ClassExtFuncClassWithIntParam);
+
+		public Stopwatch ClassExtFuncClassWithIntParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncClass(i);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncClassWithConstStructParamTest()
+			=> RunTest(nameof(ClassExtFuncClassWithConstStructParamTest), ClassExtFuncClassWithConstStructParam);
+
+		public Stopwatch ClassExtFuncClassWithConstStructParam()
+		{
+			var s = new ReturnStruct() { Value = 1 };
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncClass(s);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncClassWithStructParamTest()
+			=> RunTest(nameof(ClassExtFuncClassWithStructParamTest), ClassExtFuncClassWithStructParam);
+
+		public Stopwatch ClassExtFuncClassWithStructParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncClass(new ReturnStruct() { Value = 1 });
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncClassWithConstClassParamTest()
+			=> RunTest(nameof(ClassExtFuncClassWithConstClassParamTest), ClassExtFuncClassWithConstClassParam);
+
+		public Stopwatch ClassExtFuncClassWithConstClassParam()
+		{
+			var s = new ReturnClass() { Value = 1 };
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncClass(s);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void ClassExtFuncClassWithClassParamTest()
+			=> RunTest(nameof(ClassExtFuncClassWithClassParamTest), ClassExtFuncClassWithClassParam);
+
+		public Stopwatch ClassExtFuncClassWithClassParam()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				extClass.FuncClass(new ReturnClass() { Value = 1 });
 			sw.Stop();
 			return sw;
 		}

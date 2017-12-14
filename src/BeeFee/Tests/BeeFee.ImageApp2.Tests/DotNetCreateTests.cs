@@ -27,6 +27,26 @@ namespace BeeFee.ImageApp2.Tests
 		}
 	}
 
+	public struct StructWithPrivateField
+	{
+		private int Value;
+
+		public StructWithPrivateField(int value)
+		{
+			Value = value;
+		}
+	}
+
+	public struct StructWithReadonlyPrivateField
+	{
+		private readonly int Value;
+
+		public StructWithReadonlyPrivateField(int value)
+		{
+			Value = value;
+		}
+	}
+
 	public struct StructWithField
 	{
 		public int Value;
@@ -171,6 +191,20 @@ namespace BeeFee.ImageApp2.Tests
 		}
 
 		[TestMethod]
+		public void CreateStructWithReadonlyPrivateFieldAndParamConstructorTest()
+			=> RunTest(nameof(CreateStructWithReadonlyPrivateFieldAndParamConstructorTest), CreateStructWithReadonlyPrivateFieldAndParamConstructor);
+
+		public Stopwatch CreateStructWithReadonlyPrivateFieldAndParamConstructor()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				new StructWithReadonlyPrivateField(i);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
 		public void CreateStructWithPropertyAndParamConstructorTest()
 			=> RunTest(nameof(CreateStructWithPropertyAndParamConstructorTest), CreateStructWithPropertyAndParamConstructor);
 
@@ -194,6 +228,20 @@ namespace BeeFee.ImageApp2.Tests
 			sw.Start();
 			for (int i = 0; i < countOfInnerIterations; i++)
 				new StructWithField(i);
+			sw.Stop();
+			return sw;
+		}
+
+		[TestMethod]
+		public void CreateStructWithPrivateFieldAndParamConstructorTest()
+			=> RunTest(nameof(CreateStructWithPrivateFieldAndParamConstructorTest), CreateStructWithPrivateFieldAndParamConstructor);
+
+		public Stopwatch CreateStructWithPrivateFieldAndParamConstructor()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				new StructWithPrivateField(i);
 			sw.Stop();
 			return sw;
 		}
@@ -337,6 +385,40 @@ namespace BeeFee.ImageApp2.Tests
 				new ClassWithField() { Value = i };
 			sw.Stop();
 			return sw;
+		}
+
+		[TestMethod]
+		public void CreateClassWithFieldAndDefaultConstructorAndFieldSetTest()
+			=> RunTest(nameof(CreateClassWithFieldAndDefaultConstructorAndFieldSetTest), CreateClassWithFieldAndDefaultConstructorAndFieldSet);
+
+		public Stopwatch CreateClassWithFieldAndDefaultConstructorAndFieldSet()
+		{
+			var sw = new Stopwatch();
+			sw.Start();
+			for (int i = 0; i < countOfInnerIterations; i++)
+				new ClassWithField().Value = i;
+			sw.Stop();
+			return sw;
+		}
+
+		private delegate void DelegateChangeStruct(ref StructWithField s);
+
+		[TestMethod]
+		public void RefStructTest()
+		{
+			var s = new StructWithField(5);
+			ChangeStruct(ref s, ChangeStructAction);
+			Console.WriteLine(s.Value);
+		}
+
+		private void ChangeStructAction(ref StructWithField s)
+		{
+			s.Value = 10;
+		}
+
+		private void ChangeStruct(ref StructWithField s, DelegateChangeStruct Method)
+		{
+			Method(ref s);
 		}
 	}
 }
