@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using BeeFee.ImageApp2.Embed;
 using BeeFee.ImageApp2.Exceptions;
@@ -7,6 +9,7 @@ using BeeFee.ImageApp2.Services;
 using BeeFee.ImagesWebApplication2.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace BeeFee.ImagesWebApplication2.Controllers
 {
@@ -49,9 +52,17 @@ namespace BeeFee.ImagesWebApplication2.Controllers
 			=> _service.GetAccess(directory, remoteIp, token, RequestHost);
 
 		[HttpPut]
-		public bool Put(AcceptModel acceptModel)
-			=> _service.AcceptFile(new []{acceptModel.CreateImageSettings()}, RequestHost);
-		
+		public bool Put(/*AcceptModel acceptModel*/[FromBody]string json)
+		{
+			string r;
+			Request.Body.Position = 0;
+			using (var s = new StreamReader(Request.Body))
+				r = s.ReadToEnd();
+			var acceptModel = JsonConvert.DeserializeObject<AcceptModel>(r);
+			return _service.AcceptFile(new[] { acceptModel.CreateImageSettings() }, RequestHost); ;
+		}
+		//=> _service.AcceptFile(new []{new AcceptModel().CreateImageSettings()}, RequestHost);
+
 
 		[HttpGet("list")]
 		public JsonResult Get(string directory, string token)

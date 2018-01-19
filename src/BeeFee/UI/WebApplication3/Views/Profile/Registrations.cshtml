@@ -2,24 +2,29 @@
 @{
 	ViewBag.Title = "Мои регистрации";
 }
-
-<table width="100%">
-	<thead>
-	<tr>
-		<th>Дата</th>
-		<th>Статус</th>
-		<th>Сумма</th>
-	</tr>
-	</thead>
-	<tbody>
-	@foreach (var m in Model.Items)
-	{
-		<tr>
-			<td>@m.Date</td>
-			<td>@m.State</td>
-			<td>@m.Sum</td>
-		</tr>
-	}
-	</tbody>
-</table>
-@Html.Partial("_Pager", Model.Items)
+<div class="container">
+	<table width="100%">
+		<thead>
+			<tr>
+				<th>Дата</th>
+				<th>Статус</th>
+				<th>Сумма</th>
+				<th>Организатор</th>
+				<th>Мероприятие</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var m in Model.Items)
+			{
+				<tr>
+					<td>@m.Date</td>
+					<td>@m.State</td>
+					<td>@m.Sum</td>
+					<td>@m.Event.Company.Name</td>
+					<td><a href="/event/@m.Event.Company.Url/@m.Event.Event.Url">@m.Event.Event.Name</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	@Html.Partial("_Pager", Model.Items)
+</div>

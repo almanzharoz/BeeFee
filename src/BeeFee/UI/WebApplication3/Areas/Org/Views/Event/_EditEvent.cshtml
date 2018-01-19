@@ -19,13 +19,13 @@
 	</div>
 	@Html.ValidationMessageFor(m => m.Cover, null, new { @class = "text-danger" })
 	<div class="create--file">
-		@if (!String.IsNullOrEmpty(Model.Cover))
-		{
-		<img style="display: block; margin-bottom: 15px;" src="@Images.GetImageUrl(Model.CompanyUrl, Model.Url, Model.Cover, 368, 190)" />
-		}
 		@Html.HiddenFor(m => m.Cover)
 		<input class="create--file-i" type="file" id="File" data-eventurl="@Model.Url" data-companyurl="@Model.CompanyUrl" data-imageserverurl="@(Images.GetImageUrl())" />
 		<div class="create--file-b">Загрузить изображение</div>
+		@if (!String.IsNullOrEmpty(Model.Cover))
+		{
+			<img style="display: block; margin-bottom: 15px;" src="@Images.GetImageUrl("/event/cover", Model.Cover)"/>
+		}
 	</div>
 	@Html.ValidationMessageFor(m => m.StartDateTime, null, new { @class = "text-danger" })
 	@Html.ValidationMessageFor(m => m.FinishDateTime, null, new { @class = "text-danger" })
@@ -60,9 +60,9 @@
 			</div>
 			<ul class="select_list">
 				@foreach (var category in Model.Categories)
-			{
+				{
 					<li data-value="@category.Value">@category.Text</li>
-			}
+				}
 			</ul>
 		</div>
 	</div>
@@ -77,9 +77,11 @@
 </form>
 
 @section Scripts{
+	<script src="~/js/fileUpload.js"></script>
 	<script>
 		$(function () {
 			initEventEdit();
+			$(".create--file-i").fileUpload({url:"@Images.GetImageUrl()", dir:"/event", for:"#Cover"});
 		});
 	</script>
 }

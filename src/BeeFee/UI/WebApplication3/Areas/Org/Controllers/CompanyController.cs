@@ -8,6 +8,7 @@ using BeeFee.Model.Projections;
 using BeeFee.Model.Services;
 using BeeFee.OrganizerApp.Projections.Company;
 using BeeFee.OrganizerApp.Services;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharpFuncExt;
@@ -23,17 +24,19 @@ namespace WebApplication3.Areas.Org.Controllers
         private readonly ImagesService _imagesService;
         private readonly EventService _eventService;
         private readonly CategoryService _categoryService;
+		private readonly IAntiforgery _antiforgery;
 
-        public CompanyController(CompanyService service, EventService eventService, CategoryService categoryService, ImagesService imagesService, CompanyRequestModel model)
+		public CompanyController(CompanyService service, EventService eventService, CategoryService categoryService, ImagesService imagesService, CompanyRequestModel model, IAntiforgery antiforgery)
             : base(service, model)
         {
             _imagesService = imagesService;
             _eventService = eventService;
             _categoryService = categoryService;
-        }
+			_antiforgery = antiforgery;
+		}
 
-        #region Remove
-        [Authorize(Roles = RoleNames.MultiOrganizer)]
+		#region Remove
+		[Authorize(Roles = RoleNames.MultiOrganizer)]
         public ActionResult Remove()
         {
             Service.RemoveCompany(Model.Id, Model.Version);
@@ -43,16 +46,27 @@ namespace WebApplication3.Areas.Org.Controllers
 
         #region Edit
 
-        [HttpGet]
-        public Task<IActionResult> Edit()
-            => View("Edit",
-                m => Service.GetCompanyAsync(m.Id),
-                c => new CompanyEditModel(c/*.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost))*/));
+		[HttpGet]
+		public Task<IActionResult> Edit()
+		{
+			_imagesService.GetAccess("/logo", _antiforgery.GetAndStoreTokens(HttpContext).RequestToken, UserHost);
+			return View("Edit",
+				m => Service.GetCompanyAsync(m.Id),
+				c => new CompanyEditModel(c /*.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost))*/));
+		}
 
-        [HttpPost]
+		[HttpPost]
         public Task<IActionResult> Edit(CompanyEditModel model)
             => ModelStateIsValid(model,
-                m => Service.EditCompanyAsync(Model.Id, Model.Version, model.Name, model.Url, model.Email, model.Logo),
+				async m =>
+				{
+					await _imagesService.Accept(new AcceptModel
+					{
+						TempPath = model.Logo,
+						Images = new[] { new ImageSaveSetting("/logo", 200, 200) }
+					});
+					return await Service.EditCompanyAsync(Model.Id, Model.Version, model.Name, model.Url, model.Email, model.Logo);
+				},
                 m => User.IsInRole(RoleNames.MultiOrganizer)
                     ? RedirectToAction("Index", "Companies")
                     : RedirectToAction("Events", "Company", new { area = "Org", Model.Id }),
@@ -66,16 +80,27 @@ namespace WebApplication3.Areas.Org.Controllers
 
         #region Create Event
 
-        [HttpGet]
-        public ActionResult CreateEvent()
-            => View(new EventCreateModel(_categoryService.GetAllCategories<BaseCategoryProjection>()));
+		[HttpGet]
+		public ActionResult CreateEvent()
+		{
+			_imagesService.GetAccess("/event", _antiforgery.GetAndStoreTokens(HttpContext).RequestToken, UserHost);
+			return View(new EventCreateModel(_categoryService.GetAllCategories<BaseCategoryProjection>()));
+		}
 
-        [HttpPost]
+		[HttpPost]
         public Task<IActionResult> CreateEvent(EventCreateModel model)
             => ModelStateIsValid(model,
                 // пробуем добавить мероприятие в БД
-                m => _eventService.AddEventAsync(Model.Id, m.CategoryId, m.Name, m.Label, m.Url, m.Email,
-                    new EventDateTime(m.StartDateTime, m.FinishDateTime), new Address(m.City, m.Address), m.Cover),
+                async m =>
+				{
+					await _imagesService.Accept(new AcceptModel
+					{
+						TempPath = model.Cover,
+						Images = new[] { new ImageSaveSetting("/event/cover", 368, 190), new ImageSaveSetting("/event", 1162, 600) }
+					});
+					return await _eventService.AddEventAsync(Model.Id, m.CategoryId, m.Name, m.Label, m.Url, m.Email,
+						new EventDateTime(m.StartDateTime, m.FinishDateTime), new Address(m.City, m.Address), m.Cover);
+				},
                 // если удалось добавить в БД
                 async (m, r) =>
                 {

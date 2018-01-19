@@ -4,6 +4,7 @@ using BeeFee.OrganizerApp.Services;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SharpFuncExt;
 using WebApplication3.Areas.Org.Models.Companies;
 using WebApplication3.Controllers;
 
@@ -29,7 +30,7 @@ namespace WebApplication3.Areas.Org.Controllers
 		#endregion
 
 		public ActionResult First() //hack
-			=> RedirectToAction("Edit", "Company", new {area = "Org", id = Service.GetCompany(null).Id});
+			=> Service.GetCompany(null).Convert(c => RedirectToAction("Edit", "Company", new {area = "Org", id = c.Id, version= c.Version}));
 		public ActionResult FirstEvents() //hack
 			=> RedirectToAction("Events", "Company", new { area = "Org", id = Service.GetCompany(null).Id });
 

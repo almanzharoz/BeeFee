@@ -53,7 +53,7 @@ namespace BeeFee.ImageApp2.Services
 					{
 						var name = string.Concat(Guid.NewGuid().ToString(), Path.GetExtension(fileName));
 						SaveFile(img, Path.Combine(_settings.TempDirectory, name));
-						if (img.Size().Width <= _settings.PreviewSize.Width && img.Size().Height <= _settings.PreviewSize.Height)
+						if (img.Size().Width > _settings.PreviewSize.Width || img.Size().Height > _settings.PreviewSize.Height)
 							using (var resized = ResizeImage(img, _settings.PreviewSize))
 								SaveFile(resized, Path.Combine(_settings.PreviewDirectory, name));
 						else
@@ -123,15 +123,16 @@ namespace BeeFee.ImageApp2.Services
 			if (!IsAdminIp(requestIp)) throw new AccessDeniedException();
 			foreach (var setting in settings)
 			{
-				using (var file = File.OpenRead(setting.TempPath))
+				using (var file = File.OpenRead(String.Concat(_settings.TempDirectory,"\\", setting.TempPath)))
 				using (var img = LoadImage(file))
 				{
 					foreach (var newFile in setting.ImageSaveSettings)
 					{
-						if (!overrideExistingFiles && File.Exists(newFile.Path))
+						var path = String.Concat(_settings.PreviewDirectory, newFile.Path.Replace("/", "\\"), "\\", setting.TempPath);
+						if (!overrideExistingFiles && File.Exists(path))
 							continue;
 						using (var resized = ResizeImage(img, newFile.Size))
-							SaveFile(resized, newFile.Path);
+							SaveFile(resized, path);
 					}
 				}
 			}

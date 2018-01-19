@@ -6,6 +6,7 @@ using BeeFee.Model.Models;
 using BeeFee.Model.Projections;
 using BeeFee.Model.Services;
 using BeeFee.OrganizerApp.Services;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharpFuncExt;
@@ -20,11 +21,13 @@ namespace WebApplication3.Areas.Org.Controllers
 	{
 		private readonly ImagesService _imagesService;
 		private readonly CategoryService _categoryService;
+		private readonly IAntiforgery _antiforgery;
 
-		public EventController(EventService service, CategoryService categoryService, ImagesService imagesService, EventRequestModel model) : base(service, model)
+		public EventController(EventService service, CategoryService categoryService, ImagesService imagesService, EventRequestModel model, IAntiforgery antiforgery) : base(service, model)
 		{
 			_imagesService = imagesService;
 			_categoryService = categoryService;
+			_antiforgery = antiforgery;
 		}
 
 		#region Remove
@@ -39,22 +42,36 @@ namespace WebApplication3.Areas.Org.Controllers
 		public ActionResult Close()
 		{
 			Service.CloseEvent(Model.Id, Model.ParentId, Model.Version);
-			return RedirectToAction("Events", "Company");
+			return RedirectToAction("Events", "Company", new {id = Model.ParentId});
 		}
 		#endregion
 
 		#region Edit
+
 		[HttpGet]
 		public Task<IActionResult> Edit()
-			=> View("Edit",
+		{
+			_imagesService.GetAccess("/event", _antiforgery.GetAndStoreTokens(HttpContext).RequestToken, UserHost);
+			return View("Edit",
 				m => Service.GetEventAsync(m.Id, m.ParentId, m.Version),
-				c => new EventEditModel(c/*.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost))*/, _categoryService.GetAllCategories<BaseCategoryProjection>()));
+				c => new EventEditModel(c /*.Fluent(x => _imagesService.GetAccessToFolder(x.Url, UserHost))*/,
+					_categoryService.GetAllCategories<BaseCategoryProjection>()));
+		}
 
 		[HttpPost]
 		public Task<IActionResult> Edit(EventEditModel model)
 			=> ModelStateIsValid(model,
-				async m => await Service.UpdateEventAsync(Model.Id, Model.ParentId, Model.Version, m.Name, m.Label, m.Url,
-					m.Cover, m.Email, new EventDateTime(m.StartDateTime, m.FinishDateTime), new Address(m.City, m.Address), m.CategoryId),
+				async m =>
+				{
+					await _imagesService.Accept(new AcceptModel
+					{
+						TempPath = model.Cover,
+						Images = new[] { new ImageSaveSetting("/event/cover", 368, 190), new ImageSaveSetting("/event", 1162, 600) }
+					});
+					return await Service.UpdateEventAsync(Model.Id, Model.ParentId, Model.Version, m.Name, m.Label, m.Url,
+						m.Cover, m.Email, new EventDateTime(m.StartDateTime, m.FinishDateTime), new Address(m.City, m.Address),
+						m.CategoryId);
+				},
 				m => RedirectToAction("EditDescription", "Event",
 					new {area = "Org", Model.Id, Model.ParentId, version = Model.Version + 1}),
 				(m, c) => c

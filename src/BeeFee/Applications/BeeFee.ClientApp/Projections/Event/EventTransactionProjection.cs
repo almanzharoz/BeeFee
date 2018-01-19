@@ -19,7 +19,7 @@ namespace BeeFee.ClientApp.Projections.Event
 		}
 	}
 
-	internal class EventTransactionProjection : BaseEntity, IProjection<EventTransaction>, ISearchProjection, IRemoveProjection
+	public class EventTransactionProjection : BaseEntity, IProjection<EventTransaction>, IJoinProjection, ISearchProjection, IRemoveProjection
     {
 		public EventJoinProjection Event { get; }
 		public BaseCompanyProjection Company { get; }
@@ -28,15 +28,29 @@ namespace BeeFee.ClientApp.Projections.Event
 
 		public int TicketsLeft { get; }
 
-		public EventTicketTransaction[] Transactions { get; }
+		//public EventTicketTransaction[] Transactions { get; }
 
-		public EventTransactionProjection(string id, BaseCompanyProjection company, EventJoinProjection @event, TicketPrice[] prices, int ticketsLeft, EventTicketTransaction[] transactions) : base(id)
+		public EventTransactionProjection(string id, BaseCompanyProjection company, EventJoinProjection @event, TicketPrice[] prices, int ticketsLeft/*, EventTicketTransaction[] transactions*/) : base(id)
 		{
 			Company = company;
 			Event = @event;
 			Prices = prices;
 			TicketsLeft = ticketsLeft;
-			Transactions = transactions;
+			//Transactions = transactions;
+		}
+	}
+
+	public class EventTransactionJoinProjection : BaseEntity, IProjection<EventTransaction>, IJoinProjection
+	{
+		public EventJoinProjection Event { get; private set; }
+		public BaseCompanyProjection Company { get; private set; }
+
+		public TicketPrice[] Prices { get; private set; }
+
+		public int TicketsLeft { get; private set; }
+
+		public EventTransactionJoinProjection(string id) : base(id)
+		{
 		}
 	}
 
@@ -49,8 +63,9 @@ namespace BeeFee.ClientApp.Projections.Event
 		public float Sum { get; }
 		public ETransactionType Type { get; }
 		public ETransactionState State { get; }
+		public EventTransactionJoinProjection Event { get; }
 
-		public EventTicketTransaction(Guid id, Guid priceId, DateTime date, Contact contact, float sum, ETransactionType type, ETransactionState state)
+		public EventTicketTransaction(Guid id, Guid priceId, DateTime date, Contact contact, float sum, ETransactionType type, ETransactionState state, EventTransactionJoinProjection @event)
 		{
 			Id = id;
 			PriceId = priceId;
@@ -59,6 +74,7 @@ namespace BeeFee.ClientApp.Projections.Event
 			Sum = sum;
 			Type = type;
 			State = state;
+			Event = @event;
 		}
 	}
 }

@@ -44,10 +44,10 @@ namespace BeeFee.OrganizerApp.Services
 				(u, c) => c.DownloadDataAsync(new Uri(String.Concat(_imagesHost, "/api/home/access?directory=", u, "&remoteIp=", host, "&token=", token))));
 
 		public Task<bool> Accept(AcceptModel model)
-			=> model.Using(x => new WebClient {BaseAddress = _imagesHost},
-				async (m, c) => Convert.ToBoolean((
-					await c.UploadDataTaskAsync("/api/home", "PUT",
-						Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(model))))[0]));
+			=> model.Using(x => new WebClient {BaseAddress = _imagesHost}.Fluent(c => c.Headers[HttpRequestHeader.ContentType] = "application/json"),
+				async (m, c) => Convert.ToBoolean((byte)(
+					await c.UploadStringTaskAsync("/api/home", "PUT",
+						JsonConvert.SerializeObject(model)))[0]));
 
 		///// <summary>
 		///// Заливаем логотип через сервер

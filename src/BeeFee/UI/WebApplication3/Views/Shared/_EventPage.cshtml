@@ -4,7 +4,7 @@
 
 <div class="event">
 	<div data-fixed-wrap="info">
-		<div class="event-intro hidden-xs" style="background-image: url('@(Images.GetImageUrl(Model.Item1.Parent.Url, Model.Item1.Url, Model.Item1.Page.Cover, 1162, 600))');">
+		<div class="event-intro hidden-xs" style="background-image: url('@(Images.GetImageUrl("/event", Model.Item1.Page.Cover))');">
 			<div class="container">
 				<div class="event-intro--in">
 					<div class="event-intro--box">
@@ -16,7 +16,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="event-intro visible-xs" style="background-image: url('@(Images.GetImageUrl(Model.Item1.Parent.Url, Model.Item1.Url, Model.Item1.Page.Cover, 1162, 600))');">
+		<div class="event-intro visible-xs" style="background-image: url('@(Images.GetImageUrl("/event", Model.Item1.Page.Cover))');">
 			<h1 class="event-intro--title">@Model.Item1.Page.Caption</h1>
 		</div>
 		<div class="container">

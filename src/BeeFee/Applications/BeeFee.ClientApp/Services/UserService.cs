@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BeeFee.ClientApp.Projections.Event;
 using BeeFee.ClientApp.Projections.User;
@@ -22,7 +23,7 @@ namespace BeeFee.ClientApp.Services
 
 		public Task<Pager<EventTicketTransaction>> GetRegistrations(int page, int take)
 			=> FilterNestedAsync<EventTransaction, TicketTransaction, EventTransactionProjection, EventTicketTransaction>(
-				q => q.Term(p => p.Transactions.First().User, User.Id),
+				q => q.MatchAll()/*Term(p => p.Transactions.First().User, User.Id)*/,
 				p => p.Transactions,
 				q => q.Term(p => p.Transactions.First().User, User.Id),
 				s => s.Descending(p => p.Transactions.First().Date),

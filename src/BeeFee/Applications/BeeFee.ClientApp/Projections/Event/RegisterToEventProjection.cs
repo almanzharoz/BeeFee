@@ -20,9 +20,12 @@ namespace BeeFee.ClientApp.Projections.Event
 		{
 		}
 	}
-	public abstract class EventJoinProjection : BaseEntity, IProjection<Model.Models.Event>, IJoinProjection
+	public class EventJoinProjection : BaseEntity, IProjection<Model.Models.Event>, IJoinProjection
 	{
-		protected EventJoinProjection(string id) : base(id)
+		public string Name { get; private set; }
+		public string Url { get; private set; }
+
+		public EventJoinProjection(string id) : base(id)
 		{
 		}
 	}

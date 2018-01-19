@@ -34,34 +34,6 @@ function initEventEdit() {
 		el.find('span.is-s1').html(date);
 		el.find('span.is-s2').html(time);
 	}
-
-	var $file = $('#File');
-	$file.change(function () {
-		var $this = $(this);
-		var fd = new FormData;
-		fd.append('file', $this.prop('files')[0]);
-		fd.append('companyName', $file.data("companyurl"));
-		fd.append('eventName', $file.data("eventurl"));
-		$.ajax({
-			url: $file.data("imageserverurl") + '/api/home',
-			contentType: false,
-			processData: false,
-			dataType: 'json',
-			method: "POST",
-			data: fd,
-			success: function (data) {
-				$('#errorUploadImage').remove();
-				if (data.result.error != null) {
-					$inp.parent().before("<span id='#errorUploadImage' class=error>" + data.result.error + "</span>");
-					return;
-				}
-				$this.prev().prev().remove();
-				$this.parent().prepend("<img src='" + $file.data("imageserverurl") + "/min/" + $file.data("companyurl") + "/" + $file.data("eventurl") + "/368x190/" + data.result.path + "' />");
-				$("#Cover").val(data.result.path);
-			}
-		});
-	});
-	
 }
 
 var topFixed, prevTop = 0, prevShowTop = 0;

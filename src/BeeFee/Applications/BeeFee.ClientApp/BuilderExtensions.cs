@@ -29,9 +29,11 @@ namespace BeeFee.ClientApp
 				.AddProjection<UserUpdateProjection, User>()
                 .AddProjection<EventJoinProjection, Event>()
                 .AddProjection<EventGridItem, Event>()
+				.AddStruct<RegisterToEventTransaction>()
                 .AddProjection<EventAddressProjection, Event>()
                 .AddProjection<EventTransactionPricesProjection, EventTransaction>()
                 .AddProjection<EventTransactionProjection, EventTransaction>()
+                .AddProjection<EventTransactionJoinProjection, EventTransaction>()
 				.AddProjection<RegisterToEventProjection, EventTransaction>();
 
         }

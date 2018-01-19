@@ -1,75 +1,79 @@
-﻿@using WebApplication3.Areas.Org.Models.Event
+﻿@inject ImagesHelper Images
+@using WebApplication3.Areas.Org.Models.Event
+@using WebApplication3.Infrastructure
 @inject WebApplication3.Areas.Org.Models.Event.EventRequestModel RequestModel
 @model IEventEditModel
 @{
-    ViewBag.Title = "Редактировать мероприятие";
+	ViewBag.Title = "Редактировать мероприятие";
 }
 <div class="create">
-    <div class="create--step">
-        <div class="create--head">
-            <div class="create--number">1 / 4</div>
-            <div class="create--title">Основная информация</div>
-            @if (!(Model is EventEditModel))
-            {
-                <a asp-action="Edit" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version" class="create--edit">редактировать</a>}
-        </div>
-        @if (Model is EventEditModel)
-        {
-            @Html.Partial("_EditEvent")
-        }
-    </div>
-    <div class="create--step">
-        <div class="create--head">
-            <div class="create--number">2 / 4</div>
-            <div class="create--title">Подробное описание</div>
-            @if (!(Model is EventDescriptionModel))
-            {
-                <a asp-action="EditDescription" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version" class="create--edit">редактировать</a>}
-            else
-            {
-                <a class="create--skip" asp-action="Prices" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version">пропустить описание</a>
-            }
-        </div>
-        @if (Model is EventDescriptionModel)
-        {
-            @Html.Partial("_EditDescription")
-        }
-    </div>
-    <div class="create--step">
-        <div class="create--head">
-            <div class="create--number">3 / 4</div>
-            <div class="create--title">Настройки билетов</div>
-            @if (!(Model is EventPricesModel))
-            {
-                <a asp-action="Prices" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version" class="create--edit">редактировать</a>
-            }
-        </div>
-        @if (Model is EventPricesModel)
-        {
-            @Html.Partial("_EditPrices")
-        }
-    </div>
-    <div class="create--step">
-        <div class="create--head">
-            <div class="create--number">4 / 4</div>
-            <div class="create--title">Предпросмотр</div>
-            @if (!(Model is EventPreviewModel))
-            {
-                <a asp-action="Preview" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version" class="create--edit">просмотр</a>}
-        </div>
-        @if (Model is EventPreviewModel)
-        {
-            @Html.Partial("_Preview")
-        }
-    </div>
+	<div class="create--step">
+		<div class="create--head">
+			<div class="create--number">1 / 4</div>
+			<div class="create--title">Основная информация</div>
+			@if (!(Model is EventEditModel))
+			{
+				<a asp-action="Edit" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version" class="create--edit">редактировать</a>}
+		</div>
+		@if (Model is EventEditModel)
+		{
+			@Html.Partial("_EditEvent")
+		}
+	</div>
+	<div class="create--step">
+		<div class="create--head">
+			<div class="create--number">2 / 4</div>
+			<div class="create--title">Подробное описание</div>
+			@if (!(Model is EventDescriptionModel))
+			{
+				<a asp-action="EditDescription" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version" class="create--edit">редактировать</a>}
+			else
+			{
+				<a class="create--skip" asp-action="Prices" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version">пропустить описание</a>
+			}
+		</div>
+		@if (Model is EventDescriptionModel)
+		{
+			@Html.Partial("_EditDescription")
+		}
+	</div>
+	<div class="create--step">
+		<div class="create--head">
+			<div class="create--number">3 / 4</div>
+			<div class="create--title">Настройки билетов</div>
+			@if (!(Model is EventPricesModel))
+			{
+				<a asp-action="Prices" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version" class="create--edit">редактировать</a>
+			}
+		</div>
+		@if (Model is EventPricesModel)
+		{
+			@Html.Partial("_EditPrices")
+		}
+	</div>
+	<div class="create--step">
+		<div class="create--head">
+			<div class="create--number">4 / 4</div>
+			<div class="create--title">Предпросмотр</div>
+			@if (!(Model is EventPreviewModel))
+			{
+				<a asp-action="Preview" asp-controller="Event" asp-route-id="@RequestModel.Id" asp-route-parentId="@RequestModel.ParentId" asp-route-version="@RequestModel.Version" class="create--edit">просмотр</a>}
+		</div>
+		@if (Model is EventPreviewModel)
+		{
+			@Html.Partial("_Preview")
+		}
+	</div>
 </div>
 
 @section Scripts
-    {
-    <script src="~/lib/ckeditor/ckeditor.js"></script>
-    <script>
-        $(function () {
-            initEventEdit();
-        });
-    </script>
+	{
+	<script src="~/js/fileUpload.js"></script>
+	<script src="~/lib/ckeditor/ckeditor.js"></script>
+	<script>
+		$(function () {
+			initEventEdit();
+			$(".create--file-i").fileUpload({url:"@Images.GetImageUrl()", dir:"/event", for:"#Cover"});
+		});
+	</script>
 }

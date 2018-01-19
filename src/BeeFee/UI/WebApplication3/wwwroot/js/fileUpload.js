@@ -20,13 +20,14 @@
 				data: fd,
 				success: function (data) {
 					$t.next("span").remove();
-					if (data.error != null) {
-						$t.after("<span class=error>" + data.error + "</span>");
-						return;
-					}
+					//if (data.error != null) {
+					//	$t.after("<span class=error>" + data.error + "</span>");
+					//	return;
+					//}
 					$t.next("img").remove();
-					$t.after("<img src=" + options.url +"'"+data.path+"?ver=" + new Date().getTime() +"' />");
-					input.val(data.path);
+					$t.after("<img src='" + options.url +"/"+data+"?ver=" + new Date().getTime() +"' />");
+					input.val(data);
+					console.log(data);
 				}
 			});
 		});

@@ -30,6 +30,9 @@ namespace BeeFee.ClientApp.Services
 		public Task<EventTransactionPricesProjection> GetEventTransaction(string eventId)
 			=> FilterFirstAsync<EventTransaction, EventTransactionPricesProjection>(f => f.Term(p => p.Event, eventId.HasNotNullArg(nameof(eventId))));
 
+		private EventTransactionProjection GetEventTransactionById(string eventId)
+			=> FilterFirst<EventTransaction, EventTransactionProjection>(f => f.Term(p => p.Event, eventId.HasNotNullArg(nameof(eventId))));
+
 
 		//public IReadOnlyCollection<EventSearchProjection> SearchByName(string query)
 		//    => Search<Event, EventSearchProjection>(q => q
@@ -103,7 +106,7 @@ namespace BeeFee.ClientApp.Services
 								(ft.Term(p => p.Transactions.First().SessionId, sessionId.HasNotNullArg(nameof(sessionId))) ||
 								ft.Term(p => p.Transactions.First().Contact.Email, email) ||
 								ft.Term(p => p.Transactions.First().Contact.Phone, phoneNumber)
-									/*|| ft.Term(p => p.Transactions.First().User, User.Id)*/))))) &&
+									|| ft.Term(p => p.Transactions.First().User, User.Id)))))) &&
 						f.Nested(n => n.Path(p => p.Prices)
 							.Query(q =>
 								q.Term(t => t.Prices.First().Id, ticketId) &&
@@ -113,7 +116,7 @@ namespace BeeFee.ClientApp.Services
 						.IncNested(p => p.Prices, p => p.Left, ticketId, -1)
 						.Add(p => p.Transactions,
 							new RegisterToEventTransaction(ticketId, DateTime.Now, new Contact(name, email, phoneNumber),
-								/*GetUser<BaseUserProjection>(),*/ 0, ETransactionType.Registrition, sessionId)), true) > 0
+								GetUser<BaseUserProjection>(), 0, ETransactionType.Registrition, sessionId, GetEventTransactionById(id))), true) > 0
 				&&
 				await AddJobAsync(
 					GetById<EventProjection, BaseCompanyProjection>(id, companyId).Extend(await GetEventTransaction(id))

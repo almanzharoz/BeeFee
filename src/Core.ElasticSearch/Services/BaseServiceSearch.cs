@@ -71,6 +71,26 @@ namespace Core.ElasticSearch
 						r => r.Documents.FirstOrDefault().If(load, Load),
 						RepositoryLoggingEvents.ES_SEARCH));
 
+		protected TProjection FilterFirst<T, TProjection>(
+			Func<QueryContainerDescriptor<T>, QueryContainer> query,
+			Func<SortDescriptor<T>, IPromise<IList<ISort>>> sort = null, bool load = true)
+			where TProjection : class, IProjection<T>, ISearchProjection
+			where T : class, IModel
+			=> _mapping.GetProjectionItem<TProjection>()
+				.Convert(
+					projection => Try(
+						c => c.Search<T, TProjection>(
+							x => x
+								.Index(projection.MappingItem.IndexName)
+								.Type(projection.MappingItem.TypeName)
+								.Source(s => s.Includes(f => f.Fields(projection.Fields)))
+								.Query(q => q.Bool(b => b.Filter(query)))
+								.IfNotNull(sort, y => y.Sort(sort))
+								.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())
+								.Take(1)),
+						r => r.Documents.FirstOrDefault().If(load, Load),
+						RepositoryLoggingEvents.ES_SEARCH));
+
 		public IReadOnlyCollection<TInnerProjection> FilterNested<T, TNested, TProjection, TInnerProjection>(
 			Func<QueryContainerDescriptor<T>, QueryContainer> query,
 			Expression<Func<T, TNested[]>> path,

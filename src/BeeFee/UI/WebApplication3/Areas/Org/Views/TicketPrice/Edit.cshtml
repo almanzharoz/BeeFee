@@ -32,7 +32,13 @@
 	<script src="~/lib/ckeditor/ckeditor.js"></script>
 	<script>
 		$(function () {
-			CKEDITOR.replace($(".html-editor")[0]);
+			CKEDITOR.replace($(".html-editor")[0],
+				{
+					fullPage: true,
+					// Disable content filtering because if you use full page mode, you probably
+					// want to  freely enter any HTML content in source mode without any limitations.
+					allowedContent: true
+				});
 		});
 	</script>
 }

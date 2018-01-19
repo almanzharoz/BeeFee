@@ -43,10 +43,8 @@ namespace WebApplication3.Areas.Org.Models.Company
 		[Required(ErrorMessage = "Email is required"), EmailAddress]
 		public string Email { get; set; }
 
-		[Required]
-		public IFormFile File { get; set; }
-
-		public string Cover => File != null && File.Length > 0 ? Path.GetFileName(File.FileName) : null;
+		[Required(ErrorMessage = "Cover is required")]
+		public string Cover { get; set; }
 
 	    public string CompanyUrl { get; set; }
 

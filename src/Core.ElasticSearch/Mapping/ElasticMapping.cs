@@ -47,6 +47,7 @@ namespace Core.ElasticSearch.Mapping
 			_logger = loggerFactory.CreateLogger<ElasticMapping<TSettings>>();
 			_converters.TryAdd(typeof(GetResponse<IProjection>), new GetJsonConverter<IProjection>());
 			_converters.TryAdd(typeof(SearchResponse<IProjection>), new SearchJsonConverter<IProjection>());
+			_converters.TryAdd(typeof(SearchResponse<IProjection>), new SearchJsonConverter<IProjection>());
 		}
 
 		public bool ForTests { get; private set; }
@@ -101,6 +102,8 @@ namespace Core.ElasticSearch.Mapping
 						_converters.TryAdd(typeof(GetResponse<T>), new GetJsonConverter<T>());
 					if (typeof(ISearchProjection).IsAssignableFrom(x) || typeof(IJoinProjection).IsAssignableFrom(x) || typeof(IGetProjection).IsAssignableFrom(x))
 						_converters.TryAdd(typeof(SearchResponse<T>), new SearchJsonConverter<T>());
+					//if (typeof(IUpdateProjection).IsAssignableFrom(x))
+					//	_converters.TryAdd(typeof(Nest.UpdateByQueryDescriptor<T>), new Serialization.UpdateByQueryDescriptor<T>());
 					//_converters.TryAdd(typeof(UpdateResponse<T>), new UpdateResultJsonConverter<T>());
 					return result;
 				},
