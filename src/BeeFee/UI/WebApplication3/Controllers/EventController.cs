@@ -39,7 +39,7 @@ namespace WebApplication3.Controllers
 			=> ModelStateIsValid(model, async m =>
 					await (await Service.GetEventByUrl(Model.ParentId, Model.Id)).Convert(e =>
 						Service.RegisterToEventAsync(e.Id, e.Parent.Id, m.Email, m.Name, m.Phone, m.TicketId,
-							_imagesHelper.GetImageUrl(e.Parent.Url, e.Url, e.Page.Cover, 1162, 600), HttpContext.Session?.Id)),
+							_imagesHelper.GetImageUrl("/event", e.Page.Cover), HttpContext.Session?.Id)),
 				m => View("Index", vm => Service.GetEventByUrl(vm.ParentId, vm.Id),
 					async e => new EventPageModel(e, await Service.GetEventTransaction(e.Id), true)),
 				m => View("Index", vm => Service.GetEventByUrl(vm.ParentId, vm.Id),

@@ -106,7 +106,7 @@ namespace BeeFee.ClientApp.Services
 								(ft.Term(p => p.Transactions.First().SessionId, sessionId.HasNotNullArg(nameof(sessionId))) ||
 								ft.Term(p => p.Transactions.First().Contact.Email, email) ||
 								ft.Term(p => p.Transactions.First().Contact.Phone, phoneNumber)
-									|| ft.Term(p => p.Transactions.First().User, User.Id)))))) &&
+									/*|| ft.Term(p => p.Transactions.First().User, User.Id)*/))))) &&
 						f.Nested(n => n.Path(p => p.Prices)
 							.Query(q =>
 								q.Term(t => t.Prices.First().Id, ticketId) &&
@@ -122,7 +122,7 @@ namespace BeeFee.ClientApp.Services
 					GetById<EventProjection, BaseCompanyProjection>(id, companyId).Extend(await GetEventTransaction(id))
 						.Convert(x =>
 							new CreateTicket(id, companyId, x.Item2.Id, ticketId, x.Item1.Name, name, x.Item1.Page.Date, email,
-								imagesUrl + x.Item1.Page.Cover, x.Item1.Page.Label,
+								imagesUrl, x.Item1.Page.Label,
 								Guid.NewGuid().ToString())), DateTime.UtcNow);
 
 		//TODO сделать агргегацию посредством эластика+кеширование

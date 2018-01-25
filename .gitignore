@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /src/BeeFee/UI/BeeFee.ImagesWebApplication/images
+/Deploy
