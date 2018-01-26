@@ -156,18 +156,21 @@ namespace BeeFee.OrganizerApp.Services
                     x => x.Change(name, label, url, cover, email, dateTime, address,
                         GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category")), true);
 
-		public Task<bool> UpdateEventAsync(string id, string company, int version, string name, string label, string url, string cover, string email,
+		public async Task<bool> UpdateEventAsync(string id, string company, int version, string name, string label, string url, string cover, string email,
 			EventDateTime dateTime, Address address,
 			string categoryId)
-			=> UpdateByIdAsync<EventProjection, CompanyJoinProjection>(id,
+			=> await UpdateByIdAsync<EventProjection, CompanyJoinProjection>(id,
 				company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version,
 				x => x.Change(name, label, url.ThrowIf(z => ExistsByUrl<EventProjection>(id, z), z => new ExistsUrlException<Event>(z)), cover, email, dateTime, address,
-					GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category")), true);
+					GetById<BaseCategoryProjection>(categoryId).HasNotNullEntity("category")), true)
+			&& await UpdateAsync<EventTransactionUpdateProjection>(Filter<EventTransactionUpdateProjection>(q =>
+					q.Term(p => p.Event, id) &&
+					q.Term(p => p.Company, company)).FirstOrDefault(), e => e.Update(dateTime), false);
 
-		public bool UpdateEvent(string id, string company, int version, string html)
-            => UpdateById<EventProjection, CompanyJoinProjection>(id,
-                company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version,
-                x => x.ChangeHtml(html), true);
+		//public bool UpdateEvent(string id, string company, int version, string html)
+  //          => UpdateById<EventProjection, CompanyJoinProjection>(id,
+  //              company.ThrowIfNull(GetCompany<CompanyProjection>, x => new EntityAccessException<Company>(User, x)).Id, version,
+  //              x => x.ChangeHtml(html), true);
 
 		public Task<bool> UpdateEventDescriptionAsync(string id, string company, int version, string html)
 			=> UpdateByIdAsync<EventProjection, CompanyJoinProjection>(id,

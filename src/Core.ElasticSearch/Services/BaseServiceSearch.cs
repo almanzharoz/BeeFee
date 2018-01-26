@@ -105,7 +105,7 @@ namespace Core.ElasticSearch
 					x => x
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
-						//.Source(s => s.Includes(f => f.Fields(projection.Fields)))
+						.Source(s => s.Includes(f => f.Fields(_mapping.GetProjectionItem<TProjection>().Fields)))
 						.Query(q => query(q) && q.Nested(n => n.Path(path).Query(nq => nq.Bool(b => b.Filter(innerQquery)))
 						.InnerHits(h => h.IfNotNull(sort, y => y.Sort(sort)).IfNotNull(take, y => y.Size(take).From(page * take)))))
 						.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())),
@@ -127,7 +127,7 @@ namespace Core.ElasticSearch
 					x => x
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
-						//.Source(s => s.Includes(f => f.Fields(projection.Fields)))
+						.Source(s => s.Includes(f => f.Fields(_mapping.GetProjectionItem<TProjection>().Fields)))
 						.Query(q => query(q) && q.Nested(n => n.Path(path).Query(nq => nq.Bool(b => b.Filter(innerQquery)))
 										.InnerHits(h => h.IfNotNull(sort, y => y.Sort(sort)).Size(1))))
 						.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())),
@@ -148,7 +148,7 @@ namespace Core.ElasticSearch
 					x => x
 						.Index(_mapping.GetIndexName<T>())
 						.Type(_mapping.GetTypeName<T>())
-						//.Source(s => s.Includes(f => f.Fields(projection.Fields)))
+						.Source(s => s.Includes(f => f.Fields(_mapping.GetProjectionItem<TProjection>().Fields)))
 						.Query(q => query(q) && q.Nested(n => n.Path(path).Query(iq => iq.MatchAll())
 										.InnerHits(h => h.Name("innerhits").IfNotNull(sort, y => y.Sort(sort)).IfNotNull(take, y => y.Size(take).From(page * take)))))
 						.Is<SearchDescriptor<T>, TProjection, IWithVersion>(y => y.Version())),

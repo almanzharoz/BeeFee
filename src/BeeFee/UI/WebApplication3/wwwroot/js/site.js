@@ -5,13 +5,13 @@ function initEventEdit() {
 	$('[data-range="start"]').datetimepicker({
 		onChangeDateTime: function (dp, $input) {
 			showDate($input.closest('.create--field-di'), dp);
-		}
+		}, step: 15
 	});
 
 	$('[data-range="end"]').datetimepicker({
 		onChangeDateTime: function (dp, $input) {
 			showDate($input.closest('.create--field-di'), dp);
-		}
+		}, step: 15
 	});
 
 	if ($('[data-range="start"]').length > 0 && $('[data-range="start"]').val().length > 0)
@@ -72,7 +72,12 @@ $(document).ready(function () {
 			e.preventDefault();
 		}
 	});
-
+	try {
+		$.validator.methods.number = function (value, element) {
+			var val = value.replace(',', '.') * 1;
+			return this.optional(element) || ($.isNumeric(val));
+		};
+	} catch(e) {}
 	// -- Login Form
 
 	initLoginDialog();
@@ -81,34 +86,7 @@ $(document).ready(function () {
 	
 	// ----------
 
-    var $file = $('input[data-type="fileupload"]');
-    $file.change(function () {
-        var $this = $(this);
-        var fd = new FormData;
-        fd.append('file', $this.prop('files')[0]);
-        fd.append('companyName', $file.data("companyurl"));
-        fd.append('eventName', $file.data("eventurl"));
-        $.ajax({
-            url: $file.data("imageserverurl") + '/api/home',
-            contentType: false,
-            processData: false,
-            dataType: 'json',
-            method: "POST",
-            data: fd,
-            success: function (data) {
-                $('#errorUploadImage').remove();
-                if (data.result.error != null) {
-                    $inp.parent().before("<span id='#errorUploadImage' class=error>" + data.result.error + "</span>");
-                    return;
-                }
-                $this.prev().prev().remove();
-                $this.parent().prepend("<img src='" + $file.data("imageserverurl") + "/min/" + $file.data("companyurl") + "/" + $file.data("eventurl") + "/368x190/" + data.result.path + "' />");
-                $("#Cover").val(data.result.path);
-            }
-        });
-    });
-
-	$('[data-goto="filter"]').on({
+    $('[data-goto="filter"]').on({
 		click: function (e) {
 			e.preventDefault();
 
@@ -188,6 +166,8 @@ $(document).ready(function () {
 		if ($(inp).val().length > 0)
 			$(inp).trigger("change");
 	});
+
+	$("input[name=Phone]").mask("+7 (999) 999-9999", { placeholder: "+7 (___) ___-____" });
 
 	$('.vertical-field').each(function () {
 		var field = $(this);

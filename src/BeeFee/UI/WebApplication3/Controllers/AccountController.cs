@@ -58,7 +58,7 @@ namespace WebApplication3.Controllers
 
 			//_logger.LogInformation(4, "User logged out.");
 
-			return Redirect(Request.Headers["Referer"].FirstOrDefault() ?? "/");
+			return Redirect(/*Request.Headers["Referer"].FirstOrDefault() ?? */"/");
 		}
 
 		public IActionResult AccessDenied()

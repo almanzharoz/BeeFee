@@ -29,6 +29,7 @@ namespace BeeFee.OrganizerApp
 				.AddProjection<EventPreviewProjection, Event>()
 				.AddProjection<EventTransactionProjection, EventTransaction>()
 				.AddProjection<EventTransactionPricesProjection, EventTransaction>()
+                .AddProjection<EventTransactionUpdateProjection, EventTransaction>()
 				.AddProjection<EventJoinProjection, Event>()
 				.AddProjection<NewEvent, Event>()
 				.AddProjection<NewEventTransaction, EventTransaction>();

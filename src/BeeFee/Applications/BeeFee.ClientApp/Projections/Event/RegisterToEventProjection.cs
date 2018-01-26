@@ -13,6 +13,7 @@ namespace BeeFee.ClientApp.Projections.Event
 		public BaseCompanyProjection Company { get; }
 		public TicketPrice[] Prices { get; }
 		public int TicketsLeft { get; }
+		public EventDateTime DateTime { get; set; }
 
 		public RegisterToEventTransaction[] Transactions { get; }
 

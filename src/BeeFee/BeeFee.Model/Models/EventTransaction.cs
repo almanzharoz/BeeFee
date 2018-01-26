@@ -24,6 +24,11 @@ namespace BeeFee.Model.Models
 		public int TicketsLeft { get; set; }
 
 		/// <summary>
+		/// Период продажи билетов
+		/// </summary>
+		public EventDateTime DateTime { get; set; }
+
+		/// <summary>
 		/// Транзакции покупки билетов
 		/// </summary>
 		[Nested]

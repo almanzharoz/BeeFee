@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Security.Claims;
 using BeeFee.AdminApp;
 using BeeFee.ClientApp;
@@ -12,6 +13,7 @@ using BeeFee.OrganizerApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -100,6 +102,14 @@ namespace WebApplication3
 			app.UseSession();
 
 			app.UseAuthentication();
+
+			var supportedCultures = new[] { new CultureInfo("ru-RU") };
+			app.UseRequestLocalization(new RequestLocalizationOptions
+			{
+				DefaultRequestCulture = new RequestCulture("ru-RU"),
+				SupportedCultures = supportedCultures,
+				SupportedUICultures = supportedCultures
+			});
 
 			app.UseMvc(routes =>
             {

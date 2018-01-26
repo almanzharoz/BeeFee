@@ -92,9 +92,11 @@ namespace BeeFee.ClientApp.Services
 					f.Term(p => p.Event, id.HasNotNullArg(nameof(id))) &&
 					f.Term(p => p.Company, companyId.HasNotNullArg(nameof(companyId))) &&
 					f.Range(r => r.Field(p => p.TicketsLeft).GreaterThan(0.0)) &&
-					!f.Nested(n => n.Path(p => p.Transactions).Query(q => q.Bool(b => b.Filter(a =>
-						a.Term(p => p.Transactions.First().SessionId, sessionId.HasNotNullArg(nameof(sessionId)))
-					))))) > 0;
+					f.DateRange(r => r.Field(p => p.DateTime.Start).LessThan(DateMath.Anchored(DateTime.UtcNow))) && f.DateRange(r => r.Field(p => p.DateTime.Finish).GreaterThan(DateMath.Anchored(DateTime.UtcNow))) &&
+					!f.Nested(n => n.Path(p => p.Transactions)
+						.Query(q => q.Bool(b => b.Filter(ft =>
+							ft.Term(p => p.Transactions.First().SessionId, sessionId.HasNotNullArg(nameof(sessionId)))
+							.If(z => User != null, z => z || ft.Term(p => p.Transactions.First().User, User.Id), z => z)))))) > 0;
 
 		public async Task<bool> RegisterToEventAsync(string id, string companyId, string email, string name,
 			string phoneNumber, Guid ticketId, string imagesUrl, string sessionId)
@@ -105,8 +107,8 @@ namespace BeeFee.ClientApp.Services
 							.Query(q => q.Bool(b => b.Filter(ft =>
 								(ft.Term(p => p.Transactions.First().SessionId, sessionId.HasNotNullArg(nameof(sessionId))) ||
 								ft.Term(p => p.Transactions.First().Contact.Email, email) ||
-								ft.Term(p => p.Transactions.First().Contact.Phone, phoneNumber)
-									/*|| ft.Term(p => p.Transactions.First().User, User.Id)*/))))) &&
+								ft.Term(p => p.Transactions.First().Contact.Phone, phoneNumber))
+							.If(z => User != null, z => z || ft.Term(p => p.Transactions.First().User, User.Id), z => z))))) &&
 						f.Nested(n => n.Path(p => p.Prices)
 							.Query(q =>
 								q.Term(t => t.Prices.First().Id, ticketId) &&
